@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">位置引數</h1><br>
+<p>One feature that has been missing from our programs is the ability to accept and process
+command line options and arguments. In this chapter, we will examine the shell features
+that allow our programs to get access to the contents of the command line.</p>
+
+<p>現在我們的程式還缺少一種本領，就是接收和處理命令列選項和引數的能力。在這一章中，我們將探究一些能
+讓程式訪問命令列內容的 shell 效能。</p>
+
+<h3 id="訪問命令列">訪問命令列</h3>
+
+<p>The shell provides a set of variables called positional parameters that contain the individ-
+ual words on the command line. The variables are named 0 through 9. They can be
+demonstrated this way:</p>
+
+<p>shell 提供了一個稱為位置引數的變數集合，這個集合包含了命令列中所有獨立的單詞。這些變數按照從0到9給予命名。
+可以以這種方式講明白：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># posit-param: script to view command line parameters</span>
+<span class="nb">echo</span> <span class="s2">"
+</span><span class="se">\$</span><span class="s2">0 = </span><span class="nv">$0</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">1 = </span><span class="nv">$1</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">2 = </span><span class="nv">$2</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">3 = </span><span class="nv">$3</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">4 = </span><span class="nv">$4</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">5 = </span><span class="nv">$5</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">6 = </span><span class="nv">$6</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">7 = </span><span class="nv">$7</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">8 = </span><span class="nv">$8</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">9 = </span><span class="nv">$9</span><span class="s2">
+"</span>
+</code></pre></div></div>
+
+<p>A very simple script that displays the values of the variables $0-$9. When executed
+with no command line arguments:</p>
+
+<p>一個非常簡單的指令碼，顯示從 $0 到 $9 所有變數的值。當不帶命令列引數執行該指令碼時，輸出結果如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ posit-param
+$0 = /home/me/bin/posit-param
+$1 =
+$2 =
+$3 =
+$4 =
+$5 =
+$6 =
+$7 =
+$8 =
+$9 =
+</code></pre></div></div>
+
+<p>Even when no arguments are provided, $0 will always contain the first item appearing on
+the command line, which is the pathname of the program being executed. When argu-
+ments are provided, we see the results:</p>
+
+<p>即使不帶命令列引數，位置引數 $0 總會包含命令列中出現的第一個單詞，也就是已執行程式的路徑名。
+當帶引數執行指令碼時，我們看看輸出結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ posit-param a b c d
+$0 = /home/me/bin/posit-param
+$1 = a
+$2 = b
+$3 = c
+$4 = d
+$5 =
+$6 =
+$7 =
+$8 =
+$9 =
+</code></pre></div></div>
+
+<p>Note: You can actually access more than nine parameters using parameter expan-
+sion. To specify a number greater than nine, surround the number in braces. For ex-
+ample ${10}, ${55}, ${211}, and so on.</p>
+
+<p>注意： 實際上透過引數展開方式你可以訪問的引數個數多於9個。只要指定一個大於9的數字，用花括號把該數字括起來就可以。
+例如 ${10}、 ${55}、 ${211}等等。</p>
+
+<h4 id="確定引數個數">確定引數個數</h4>
+
+<p>The shell also provides a variable, $#, that yields the number of arguments on the com-
+mand line:</p>
+
+<p>另外 shell 還提供了一個名為 $#，可以得到命令列引數個數的變數:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># posit-param: script to view command line parameters</span>
+<span class="nb">echo</span> <span class="s2">"
+Number of arguments: </span><span class="nv">$#</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">0 = </span><span class="nv">$0</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">1 = </span><span class="nv">$1</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">2 = </span><span class="nv">$2</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">3 = </span><span class="nv">$3</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">4 = </span><span class="nv">$4</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">5 = </span><span class="nv">$5</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">6 = </span><span class="nv">$6</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">7 = </span><span class="nv">$7</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">8 = </span><span class="nv">$8</span><span class="s2">
+</span><span class="se">\$</span><span class="s2">9 = </span><span class="nv">$9</span><span class="s2">
+"</span>
+</code></pre></div></div>
+
+<p>The result:</p>
+
+<p>結果是：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ posit-param a b c d
+Number of arguments: 4
+$0 = /home/me/bin/posit-param
+$1 = a
+$2 = b
+$3 = c
+$4 = d
+$5 =
+$6 =
+$7 =
+$8 =
+$9 =
+</code></pre></div></div>
+
+<h4 id="shift---訪問多個引數的利器">shift - 訪問多個引數的利器</h4>
+
+<p>But what happens when we give the program a large number of arguments such as this:</p>
+
+<p>但是如果我們給一個程式新增大量的命令列引數，會怎麼樣呢？ 正如下面的例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ posit-param *
+Number of arguments: 82
+$0 = /home/me/bin/posit-param
+$1 = addresses.ldif
+$2 = bin
+$3 = bookmarks.html
+$4 = debian-500-i386-netinst.iso
+$5 = debian-500-i386-netinst.jigdo
+$6 = debian-500-i386-netinst.template
+$7 = debian-cd_info.tar.gz
+$8 = Desktop
+$9 = dirlist-bin.txt
+</code></pre></div></div>
+
+<p>On this example system, the wildcard * expands into 82 arguments. How can we process
+that many? The shell provides a method, albeit a clumsy one, to do this. The shift
+command causes all the parameters to “move down one” each time it is executed. In fact,
+by using shift, it is possible to get by with only one parameter (in addition to $0,
+which never changes):</p>
+
+<p>在這個例子執行的環境下，萬用字元 * 展開成82個引數。我們如何處理那麼多的引數？
+為此，shell 提供了一種方法，儘管笨拙，但可以解決這個問題。執行一次 shift 命令，
+就會導致所有的位置引數 “向下移動一個位置”。事實上，用 shift 命令也可以
+處理只有一個引數的情況（除了其值永遠不會改變的變數 $0）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># posit-param2: script to display all arguments</span>
+<span class="nv">count</span><span class="o">=</span>1
+<span class="k">while</span> <span class="o">[[</span> <span class="nv">$# </span><span class="nt">-gt</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">do
+    </span><span class="nb">echo</span> <span class="s2">"Argument </span><span class="nv">$count</span><span class="s2"> = </span><span class="nv">$1</span><span class="s2">"</span>
+    <span class="nv">count</span><span class="o">=</span><span class="k">$((</span>count <span class="o">+</span> <span class="m">1</span><span class="k">))</span>
+    <span class="nb">shift
+</span><span class="k">done</span>
+</code></pre></div></div>
+
+<p>Each time shift is executed, the value of $2 is moved to $1, the value of $3 is moved
+to $2 and so on. The value of $# is also reduced by one.</p>
+
+<p>每次 shift 命令執行的時候，變數 $2 的值會移動到變數 $1 中，變數 $3 的值會移動到變數 $2 中，依次類別推。
+變數 $# 的值也會相應的減1。</p>
+
+<p>In the posit-param2 program, we create a loop that evaluates the number of
+arguments remaining and continues as long as there is at least one. We display the current
+argument, increment the variable count with each iteration of the loop to provide a
+running count of the number of arguments processed and, finally, execute a shift to load
+$1 with the next argument. Here is the program at work:</p>
+
+<p>在該 posit-param2 程式中，我們編寫了一個計算剩餘引數數量，只要引數個數不為零就會繼續執行的 while 迴圈。
+我們顯示當前的位置引數，每次迴圈迭代變數 count 的值都會加1，用來計數處理的引數數量，
+最後，執行 shift 命令載入 $1，其值為下一個位置引數的值。這裡是程式執行後的輸出結果:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ posit-param2 a b c d
+Argument 1 = a
+Argument 2 = b
+Argument 3 = c
+Argument 4 = d
+</code></pre></div></div>
+
+<h4 id="簡單應用">簡單應用</h4>
+
+<p>Even without shift, it’s possible to write useful applications using positional parameters.
+By way of example, here is a simple file information program:</p>
+
+<p>即使沒有 shift 命令，也可以用位置引數編寫一個有用的應用。舉例說明，這裡是一個簡單的輸出檔案資訊的程式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># file_info: simple file information program</span>
+<span class="nv">PROGNAME</span><span class="o">=</span><span class="k">$(</span>basename <span class="nv">$0</span><span class="k">)</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nt">-e</span> <span class="nv">$1</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">File Type:"</span>
+    file <span class="nv">$1</span>
+    <span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">File Status:"</span>
+    stat <span class="nv">$1</span>
+<span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$PROGNAME</span><span class="s2">: usage: </span><span class="nv">$PROGNAME</span><span class="s2"> file"</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>This program displays the file type (determined by the file command) and the file
+status (from the stat command) of a specified file. One interesting feature of this program
+is the <strong>PROGNAME</strong> variable. It is given the value that results from the <strong>basename $0</strong>
+command. The <strong>basename</strong> command removes the leading portion of a pathname,
+leaving only the base name of a file. In our example, <strong>basename</strong> removes the leading portion
+of the pathname contained in the $0 parameter, the full pathname of our example
+program. This value is useful when constructing messages such as the usage message at the
+end of the program. By coding it this way, the script can be renamed and the message
+automatically adjusts to contain the name of the program.</p>
+
+<p>這個程式顯示一個具體檔案的檔案型別（由 file 命令確定）和檔案狀態（來自 stat 命令）。該程式一個有意思
+的特點是 PROGNAME 變數。它的值就是 basename $0 命令的執行結果。這個 basename 命令清除
+一個路徑名的開頭部分，只留下一個檔案的基本名稱。在我們的程式中，basename 命令清除了包含在 $0 位置引數
+中的路徑名的開頭部分，$0 中包含著我們示例程式的完整路徑名。當建構提示資訊正如程式結尾的使用資訊的時候，
+basename $0 的執行結果就很有用處。按照這種方式編碼，可以重新命名該指令碼，且程式資訊會自動調整為
+包含相應的程式名稱。</p>
+
+<h4 id="shell-函式中使用位置引數">Shell 函式中使用位置引數</h4>
+
+<p>Just as positional parameters are used to pass arguments to shell scripts, they can also be
+used to pass arguments to shell functions. To demonstrate, we will convert the
+file_info script into a shell function:</p>
+
+<p>正如位置引數被用來給 shell 指令碼傳遞引數一樣，它們也能夠被用來給 shell 函式傳遞引數。為了說明這一點，
+我們將把 file_info 指令碼轉變成一個 shell 函式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>file_info () {
+  # file_info: function to display file information
+  if [[ -e $1 ]]; then
+      echo -e "\nFile Type:"
+      file $1
+      echo -e "\nFile Status:"
+      stat $1
+  else
+      echo "$FUNCNAME: usage: $FUNCNAME file" &gt;&amp;2
+      return 1
+  fi
+}
+</code></pre></div></div>
+
+<p>Now, if a script that incorporates the file_info shell function calls the function with a
+filename argument, the argument will be passed to the function.</p>
+
+<p>現在，如果一個包含 shell 函式 file_info 的指令碼呼叫該函式，且帶有一個檔名引數，那這個引數會傳遞給 file_info 函式。</p>
+
+<p>With this capability, we can write many useful shell functions that can not only be used in
+scripts, but also within the .bashrc file.</p>
+
+<p>透過此功能，我們可以寫出許多有用的 shell 函式，這些函式不僅能在指令碼中使用，也可以用在 .bashrc 檔案中。</p>
+
+<p>Notice that the PROGNAME variable was changed to the shell variable FUNCNAME. The
+shell automatically updates this variable to keep track of the currently executed shell
+function. Note that $0 always contains the full pathname of the first item on the
+command line (i.e., the name of the program) and does not contain the name of the shell
+function as we might expect.</p>
+
+<p>注意那個 PROGNAME 變數已經改成 shell 變數 FUNCNAME 了。shell 會自動更新 FUNCNAME 變數，以便
+追蹤當前執行的 shell 函式。注意位置引數 $0 總是包含命令列中第一項的完整路徑名（例如，該程式的名字），
+但不會包含這個我們可能期望的 shell 函式的名字。</p>
+
+<h3 id="處理集體位置引數">處理集體位置引數</h3>
+
+<p>It is sometimes useful to manage all the positional parameters as a group. For example,
+we might want to write a “wrapper” around another program. This means that we create a
+script or shell function that simplifies the execution of another program. The wrapper
+supplies a list of arcane command line options and then passes a list of arguments to the
+lower-level program.</p>
+
+<p>有時候把所有的位置引數作為一個集體來管理是很有用的。例如，我們可能想為另一個程式編寫一個 “包裹程式”。
+這意味著我們會建立一個指令碼或 shell 函式，來簡化另一個程式的執行。包裹程式提供了一個神祕的命令列選項
+列表，然後把這個引數列表傳遞給下一級的程式。</p>
+
+<p>The shell provides two special parameters for this purpose. They both expand into the
+complete list of positional parameters, but differ in rather subtle ways. They are:</p>
+
+<p>為此 shell 提供了兩種特殊的引數。他們二者都能擴充套件成完整的位置引數列表，但以相當微妙的方式略有不同。它們是：</p>
+
+<table class="multi">
+<caption class="cap">Table 32-1: The * And @ Special Parameters</caption>
+<tr>
+<th class="title" width="15%">Parameter</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top">$*</td>
+<td valign="top">Expands into the list of positional parameters, starting with 1.
+When surrounded by double quotes, it expands into a double quoted string
+containing all of the positional parameters, each separated by the first
+character of the IFS shell variable (by default a space character).</td>
+</tr>
+<tr>
+<td valign="top">$@</td>
+<td valign="top">Expands into the list of positional parameters, starting with 1. When surrounded by double quotes, it expands each positional
+parameter into a separate word surrounded by double quotes.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 32-1: * 和 @ 特殊引數</caption>
+<tr>
+<th class="title" width="15%">引數</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top">$*</td>
+<td valign="top">展開成一個從1開始的位置引數列表。當它被用雙引號引起來的時候，展開成一個由雙引號引起來
+的字串，包含了所有的位置引數，每個位置引數由 shell 變數 IFS 的第一個字元（預設為一個空格）分隔開。</td>
+</tr>
+<tr>
+<td valign="top">$@</td>
+<td valign="top">展開成一個從1開始的位置引數列表。當它被用雙引號引起來的時候，
+它把每一個位置引數展開成一個由雙引號引起來的分開的字串。</td>
+</tr>
+</table>
+
+<p>Here is a script that shows these special paramaters in action:</p>
+
+<p>下面這個指令碼用程式中展示了這些特殊引數：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># posit-params3 : script to demonstrate $* and $@</span>
+print_params <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> <span class="s2">"</span><span class="se">\$</span><span class="s2">1 = </span><span class="nv">$1</span><span class="s2">"</span>
+    <span class="nb">echo</span> <span class="s2">"</span><span class="se">\$</span><span class="s2">2 = </span><span class="nv">$2</span><span class="s2">"</span>
+    <span class="nb">echo</span> <span class="s2">"</span><span class="se">\$</span><span class="s2">3 = </span><span class="nv">$3</span><span class="s2">"</span>
+    <span class="nb">echo</span> <span class="s2">"</span><span class="se">\$</span><span class="s2">4 = </span><span class="nv">$4</span><span class="s2">"</span>
+<span class="o">}</span>
+pass_params <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="s1">'$* :'</span><span class="p">;</span>      print_params   <span class="nv">$*</span>
+    <span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="s1">'"$*" :'</span><span class="p">;</span>    print_params   <span class="s2">"</span><span class="nv">$*</span><span class="s2">"</span>
+    <span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="s1">'$@ :'</span><span class="p">;</span>      print_params   <span class="nv">$@</span>
+    <span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="s1">'"$@" :'</span><span class="p">;</span>    print_params   <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>
+<span class="o">}</span>
+pass_params <span class="s2">"word"</span> <span class="s2">"words with spaces"</span>
+</code></pre></div></div>
+
+<p>In this rather convoluted program, we create two arguments: “word” and “words with
+spaces”, and pass them to the pass_params function. That function, in turn, passes
+them on to the print_params function, using each of the four methods available with
+the special parameters $* and $@. When executed, the script reveals the differences:</p>
+
+<p>在這個相當複雜的程式中，我們建立了兩個引數： “word” 和 “words with spaces”，然後把它們
+傳遞給 pass_params 函式。這個函式，依次，再把兩個引數傳遞給 print_params 函式，
+使用了特殊引數 $* 和 $@ 提供的四種可用方法。指令碼執行後，揭示了這兩個特殊引數存在的差異：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ posit-param3
+ $* :
+$1 = word
+$2 = words
+$3 = with
+$4 = spaces
+ "$*" :
+$1 = word words with spaces
+$2 =
+$3 =
+$4 =
+ $@ :
+$1 = word
+$2 = words
+$3 = with
+$4 = spaces
+ "$@" :
+$1 = word
+$2 = words with spaces
+$3 =
+$4 =
+</code></pre></div></div>
+
+<p>With our arguments, both $* and $@ produce a four word result:</p>
+
+<p>透過我們的引數，$* 和 $@ 兩個都產生了一個有四個詞的結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>word words with spaces
+"$*" produces a one word result:
+    "word words with spaces"
+"$@" produces a two word result:
+    "word" "words with spaces"
+</code></pre></div></div>
+
+<p>which matches our actual intent. The lesson to take from this is that even though the shell
+provides four different ways of getting the list of positional parameters, “$@” is by far
+the most useful for most situations, because it preserves the integrity of each positional
+parameter.</p>
+
+<p>這個結果符合我們實際的期望。我們從中得到的教訓是儘管 shell 提供了四種不同的得到位置引數列表的方法，
+但到目前為止，「$@」在大多數情況下是最有用的方法，因為它保留了每一個位置引數的完整性。</p>
+
+<h3 id="一個更復雜的應用">一個更復雜的應用</h3>
+
+<p>After a long hiatus, we are going to resume work on our sys_info_page program.
+Our next addition will add several command line options to the program as follows:</p>
+
+<p>經過長時間的間斷，我們將恢復程式 sys_info_page 的工作。我們下一步要給程式新增如下幾個命令列選項：</p>
+
+<ul>
+  <li>
+    <p><strong>Output file</strong>. We will add an option to specify a name for a file to contain the pro-
+gram’s output. It will be specified as either <em>-f file</em> or <em>--file file</em>.</p>
+  </li>
+  <li>
+    <p><strong>輸出檔案</strong>。 我們將新增一個選項，以便指定一個檔名，來包含程式的輸出結果。
+選項格式要麼是 -f file，要麼是 --file file</p>
+  </li>
+  <li>
+    <p><strong>Interactive mode</strong>. This option will prompt the user for an output filename and
+will determine if the specified file already exists. If it does, the user will be
+prompted before the existing file is overwritten. This option will be specified by
+either -i or --interactive.</p>
+  </li>
+  <li>
+    <p><strong>互動模式</strong>。這個選項將提示使用者輸入一個輸出檔名，然後判斷指定的檔案是否已經存在了。如果檔案存在，
+在覆蓋這個存在的檔案之前會提示使用者。這個選項可以透過 -i 或者 --interactive 來指定。</p>
+  </li>
+  <li>
+    <p><strong>Help</strong>. Either <em>-h</em> or <em>--help</em> may be specified to cause the program to output an
+informative usage message.</p>
+  </li>
+  <li>
+    <p><strong>幫助</strong>。指定 -h 選項 或者是 --help 選項，可導致程式輸出提示性的使用資訊。</p>
+  </li>
+</ul>
+
+<p>Here is the code needed to implement the command line processing:</p>
+
+<p>這裡是處理命令列選項所需的程式碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>usage () {
+    echo "$PROGNAME: usage: $PROGNAME [-f file | -i]"
+    return
+}
+# process command line options
+interactive=
+filename=
+while [[ -n $1 ]]; do
+    case $1 in
+    -f | --file)            shift
+                            filename=$1
+                            ;;
+    -i | --interactive)     interactive=1
+                            ;;
+    -h | --help)            usage
+                            exit
+                            ;;
+    *)                      usage &gt;&amp;2
+                            exit 1
+                            ;;
+    esac
+    shift
+done
+</code></pre></div></div>
+
+<p>First, we add a shell function called usage to display a message when the help option is
+invoked or an unknown option is attempted.</p>
+
+<p>首先，我們添加了一個叫做 usage 的 shell 函式，以便顯示幫助資訊，當啟用幫助選項或敲寫了一個未知選項的時候。</p>
+
+<p>Next, we begin the processing loop. This loop continues while the positional parameter
+$1 is not empty. At the bottom of the loop, we have a shift command to advance the
+positional parameters to ensure that the loop will eventually terminate.
+Within the loop, we have a case statement that examines the current positional
+parameter to see if it matches any of the supported choices. If a supported parameter is found, it
+is acted upon. If not, the usage message is displayed and the script
+terminates with an error.</p>
+
+<p>下一步，我們開始處理迴圈。當位置引數 $1 不為空的時候，這個迴圈會持續執行。在迴圈的底部，有一個 shift 命令，
+用來提升位置引數，以便確保該迴圈最終會終止。在迴圈體內，我們使用了一個 case 語句來檢查當前位置引數的值，
+看看它是否匹配某個支援的選項。若找到了匹配項，就會執行與之對應的程式碼。若沒有，就會打印出程式使用資訊，
+該指令碼終止且執行錯誤。</p>
+
+<p>The -f parameter is handled in an interesting way. When detected, it causes an additional
+shift to occur, which advances the positional parameter $1 to the filename argument
+supplied to the -f option.</p>
+
+<p>處理 -f 引數的方式很有意思。當監測到 -f 引數的時候，會執行一次 shift 命令，從而提升位置引數 $1 為
+伴隨著 -f 選項的 filename 引數。</p>
+
+<p>We next add the code to implement the interactive mode:</p>
+
+<p>我們下一步新增程式碼來實現互動模式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># interactive mode
+if [[ -n $interactive ]]; then
+    while true; do
+        read -p "Enter name of output file: " filename
+        if [[ -e $filename ]]; then
+            read -p "'$filename' exists. Overwrite? [y/n/q] &gt; "
+            case $REPLY in
+            Y|y)    break
+                    ;;
+            Q|q)    echo "Program terminated."
+                    exit
+                    ;;
+            *)      continue
+                    ;;
+            esac
+        elif [[ -z $filename ]]; then
+            continue
+        else
+            break
+        fi
+    done
+fi
+</code></pre></div></div>
+
+<p>If the interactive variable is not empty, an endless loop is started, which contains
+the filename prompt and subsequent existing file-handling code. If the desired output file
+already exists, the user is prompted to overwrite, choose another filename, or quit the
+program. If the user chooses to overwrite an existing file, a <em>break</em> is executed to
+terminate the loop. Notice how the case statement only detects if the user chooses to
+overwrite or quit. Any other choice causes the loop to continue and prompts the user again.</p>
+
+<p>若 interactive 變數不為空，就會啟動一個無休止的迴圈，該迴圈包含檔名提示和隨後存在的檔案處理程式碼。
+如果所需要的輸出檔案已經存在，則提示使用者覆蓋，選擇另一個檔名，或者退出程式。如果使用者選擇覆蓋一個
+已經存在的檔案，則會執行 break 命令終止迴圈。注意 case 語句是怎樣只檢測使用者選擇了覆蓋還是退出選項。
+其它任何選擇都會導致迴圈繼續並提示使用者再次選擇。</p>
+
+<p>In order to implement the output filename feature, we must first convert the existing
+page-writing code into a shell function, for reasons that will become clear in a moment:</p>
+
+<p>為了實現這個輸出檔名的功能，首先我們必須把現有的這個寫頁面（page-writing）的程式碼轉變成一個 shell 函式，
+一會就會明白這樣做的原因：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>write_html_page () {
+    cat &lt;&lt;- _EOF_
+        &lt;HTML&gt;
+            &lt;HEAD&gt;
+                &lt;TITLE&gt;$TITLE&lt;/TITLE&gt;
+            &lt;/HEAD&gt;
+            &lt;BODY&gt;
+                &lt;H1&gt;$TITLE&lt;/H1&gt;
+                &lt;P&gt;$TIMESTAMP&lt;/P&gt;
+                $(report_uptime)
+                $(report_disk_space)
+                $(report_home_space)
+            &lt;/BODY&gt;
+        &lt;/HTML&gt;
+    _EOF_
+    return
+}
+# output html page
+if [[ -n $filename ]]; then
+    if touch $filename &amp;&amp; [[ -f $filename ]]; then
+        write_html_page &gt; $filename
+    else
+        echo "$PROGNAME: Cannot write file '$filename'" &gt;&amp;2
+        exit 1
+    fi
+else
+    write_html_page
+fi
+</code></pre></div></div>
+
+<p>The code that handles the logic of the -f option appears at the end of the listing shown
+above. In it, we test for the existence of a filename and, if one is found, a test is
+performed to see if the file is indeed writable. To do this, a <em>touch</em> is performed, followed
+by a test to determine if the resulting file is a regular file. These two tests
+take care of situations where an invalid pathname is input (<em>touch</em> will fail), and,
+if the file already exists, that it’s a regular file.</p>
+
+<p>解決 -f 選項邏輯的程式碼出現在以上程式片段的末尾。在這段程式碼中，我們測試一個檔名是否存在，若檔名存在，
+則執行另一個測試看看該檔案是不是可寫檔案。為此，會執行 touch 命令，緊隨其後執行一個測試，來決定 touch 命令
+建立的檔案是否是個普通檔案。這兩個測試考慮到了輸入是無效路徑名（touch 命令執行失敗），和一個普通檔案已經存在的情況。</p>
+
+<p>As we can see, the write_html_page function is called to perform the actual
+generation of the page. Its output is either directed to standard output
+(if the variable filename is empty) or redirected to the specified file.</p>
+
+<p>正如我們所看到的，程式呼叫 write_html_page 函式來產生實際的網頁。函式輸出要麼直接定向到
+標準輸出（若 filename 變數為空的話）要麼重新導向到具體的檔案中。</p>
+
+<h3 id="總結">總結</h3>
+
+<p>With the addition of positional parameters, we can now write fairly functional scripts.
+For simple, repetitive tasks, positional parameters make it possible to write very useful
+shell functions that can be placed in a user’s .bashrc file.</p>
+
+<p>伴隨著位置引數的加入，現在我們能編寫相當具有功能性的指令碼。例如，重複性的任務，位置引數使得我們可以編寫
+非常有用的，可以放置在一個使用者的 .bashrc 檔案中的 shell 函式。</p>
+
+<p>Our sys_info_page program has grown in complexity and sophistication. Here is a
+complete listing, with the most recent changes highlighted:</p>
+
+<p>我們的 sys_info_page 程式日漸精進。這裡是一個完整的程式清單，最新的更改用高亮顯示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># sys_info_page: program to output a system information page</span>
+<span class="nv">PROGNAME</span><span class="o">=</span><span class="k">$(</span>basename <span class="nv">$0</span><span class="k">)</span>
+<span class="nv">TITLE</span><span class="o">=</span><span class="s2">"System Information Report For </span><span class="nv">$HOSTNAME</span><span class="s2">"</span>
+<span class="nv">CURRENT_TIME</span><span class="o">=</span><span class="k">$(</span>date +<span class="s2">"%x %r %Z"</span><span class="k">)</span>
+<span class="nv">TIMESTAMP</span><span class="o">=</span><span class="s2">"Generated </span><span class="nv">$CURRENT_TIME</span><span class="s2">, by </span><span class="nv">$USER</span><span class="s2">"</span>
+report_uptime <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">cat</span> <span class="o">&lt;&lt;-</span> <span class="no">_EOF_</span><span class="sh">
+        &lt;H2&gt;System Uptime&lt;/H2&gt;
+        &lt;PRE&gt;</span><span class="k">$(</span>uptime<span class="k">)</span><span class="sh">&lt;/PRE&gt;
+</span><span class="no">    _EOF_
+</span>    <span class="k">return</span>
+<span class="o">}</span>
+report_disk_space <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">cat</span> <span class="o">&lt;&lt;-</span> <span class="no">_EOF_</span><span class="sh">
+        &lt;H2&gt;Disk Space Utilization&lt;/H2&gt;
+        &lt;PRE&gt;</span><span class="k">$(</span>df <span class="nt">-h</span><span class="k">)</span><span class="sh">&lt;/PRE&gt;
+</span><span class="no">    _EOF_
+</span>    <span class="k">return</span>
+<span class="o">}</span>
+report_home_space <span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>id <span class="nt">-u</span><span class="k">)</span> <span class="nt">-eq</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">cat</span> <span class="o">&lt;&lt;-</span> <span class="no">_EOF_</span><span class="sh">
+            &lt;H2&gt;Home Space Utilization (All Users)&lt;/H2&gt;
+            &lt;PRE&gt;</span><span class="k">$(</span>du <span class="nt">-sh</span> /home/<span class="k">*)</span><span class="sh">&lt;/PRE&gt;
+</span><span class="no">        _EOF_
+</span>    <span class="k">else
+        </span><span class="nb">cat</span> <span class="o">&lt;&lt;-</span> <span class="no">_EOF_</span><span class="sh">
+            &lt;H2&gt;Home Space Utilization (</span><span class="nv">$USER</span><span class="sh">)&lt;/H2&gt;
+            &lt;PRE&gt;</span><span class="k">$(</span>du <span class="nt">-sh</span> <span class="nv">$HOME</span><span class="k">)</span><span class="sh">&lt;/PRE&gt;
+</span><span class="no">        _EOF_
+</span>    <span class="k">fi
+    return</span>
+<span class="o">}</span>
+usage <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> <span class="s2">"</span><span class="nv">$PROGNAME</span><span class="s2">: usage: </span><span class="nv">$PROGNAME</span><span class="s2"> [-f file | -i]"</span>
+    <span class="k">return</span>
+<span class="o">}</span>
+write_html_page <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">cat</span> <span class="o">&lt;&lt;-</span> <span class="no">_EOF_</span><span class="sh">
+        &lt;HTML&gt;
+            &lt;HEAD&gt;
+                &lt;TITLE&gt;</span><span class="nv">$TITLE</span><span class="sh">&lt;/TITLE&gt;
+            &lt;/HEAD&gt;
+            &lt;BODY&gt;
+                &lt;H1&gt;</span><span class="nv">$TITLE</span><span class="sh">&lt;/H1&gt;
+                &lt;P&gt;</span><span class="nv">$TIMESTAMP</span><span class="sh">&lt;/P&gt;
+                </span><span class="k">$(</span>report_uptime<span class="k">)</span><span class="sh">
+                </span><span class="k">$(</span>report_disk_space<span class="k">)</span><span class="sh">
+                </span><span class="k">$(</span>report_home_space<span class="k">)</span><span class="sh">
+            &lt;/BODY&gt;
+        &lt;/HTML&gt;
+</span><span class="no">    _EOF_
+</span>    <span class="k">return</span>
+<span class="o">}</span>
+<span class="c"># process command line options</span>
+<span class="nv">interactive</span><span class="o">=</span>
+<span class="nv">filename</span><span class="o">=</span>
+<span class="k">while</span> <span class="o">[[</span> <span class="nt">-n</span> <span class="nv">$1</span> <span class="o">]]</span><span class="p">;</span> <span class="k">do
+    case</span> <span class="nv">$1</span> <span class="k">in</span>
+        <span class="nt">-f</span> <span class="p">|</span> <span class="nt">--file</span><span class="p">)</span>          <span class="nb">shift
+                              </span><span class="nv">filename</span><span class="o">=</span><span class="nv">$1</span>
+                              <span class="p">;;</span>
+        <span class="nt">-i</span> <span class="p">|</span> <span class="nt">--interactive</span><span class="p">)</span>   <span class="nv">interactive</span><span class="o">=</span>1
+                              <span class="p">;;</span>
+        <span class="nt">-h</span> <span class="p">|</span> <span class="nt">--help</span><span class="p">)</span>          usage
+                              <span class="nb">exit</span>
+                              <span class="p">;;</span>
+        <span class="k">*</span><span class="p">)</span>                    usage <span class="o">&gt;</span>&amp;2
+                              <span class="nb">exit </span>1
+                              <span class="p">;;</span>
+    <span class="k">esac</span>
+    <span class="nb">shift
+</span><span class="k">done</span>
+<span class="c"># interactive mode</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nt">-n</span> <span class="nv">$interactive</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    while </span><span class="nb">true</span><span class="p">;</span> <span class="k">do
+        </span><span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Enter name of output file: "</span> filename
+        <span class="k">if</span> <span class="o">[[</span> <span class="nt">-e</span> <span class="nv">$filename</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"'</span><span class="nv">$filename</span><span class="s2">' exists. Overwrite? [y/n/q] &gt; "</span>
+            <span class="k">case</span> <span class="nv">$REPLY</span> <span class="k">in
+                </span>Y|y<span class="p">)</span>    <span class="nb">break</span>
+                        <span class="p">;;</span>
+                Q|q<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"Program terminated."</span>
+                        <span class="nb">exit</span>
+                        <span class="p">;;</span>
+                <span class="k">*</span><span class="p">)</span>      <span class="k">continue</span>
+                        <span class="p">;;</span>
+            <span class="k">esac</span>
+        <span class="k">fi
+    done
+fi</span>
+<span class="c"># output html page</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nt">-n</span> <span class="nv">$filename</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    if </span>touch <span class="nv">$filename</span> <span class="o">&amp;&amp;</span> <span class="o">[[</span> <span class="nt">-f</span> <span class="nv">$filename</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span>write_html_page <span class="o">&gt;</span> <span class="nv">$filename</span>
+    <span class="k">else
+        </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$PROGNAME</span><span class="s2">: Cannot write file '</span><span class="nv">$filename</span><span class="s2">'"</span> <span class="o">&gt;</span>&amp;2
+        <span class="nb">exit </span>1
+    <span class="k">fi
+else
+    </span>write_html_page
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>We’re not done yet. There are still more things we can do and improvements we can make.</p>
+
+<p>我們還沒有完成。仍然還有許多事情我們可以做，可以改進。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The <em>Bash Hackers Wiki</em> has a good article on positional parameters:</p>
+  </li>
+  <li>
+    <p><em>Bash Hackers Wiki</em> 上有一篇不錯的關於位置引數的文章：</p>
+
+    <p><a href="http://wiki.bash-hackers.org/scripting/posparams">http://wiki.bash-hackers.org/scripting/posparams</a></p>
+  </li>
+  <li>
+    <p>The <em>Bash Reference Manual</em> has an article on the special parameters, including $* and $@:</p>
+  </li>
+  <li>
+    <p>Bash 的參考手冊有一篇關於特殊引數的文章，包括 $* 和 $@：</p>
+
+    <p><a href="http://www.gnu.org/software/bash/manual/bashref.html#Special-Parameters">http://www.gnu.org/software/bash/manual/bashref.html#Special-Parameters</a></p>
+  </li>
+  <li>
+    <p>In addition to the techniques discussed in this chapter, bash includes a builtin command called <em>getopts</em>,
+which can also be used for process command line arguments.
+It is described in the SHELL BUILTIN COMMANDS section of the bash man page and at the <em>Bash Hackers Wiki</em>:</p>
+  </li>
+  <li>
+    <p>除了本章討論的技術之外，bash 還包含一個叫做 getopts 的內部命令，此命令也可以用來處理命令列引數。
+bash 參考頁面的 SHELL BUILTIN COMMANDS 一節介紹了這個命令，Bash Hackers Wiki 上也有對它的描述：</p>
+
+    <p><a href="http://wiki.bash-hackers.org/howto/getopts_tutorial">http://wiki.bash-hackers.org/howto/getopts_tutorial</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

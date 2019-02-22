@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">引言</h1><br>
+<p>I want to tell you a story.</p>
+
+<p>我想給大家講個故事。</p>
+
+<p>No, not the story of how, in 1991, Linus Torvalds wrote the first version of the Linux
+kernel. You can read that story in lots of Linux books. Nor am I going to tell you the
+story of how, some years earlier, Richard Stallman began the GNU Project to create a free
+Unix-like operating system. That’s an important story too, but most other Linux books
+have that one, as well.</p>
+
+<p>故事內容不是 Linus Torvalds 在1991年怎樣寫了 Linux 核心的第一個版本，
+因為這些內容你可以在許多 Linux 書籍中讀到。我也不是來告訴你，更早之前，Richard Stallman
+是如何開始 GNU 專案，設計了一個免費的類別Unix 的作業系統。那也是一個很有意義的故事，
+但大多數 Linux 書籍也講到了它。</p>
+
+<p>No, I want to tell you the story of how you can take back control of your computer.</p>
+
+<p>我想告訴大家一個你如何才能奪回計算機管理權的故事。</p>
+
+<p>When I began working with computers as a college student in the late 1970s, there was a
+revolution going on. The invention of the microprocessor had made it possible for
+ordinary people like you and me to actually own a computer. It’s hard for many people
+today to imagine what the world was like when only big business and big government ran
+all the computers. Let's just say, you couldn’t get much done.</p>
+
+<p>在20世紀70年代末，我剛開始和計算機打交道時，正進行著一場革命，那時的我還是一名大學生。
+微處理器的發明，使普通老百姓（就如你和我）真正擁有一臺計算機成為可能。今天，
+人們難以想象，只有大企業和強大的政府才能夠擁有計算機的世界，是怎樣的一個世界。
+簡單說，你做不了多少事情。</p>
+
+<p>Today, the world is very different. Computers are everywhere, from tiny wristwatches to
+giant data centers to everything in between. In addition to ubiquitous computers, we also
+have a ubiquitous network connecting them together. This has created a wondrous new
+age of personal empowerment and creative freedom, but over the last couple of decades
+something else has been happening. A single giant corporation has been imposing its
+control over most of the world’s computers and deciding what you can and cannot do
+with them. Fortunately, people from all over the world are doing something about it.
+They are fighting to maintain control of their computers by writing their own software.
+They are building Linux.</p>
+
+<p>今天，世界已經截然不同了。計算機遍佈各個領域，從小手錶到大型資料中心，及大小介於它們之間的每件東西。
+除了隨處可見的計算機之外，我們還有一個無處不在的連線所有計算機的網路。這已經開創了一個奇妙的，
+個人授權和創作自由的新時代，但是在過去的二三十年裡，正在發生另一些事情。一個大公司不斷地把它的
+管理權強加到世界上絕大多數的計算機上，並且決定你對計算機的操作權力。幸運地是，來自世界各地的人們，
+正積極努力地做些事情來改變這種境況。透過編寫自己的軟體，他們一直在為維護電腦的管理權而戰鬥著。
+他們建設著 Linux。</p>
+
+<p>Many people speak of “freedom” with regard to Linux, but I don’t think most people
+know what this freedom really means. Freedom is the power to decide what your
+computer does, and the only way to have this freedom is to know what your computer is
+doing. Freedom is a computer that is without secrets, one where everything can be
+known if you care enough to find out.</p>
+
+<p>一提到 Linux，許多人都會說到“自由”，但我不認為他們都知道“自由”的真正涵義。“自由”是一種權力，
+它決定你的計算機能做什麼，同時能夠擁有這種“自由”的唯一方式就是知道計算機正在做什麼。
+“自由”是指一臺沒有任何祕密的計算機，你可以從它那裡瞭解一切，只要你用心的去尋找。</p>
+
+<h3 id="為什麼使用命令列">為什麼使用命令列</h3>
+
+<p>Have you ever noticed in the movies when the “super hacker,”— you know, the guy who
+can break into the ultra-secure military computer in under thirty seconds —sits down at
+the computer, he never touches a mouse? It’s because movie makers realize that we, as
+human beings, instinctively know the only way to really get anything done on a computer
+is by typing on a keyboard.</p>
+
+<p>你是否注意到，在電影中一個“超級黑客”坐在電腦前，從不摸一下滑鼠，
+就能夠在30秒內侵入到超安全的軍用計算機中。這是因為電影製片人意識到，
+作為人類，本能地知道讓計算機圓滿完成工作的唯一途徑，是用鍵盤來操縱計算機。</p>
+
+<p>Most computer users today are only familiar with the graphical user interface (GUI) and
+have been taught by vendors and pundits that the command line interface (CLI) is a
+terrifying thing of the past. This is unfortunate, because a good command line interface is
+a marvelously expressive way of communicating with a computer in much the same way
+the written word is for human beings. It’s been said that “graphical user interfaces make
+easy tasks easy, while command line interfaces make difficult tasks possible” and this is
+still very true today.</p>
+
+<p>現在，大多數的計算機使用者只是熟悉圖形使用者介面（GUI），並且產品供應商和此領域的學者會灌輸給使用者這樣的思想，
+命令列介面（CLI）是過去使用的一種很恐怖的東西。這就很不幸，因為一個好的命令列介面，
+是用來和計算機進行交流溝通的非常有效的方式，正像人類社會使用文字互通訊息一樣。人們說，“圖形使用者介面讓簡單的任務更容易完成，
+而命令列介面使完成複雜的任務成為可能”，到現在這句話仍然很正確。</p>
+
+<p>Since Linux is modeled after the Unix family of operating systems, it shares the same
+rich heritage of command line tools as Unix. Unix came into prominence during the
+early 1980s (although it was first developed a decade earlier), before the widespread
+adoption of the graphical user interface and, as a result, developed an extensive command
+line interface instead. In fact, one of the strongest reasons early adopters of Linux chose it
+over, say, Windows NT was the powerful command line interface which made the
+“difficult tasks possible.”</p>
+
+<p>因為 Linux 是以 Unix 家族的作業系統為模型寫成的，所以它分享了 Unix 豐富的命令列工具。
+Unix 在20世紀80年代初顯赫一時(雖然，開發它在更早之前），結果，在普遍地使用圖形介面之前，
+開發了一種廣泛的命令列介面。事實上，很多人選擇 Linux（而不是其他的系統，比如說 Windows NT）是因為其可以使“完成複雜的任務成為可能”的強大的命令列介面。</p>
+
+<h3 id="這本書講什麼">這本書講什麼</h3>
+
+<p>This book is a broad overview of “living” on the Linux command line. Unlike
+some books that concentrate on just a single program, such as the shell
+program, bash, this book will try to convey how to get along with the command
+line interface in a larger sense. How does it all work? What can it do? What’s
+the best way to use it?</p>
+
+<p>這本書介紹如何生存在 Linux 命令列的世界。不像一些書籍僅僅涉及一個程式，比如像 shell 程式，bash。
+這本書將試著向你傳授如何與命令列介面友好相處。
+它是怎樣工作的？ 它能做什麼？ 使用它的最好方法是什麼？</p>
+
+<p>This is not a book about Linux system administration. While any serious
+discussion of the command line will invariably lead to system administration
+topics, this book only touches on a few administration issues. It will,
+however, prepare the reader for additional study by providing a solid
+foundation in the use of the command line, an essential tool for any serious
+system administration task.</p>
+
+<p><strong>這不是一本關於 Linux 系統管理的書</strong>。然而任何一個關於命令列的深入討論，都一定會牽涉到
+系統管理方面的內容，這本書僅僅提到一點管理方面的知識。但是這本書為讀者準備好了學習更多內容的堅實基礎，
+畢竟要勝任系統管理工作也需要良好的命令列使用基本功。</p>
+
+<p>This book is very Linux-centric. Many other books try to broaden their appeal
+by including other platforms such as generic Unix and MacOS X. In doing so,
+they “water down” their content to feature only general topics. This book, on
+the other hand, only covers contemporary Linux distributions. Ninety-five
+percent of the content is useful for users of other Unix-like systems, but
+this book is highly targeted at the modern Linux command line user.</p>
+
+<p><strong>這本書是圍繞 Linux 而寫的</strong>。許多書籍，為了擴大自身的影響力，會包含一些其它平臺的知識，
+比如 Unix, MacOS X 等。這樣做，很多內容只能比較空泛的去講了。另一方面，
+這本書只研究了當代 Linux 發行版。雖然，對於使用其它類別 Unix 系統的使用者來說，
+書中95％的內容是有用的，但這本書主要面向的物件是現代 Linux 命令列使用者。</p>
+
+<h3 id="誰應該讀這本書">誰應該讀這本書</h3>
+
+<p>This book is for new Linux users who have migrated from other platforms. Most
+likely you are a “power user” of some version of Microsoft Windows. Perhaps
+your boss has told you to administer a Linux server, or maybe you’re just a
+desktop user who is tired of all the security problems and want to give Linux
+a try. That’s fine.here.All are welcome</p>
+
+<p>這本書是為已經從其它平臺移民到 Linux 系統的新手而寫的。最有可能，你是使用某個 Windows 版本的高手。
+或許是老闆讓你去管理一個 Linux 伺服器，或許你只是一個桌面使用者，厭倦了系統出現的各種
+安全防禦問題，而想要體驗一下 Linux。很好，這裡歡迎你們！</p>
+
+<p>That being said, there is no shortcut to Linux enlightenment. Learning the
+command line is challenging and takes real effort. It’s not that it’s so hard,
+but rather it’s so vast. The average Linux system has literally thousands of
+programs you can employ on the command line. Consider yourself warned;
+learning the command line is not a casual endeavor.</p>
+
+<p>不過一般來說，對於 Linux 的啟蒙教育，沒有捷徑可言。學習命令列富於挑戰性，而且很費氣力。
+這並不是說 Linux 命令列很難學，而是它的知識量很大，不容易掌握。Linux 作業系統，
+差不多有數以千計的命令可供使用者操作。由此可見，要給自己提個醒，命令列可不是輕輕鬆鬆就能學好的。</p>
+
+<p>On the other hand, learning the Linux command line is extremely rewarding. If
+you think you’re a “power user” now, just wait. You don’t know what real power
+is — yet. And, unlike many other computer skills, knowledge of the command
+line is long lasting. The skills learned today will still be useful ten years
+from now. The command line has survived the test of time.</p>
+
+<p>另一方面，學習 Linux 命令列會讓你受益匪淺，給你極大的回報。如果你認為，
+現在你已經是高手了。別急，其實你還不知道什麼才是真正的高手。不像其他一些計算機技能，
+一段時間之後可能就被淘汰了，命令列知識卻不會落伍，你今天所學到的，在十年以後，
+都會有用處。命令列通過了時間的考驗。</p>
+
+<p>It is also assumed that you have no programming experience, but not to worry,
+we’ll start you down that path as well.</p>
+
+<p>如果你沒有程式設計經驗，也不要擔心，我會帶你入門。</p>
+
+<h3 id="這本書的內容">這本書的內容</h3>
+
+<p>This material is presented in a carefully chosen sequence, much like a tutor
+sitting next to you guiding you along. Many authors treat this material in a
+“systematic” fashion, which makes sense from a writer’s perspective, but can
+be very confusing to new users.</p>
+
+<p>這些材料是經過精心安排的，很像一位老師坐在你身旁，耐心地指導你。
+許多作者用系統化的方式講解這些材料，雖然從一個作者的角度考慮很有道理，但對於 Linux 新手來說，
+他們可能會感到非常困惑。</p>
+
+<p>Another goal is to acquaint you with the Unix way of thinking, which is
+different from the Windows way of thinking. Along the way, we’ll go on a few
+side trips to help you understand why certain things work the way they do and
+how they got that way. Linux is not just a piece of software, it’s also a
+small part of the larger Unix culture, which has its own language and history.
+I might throw in a rant or two, as well.</p>
+
+<p>另一個目的，是想讓讀者熟悉 Unix 的思維方式，這種思維方式與 Windows 不同。在學習過程中，
+我們會幫助你理解為什麼某些命令那樣工作，以及它們是如何工作的。
+Linux 不僅是一款軟體，也是 Unix 文化的一小部分，它有自己的語言和歷史淵源。
+同時，我也許會說些過激的話。</p>
+
+<p>This book is divided into five parts, each covering some aspect of the command
+line experience. Besides the first part, which you are reading now, this book
+contains:</p>
+
+<p>這本書共分為五部分，每一部分講述了不同方面的命令列知識。除了第一部分，
+也就是你正在閱讀的這一部分，這本書還包括：</p>
+
+<ul>
+  <li>
+    <p>Part 2 – Learning The Shell starts our exploration of the basic language of
+the command line including such things as the structure of commands, file
+system navigation, command line editing, and finding help and documentation
+for commands.</p>
+  </li>
+  <li>
+    <p>Part 3 – Configuration And The Environment covers editing configuration files
+that control the computer’s operation from the command line.</p>
+  </li>
+  <li>
+    <p>Part 4 – Common Tasks And Essential Tools explores many of the ordinary tasks
+that are commonly performed from the command line. Unix-like operating
+systems, such as Linux, contain many “classic” command line programs that are
+used to perform powerful operations on data.</p>
+  </li>
+  <li>
+    <p>Part 5 – Writing Shell Scripts introduces shell programming, an admittedly
+rudimentary, but easy to learn, technique for automating many common
+computing tasks. By learning shell programming, you will become familiar with
+concepts that can be applied to many other programming languages.</p>
+  </li>
+  <li>
+    <p>第二部分 — 學習 shell 開始探究命令列基本語言，包括命令組成結構，
+檔案系統瀏覽，編寫命令列，查詢命令幫助文件。</p>
+  </li>
+  <li>
+    <p>第三部分 — 配置檔案及環境 講述瞭如何編寫配置檔案，透過配置檔案，用命令列來
+操控計算機。</p>
+  </li>
+  <li>
+    <p>第四部分 — 常見任務及主要工具  探究了許多命令列經常執行的普通任務。類似於
+Unix 的作業系統，例如 Linux, 包括許多經典的命令列程式，這些程式可以用來對資料進行
+強大的操作。</p>
+  </li>
+  <li>
+    <p>第五部分 — 編寫 Shell 指令碼  介紹了 shell 程式設計，一個無可否認的基本技能，能夠自動化許多
+常見的計算任務，很容易學。透過學習 shell 程式設計，你會逐漸熟悉一些關於程式語言方面的概念，
+這些概念也適用於其他的程式語言。</p>
+  </li>
+</ul>
+
+<h3 id="怎樣閱讀這本書">怎樣閱讀這本書</h3>
+
+<p>Start at the beginning of the book and follow it to the end. It isn’t written as a reference
+work, it’s really more like a story with a beginning, middle, and an end.</p>
+
+<p>從頭到尾的閱讀。它並不是一本技術參考手冊，實際上它更像一本故事書，有開頭，過程，結尾。</p>
+
+<h4 id="前提條件">前提條件</h4>
+
+<p>To use this book, all you will need is a working Linux installation. You can get this in
+one of two ways:</p>
+
+<p>為了使用這本書，你需要安裝 Linux 作業系統。你可以透過兩種方式，來完成安裝。</p>
+
+<ol>
+  <li>
+    <p>Install Linux on a (not so new) computer. It doesn’t matter which
+distribution you choose, though most people today start out with either
+Ubuntu, Fedora, or . If in doubt, try Ubuntu first. Installing a modern
+Linux distribution can be ridiculously easy or ridiculously difficult
+depending on your hardware. I suggest a desktop computer that is a couple
+of years old and has at least 256 megabytes of RAM and 6 gigabytes of free
+hard disk space. Avoid laptops and wireless networks if at all possible, as
+these are often more difficult to get working.</p>
+  </li>
+  <li>
+    <p>Use a “Live CD.” One of the cool things you can do with many Linux
+distributions is run them directly from a CDROM without installing them at
+all.  Just go into your BIOS setup and set your computer to “Boot from
+CDROM,” insert the live CD, and reboot. Using a live CD is a great way to
+test a computer for Linux compatibility prior to installation. The
+disadvantage of using a live CD is that it may be very slow compared to
+having Linux installed on your hard drive.  Both Ubuntu and Fedora (among
+others) have live CD versions.</p>
+  </li>
+</ol>
+<ol>
+  <li>
+    <p>在一臺（不用很新）的電腦上安裝 Linux。你選擇哪個 Linux 發行版安裝，是無關緊要的事。
+雖然大多數人一開始選擇安裝 Ubuntu, Fedora, 或者 OpenSUSE。如果你拿不定主意，那就先試試 Ubuntu。
+由於主機硬體配置不同，安裝 Linux 時，你可能不費吹灰之力就裝上了，也可能費了九牛二虎之力還裝不上。
+所以我建議，一臺使用了幾年的桌上型電腦，至少要有256M 的記憶體，6G 的硬碟可用空間。儘可能避免使用
+膝上型電腦和無線網路，在 Linux 環境下，它們經常不能工作。</p>
+  </li>
+  <li>
+    <p>使用“Live CD.” 許多 Linux 發行版都自帶一個比較酷的功能，你可以直接從系統安裝盤 CDROM 中執行 Linux，
+而不必安裝 Linux。開機進入 BIOS 設定介面，更改引導項，設定為“從 CDROM 啟動”。</p>
+  </li>
+</ol>
+
+<p>Regardless of how you install Linux, you will need to have occasional
+superuser (i.e., administrative) privileges to carry out the lessons in this
+book.</p>
+
+<p>不管你怎樣安裝 Linux，為了練習書中介紹的知識，你需要有超級使用者（管理員）許可權。</p>
+
+<p>After you have a working installation, start reading and follow along with
+your own computer. Most of the material in this book is “hands on,” so sit
+down and get typing!</p>
+
+<p>當你在自己的電腦上安裝了 Linux 系統之後，就開始一邊閱讀本書，一邊練習吧。本書大部分內容
+都可以自己動手練習，坐下來，敲入命令，體驗一下吧。</p>
+
+<blockquote>
+  <p>Why I Don’t Call It “GNU/Linux”</p>
+
+  <p>In some quarters, it’s politically correct to call the Linux operating system
+the “GNU/Linux operating system.” The problem with “Linux” is that there is no
+completely correct way to name it because it was written by many different
+people in a vast, distributed development effort. Technically speaking, Linux
+is the name of the operating system’s kernel, nothing more.  The kernel is
+very important of course, since it makes the operating system go, but it’s not
+enough to form a complete operating system.</p>
+
+  <p>Enter Richard Stallman, the genius-philosopher who founded the Free Software
+movement, started the Free Software Foundation, formed the GNU Project, wrote
+the first version of the GNU C Compiler (gcc), created the GNU General Public
+License (the GPL), etc., etc., etc. He insists that you call it “GNU/Linux” to
+properly reflect the contributions of the GNU Project. While the GNU Project
+predates the Linux kernel, and the project’s contributions are extremely deserving
+of recognition, placing them in the name is unfair to everyone else who made
+significant contributions. Besides, I think “Linux/GNU” would be more
+technically accurate since the kernel boots first and everything else runs on top of it.</p>
+
+  <p>In popular usage, “Linux” refers to the kernel and all the other free and open
+source software found in the typical Linux distribution; that is, the entire Linux
+ecosystem, not just the GNU components. The operating system marketplace
+seems to prefer one-word names such as DOS, Windows, MacOS, Solaris, Irix,
+AIX. I have chosen to use the popular format. If, however, you prefer to use
+“GNU/Linux” instead, please perform a mental search and replace while reading this book. I won’t mind.</p>
+
+  <p>為什麼我不叫它“GNU/Linux”</p>
+
+  <p>在某些領域，把 Linux 作業系統稱為“GNU/Linux 作業系統”， 則政治立場正確。但“Linux”的問題是，
+沒有一個完全正確的方式能命名它，因為它是由許許多多，分佈在世界各地的貢獻者們，合作開發而成的。
+從技術層面講，Linux 只是作業系統的核心名字，沒別的含義。當然核心非常重要，因為有它，
+作業系統才能執行起來，但它並不能構成一個完備的作業系統。</p>
+
+  <p>Richard Stallman 是一個天才的哲學家，自由軟體運動創始人，自由軟體基金會創辦者，他建立了 GNU 工程，
+編寫了第一版 GNU C 編譯器（gcc），創立了 GNU 通用公共協議（the GPL)等等。
+他堅持把 Linux 稱為“GNU/Linux”，為的是準確地反映 GNU 工程對 Linux 作業系統的貢獻。
+然而，儘管 GNU 專案早於 Linux 核心，專案的貢獻應該得到極高的讚譽，但是把 GNU 用在 Linux 名字裡，
+這對其他為 Linux 的發展做出重大貢獻的程式設計師來說，就不公平了。而且，我覺得要是叫也要叫 “Linux/GNU” 比較準確一些，
+因為核心會先啟動，其他一切都執行在核心之上。</p>
+
+  <p>在目前流行的用法中，“Linux”指的是核心以及在一個典型的 Linux 發行版中所包含的所有免費及開源軟體；
+也就是說，整個 Linux 生態系統，不只有 GNU 專案軟體。在作業系統商界，好像喜歡使用單個詞的名字，
+比如說 DOS, Windows, MacOS, Solaris, Irix, AIX. 所以我選擇用流行的命名規則。然而，
+如果你喜歡用“GNU/Linux”，當你讀這本書時，可以在腦子裡搜尋並替換“Linux”。我不介意。</p>
+</blockquote>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<p>Here are some Wikipedia articles on the famous people mentioned in this chapter:</p>
+
+<p>Wikipedia 網站上有些介紹本章提到的名人的文章，以下是連結地址：</p>
+
+<ul>
+  <li><a href="http://en.wikipedia.org/wiki/Linux_Torvalds">http://en.wikipedia.org/wiki/Linux_Torvalds</a></li>
+  <li><a href="http://en.wikipedia.org/wiki/Richard_Stallman">http://en.wikipedia.org/wiki/Richard_Stallman</a></li>
+</ul>
+
+<p>The Free Software Foundation and the GNU Project:</p>
+
+<p>介紹自由軟體基金會及 GNU 專案的網站和文章：</p>
+
+<ul>
+  <li><a href="http://en.wikipedia.org/wiki/Free_Software_Foundation">http://en.wikipedia.org/wiki/Free_Software_Foundation</a></li>
+  <li><a href="http://www.fsf.org">http://www.fsf.org</a></li>
+  <li><a href="http://www.gnu.org">http://www.gnu.org</a></li>
+</ul>
+
+<p>Richard Stallman has written extensively on the “GNU/Linux” naming issue:</p>
+
+<p>Richard Stallman 用了大量的文字來敘述“GNU/Linux”的命名問題，可以瀏覽以下網頁：</p>
+
+<ul>
+  <li><a href="http://www.gnu.org/gnu/why-gnu-linux.html">http://www.gnu.org/gnu/why-gnu-linux.html</a></li>
+  <li><a href="http://www.gnu.org/gnu/gnu-linux-faq.html#tools">http://www.gnu.org/gnu/gnu-linux-faq.html#tools</a></li>
+</ul>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

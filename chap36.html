@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">陣列</h1><br>
+<p>In the last chapter, we looked at how the shell can manipulate strings and numbers.
+The data types we have looked at so far are known in computer science circles as
+scalar variables; that is, variables that contain a single value.</p>
+
+<p>在上一章中，我們查看了 shell 怎樣操作字串和數字的。目前我們所見到的資料型別在電腦科學圈裡被
+稱為標量變數；也就是說，只能包含一個值的變數。</p>
+
+<p>In this chapter, we will look at another kind of data structure called an array,
+which holds multiple values. Arrays are a feature of virtually every programming language.
+The shell supports them, too, though in a rather limited fashion.
+Even so, they can be very useful for solving programming problems.</p>
+
+<p>在本章中，我們將看看另一種資料結構叫做陣列，陣列能存放多個值。陣列幾乎是所有程式語言的一個特性。
+shell 也支援它們，儘管以一個相當有限的形式。即便如此，為解決程式設計問題，它們是非常有用的。</p>
+
+<h3 id="什麼是陣列">什麼是陣列？</h3>
+
+<p>Arrays are variables that hold more than one value at a time. Arrays are organized like a table.
+Let's consider a spreadsheet as an example. A spreadsheet acts like a two-dimensional array.
+It has both rows and columns, and an individual cell in the spreadsheet
+can be located according to its row and column address. An array behaves the same way.
+An array has cells, which are called elements, and each element contains data.
+An individual array element is accessed using an address called an index or subscript.</p>
+
+<p>陣列是一次能存放多個數據的變數。陣列的組織結構就像一張表。我們拿電子表格舉例。一張電子表格就像是一個
+二維陣列。它既有行也有列，並且電子表格中的一個單元格，可以透過單元格所在的行和列的地址定位它的位置。
+陣列行為也是如此。陣列有單元格，被稱為元素，而且每個元素會包含資料。
+使用一個稱為索引或下標的地址可以訪問一個單獨的陣列元素。</p>
+
+<p>Most programming languages support multidimensional arrays. A spreadsheet is an
+example of a multidimensional array with two dimensions, width and height.
+Many languages support arrays with an arbitrary number of dimensions,
+though two- and three-dimensional arrays are probably the most commonly used.</p>
+
+<p>大多數程式語言支援多維陣列。一個電子表格就是一個多維陣列的例子，它有兩個維度，寬度和高度。
+許多語言支援任意維度的陣列，雖然二維和三維陣列可能是最常用的。</p>
+
+<p>Arrays in bash are limited to a single dimension. We can think of them as a
+spreadsheet with a single column. Even with this limitation,
+there are many applications for them. Array support first appeared in bash version 2.
+The original Unix shell program, sh, did not support arrays at all.</p>
+
+<p>Bash 中的陣列僅限制為單一維度。我們可以把它們看作是隻有一列的電子表格。儘管有這種侷限，但是有許多應用使用它們。
+對陣列的支援第一次出現在 bash 版本2中。原來的 Unix shell 程式，sh，根本就不支援陣列。</p>
+
+<h3 id="建立一個數組">建立一個數組</h3>
+
+<p>Array variables are named just like other bash variables,
+and are created automatically when they are accessed. Here is an example:</p>
+
+<p>陣列變數就像其它 bash 變數一樣命名，當被訪問的時候，它們會被自動地建立。這裡是一個例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ a[1]=foo
+[me@linuxbox ~]$ echo ${a[1]}
+foo
+</code></pre></div></div>
+
+<p>Here we see an example of both the assignment and access of an array element. With the
+first command, element 1 of array a is assigned the value “foo”. The second command
+displays the stored value of element 1. The use of braces in the second command is re-
+quired to prevent the shell from attempting pathname expansion on the name of the array
+element.</p>
+
+<p>這裡我們看到一個賦值並訪問陣列元素的例子。透過第一個命令，把陣列 a 的元素1賦值為 「foo」。
+第二個命令顯示儲存在元素1中的值。在第二個命令中使用花括號是必需的，
+以便防止 shell 試圖對陣列元素名執行路徑名展開操作。</p>
+
+<p>An array can also be created with the declare command:</p>
+
+<p>也可以用 declare 命令建立一個數組：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ declare -a a
+</code></pre></div></div>
+
+<p>Using the -a option, this example of declare creates the array a.</p>
+
+<p>使用 -a 選項，declare 命令的這個例子建立了陣列 a。</p>
+
+<h3 id="陣列賦值">陣列賦值</h3>
+
+<p>Values may be assigned in one of two ways. Single values may be assigned using the fol-
+lowing syntax:</p>
+
+<p>有兩種方式可以給陣列賦值。單個值賦值使用以下語法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>name[subscript]=value
+</code></pre></div></div>
+
+<p>where name is the name of the array and subscript is an integer (or arithmetic expression)
+greater than or equal to zero. Note that the first element of an array is subscript zero, not
+one. value is a string or integer assigned to the array element.</p>
+
+<p>這裡的 name 是陣列的名字，subscript 是一個大於或等於零的整數（或算術表示式）。注意陣列第一個元素的下標是0，
+而不是1。陣列元素的值可以是一個字串或整數。</p>
+
+<p>Multiple values may be assigned using the following syntax:</p>
+
+<p>多個值賦值使用下面的語法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>name=(value1 value2 ...)
+</code></pre></div></div>
+
+<p>where name is the name of the array and value… are values assigned sequentially to
+elements of the array, starting with element zero. For example, if we wanted to assign
+abbreviated days of the week to the array days, we could do this:</p>
+
+<p>這裡的 name 是陣列的名字，value… 是要按照順序賦給陣列的值，從元素0開始。例如，如果我們希望
+把星期幾的英文簡寫賦值給陣列 days，我們可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ days=(Sun Mon Tue Wed Thu Fri Sat)
+</code></pre></div></div>
+
+<p>It is also possible to assign values to a specific element by specifying a subscript for each
+value:</p>
+
+<p>還可以透過指定下標，把值賦給陣列中的特定元素：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ days=([0]=Sun [1]=Mon [2]=Tue [3]=Wed [4]=Thu [5]=Fri [6]=Sat)
+</code></pre></div></div>
+
+<h3 id="訪問陣列元素">訪問陣列元素</h3>
+
+<p>So what are arrays good for? Just as many data-management tasks can be performed with
+a spreadsheet program, many programming tasks can be performed with arrays.</p>
+
+<p>那麼陣列對什麼有好處呢？ 就像許多資料管理任務一樣，可以用電子表格程式來完成，許多程式設計任務則可以用陣列完成。</p>
+
+<p>Let's consider a simple data-gathering and presentation example. We will construct a
+script that examines the modification times of the files in a specified directory. From this
+data, our script will output a table showing at what hour of the day the files were last
+modified. Such a script could be used to determine when a system is most active. This
+script, called hours, produces this result:</p>
+
+<p>讓我們考慮一個簡單的資料收集和展示的例子。我們將建構一個指令碼，用來檢查一個特定目錄中檔案的修改次數。
+從這些資料中，我們的指令碼將輸出一張表，顯示這些檔案最後是在一天中的哪個小時被修改的。這樣一個指令碼
+可以被用來確定什麼時段一個系統最活躍。這個指令碼，稱為 hours，輸出這樣的結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ hours .
+Hour Files Hour Files
+---- ----- ---- ----
+00   0     12   11
+01   1     13   7
+02   0     14   1
+03   0     15   7
+04   1     16   6
+04   1     17   5
+06   6     18   4
+07   3     19   4
+08   1     20   1
+09   14    21   0
+10   2     22   0
+11   5     23   0
+Total files = 80
+</code></pre></div></div>
+
+<p>We execute the hours program, specifying the current directory as the target.
+It produces a table showing, for each hour of the day (0-23), how many files
+were last modified. The code to produce this is as follows:</p>
+
+<p>當執行該 hours 程式時，指定當前目錄作為目標目錄。它打印出一張表顯示一天（0-23小時）每小時內，
+有多少檔案做了最後修改。程式程式碼如下所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># hours : script to count files by modification time</span>
+usage <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> <span class="s2">"usage: </span><span class="k">$(</span>basename <span class="nv">$0</span><span class="k">)</span><span class="s2"> directory"</span> <span class="o">&gt;</span>&amp;2
+<span class="o">}</span>
+<span class="c"># Check that argument is a directory</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="o">!</span> <span class="nt">-d</span> <span class="nv">$1</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span>usage
+    <span class="nb">exit </span>1
+<span class="k">fi</span>
+<span class="c"># Initialize array</span>
+<span class="k">for </span>i <span class="k">in</span> <span class="o">{</span>0..23<span class="o">}</span><span class="p">;</span> <span class="k">do </span>hours[i]<span class="o">=</span>0<span class="p">;</span> <span class="k">done</span>
+<span class="c"># Collect data</span>
+<span class="k">for </span>i <span class="k">in</span> <span class="k">$(</span>stat <span class="nt">-c</span> %y <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>/<span class="k">*</span> | cut <span class="nt">-c</span> 12-13<span class="k">)</span><span class="p">;</span> <span class="k">do
+    </span><span class="nv">j</span><span class="o">=</span><span class="k">${</span><span class="nv">i</span><span class="p">/#0</span><span class="k">}</span>
+    <span class="o">((</span>++hours[j]<span class="o">))</span>
+    <span class="o">((</span>++count<span class="o">))</span>
+<span class="k">done</span>
+<span class="c"># Display data</span>
+<span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"Hour</span><span class="se">\t</span><span class="s2">Files</span><span class="se">\t</span><span class="s2">Hour</span><span class="se">\t</span><span class="s2">Files"</span>
+<span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"----</span><span class="se">\t</span><span class="s2">-----</span><span class="se">\t</span><span class="s2">----</span><span class="se">\t</span><span class="s2">-----"</span>
+<span class="k">for </span>i <span class="k">in</span> <span class="o">{</span>0..11<span class="o">}</span><span class="p">;</span> <span class="k">do
+    </span><span class="nv">j</span><span class="o">=</span><span class="k">$((</span>i <span class="o">+</span> <span class="m">12</span><span class="k">))</span>
+    <span class="nb">printf</span> <span class="s2">"%02d</span><span class="se">\t</span><span class="s2">%d</span><span class="se">\t</span><span class="s2">%02d</span><span class="se">\t</span><span class="s2">%d</span><span class="se">\n</span><span class="s2">"</span> <span class="nv">$i</span> <span class="k">${</span><span class="nv">hours</span><span class="p">[i]</span><span class="k">}</span> <span class="nv">$j</span> <span class="k">${</span><span class="nv">hours</span><span class="p">[j]</span><span class="k">}</span>
+<span class="k">done
+</span><span class="nb">printf</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Total files = %d</span><span class="se">\n</span><span class="s2">"</span> <span class="nv">$count</span>
+</code></pre></div></div>
+
+<p>The script consists of one function (usage) and a main body with four sections. In the
+first section, we check that there is a command line argument and that it is a directory. If
+it is not, we display the usage message and exit.</p>
+
+<p>這個指令碼由一個函式（名為 usage），和一個分為四個區塊的主體組成。在第一部分，我們檢查是否有一個命令列引數，
+且該引數為目錄。如果不是目錄，會顯示指令碼使用資訊並退出。</p>
+
+<p>The second section initializes the array hours. It does this by assigning each element a
+value of zero. There is no special requirement to prepare arrays prior to use, but our script
+needs to ensure that no element is empty. Note the interesting way the loop is
+constructed. By employing brace expansion ({0..23}), we are able to easily generate
+a sequence of words for the for command.</p>
+
+<p>第二部分初始化一個名為 hours 的陣列。給每一個數組元素賦值一個0。雖然沒有特殊需要在使用之前準備陣列，但是
+我們的指令碼需要確保沒有元素是空值。注意這個迴圈建構方式很有趣。透過使用花括號展開（{0..23}），我們能
+很容易為 for 命令產生一系列的資料（words）。</p>
+
+<p>The next section gathers the data by running the stat program on each file in the directory.
+We use cut to extract the two-digit hour from the result. Inside the loop, we need to
+remove leading zeros from the hour field, since the shell will try (and ultimately fail) to
+interpret values “00” through “09” as octal numbers (see Table 35-1). Next, we increment
+the value of the array element corresponding with the hour of the day. Finally,
+we increment a counter (count) to track the total number of files in the directory.</p>
+
+<p>接下來的一部分收集資料，對目錄中的每一個檔案執行 stat 程式。我們使用 cut 命令從結果中抽取兩位數字的小時欄位。
+在迴圈裡面，我們需要把小時欄位開頭的零清除掉，因為 shell 將試圖（最終會失敗）把從「00」到「09」的數值解釋為八進位制（見表35-1）。
+下一步，我們以小時為陣列索引，來增加其對應的陣列元素的值。最後，我們增加一個計數器的值（count），記錄目錄中總共的檔案數目。</p>
+
+<p>The last section of the script displays the contents of the array. We first output a couple of
+header lines and then enter a loop that produces two columns of output. Lastly, we output
+the final tally of files.</p>
+
+<p>指令碼的最後一部分顯示陣列中的內容。我們首先輸出兩行標題，然後進入一個迴圈產生兩欄輸出。最後，輸出總共的檔案數目。</p>
+
+<h3 id="陣列操作">陣列操作</h3>
+
+<p>There are many common array operations. Such things as deleting arrays, determining
+their size, sorting, etc. have many applications in scripting.</p>
+
+<p>有許多常見的陣列操作。比方說刪除陣列，確定陣列大小，排序，等等。有許多指令碼應用程式。</p>
+
+<h4 id="輸出整個陣列的內容">輸出整個陣列的內容</h4>
+
+<p>The subscripts * and @ can be used to access every element in an array.
+As with positional parameters, the @ notation is the more useful of the two.
+Here is a demonstration:</p>
+
+<p>下標 * 和 @ 可以被用來訪問陣列中的每一個元素。與位置引數一樣，@ 表示法在兩者之中更有用處。
+這裡是一個示範：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ animals=("a dog" "a cat" "a fish")
+[me@linuxbox ~]$ for i in ${animals[*]}; do echo $i; done
+a
+dog
+a
+cat
+a
+fish
+[me@linuxbox ~]$ for i in ${animals[@]}; do echo $i; done
+a
+dog
+a
+cat
+a
+fish
+[me@linuxbox ~]$ for i in "${animals[*]}"; do echo $i; done
+a dog a cat a fish
+[me@linuxbox ~]$ for i in "${animals[@]}"; do echo $i; done
+a dog
+a cat
+a fish
+</code></pre></div></div>
+
+<p>We create the array animals and assign it three two-word strings. We then execute four
+loops to see the affect of word-splitting on the array contents. The behavior of notations $
+{animals[*]} and ${animals[@]} is identical until they are quoted.
+The * notation results in a single word containing the array’s contents, while the @ notation results
+in three words, which matches the arrays “real” contents.</p>
+
+<p>我們建立了陣列 animals，並把三個含有兩個字的字串賦值給陣列。然後我們執行四個迴圈看一下對陣列內容進行分詞的效果。
+表示法 ${animals[*]} 和 ${animals[@]}的行為是一致的直到它們被用引號引起來。</p>
+
+<h4 id="確定陣列元素個數">確定陣列元素個數</h4>
+
+<p>Using parameter expansion, we can determine the number of elements in an array in
+much the same way as finding the length of a string. Here is an example:</p>
+
+<p>使用引數展開，我們能夠確定陣列元素的個數，與計算字串長度的方式幾乎相同。這裡是一個例子:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ a[100]=foo
+[me@linuxbox ~]$ echo ${#a[@]} # number of array elements
+1
+[me@linuxbox ~]$ echo ${#a[100]} # length of element 100
+3
+</code></pre></div></div>
+
+<p>We create array a and assign the string “foo” to element 100. Next, we use parameter ex-
+pansion to examine the length of the array, using the @ notation. Finally, we look at the
+length of element 100 which contains the string “foo”. It is interesting to note that while
+we assigned our string to element 100, bash only reports one element in the array. This
+differs from the behavior of some other languages in which the unused elements of
+the array (elements 0-99) would be initialized with empty values and counted.</p>
+
+<p>我們建立了陣列 a，並把字串「foo」賦值給陣列元素100。下一步，我們使用引數展開來檢查陣列的長度，使用 @ 表示法。
+最後，我們查看了包含字串「foo」的陣列元素 100 的長度。有趣的是，儘管我們把字串賦值給陣列元素100，
+bash 僅僅報告陣列中有一個元素。這不同於一些其它語言的行為，這種行為是陣列中未使用的元素（元素0-99）會初始化為空值，
+並把它們計入陣列長度。</p>
+
+<h4 id="找到陣列使用的下標">找到陣列使用的下標</h4>
+
+<p>As bash allows arrays to contain “gaps” in the assignment of subscripts, it is sometimes
+useful to determine which elements actually exist. This can be done with a parameter ex-
+pansion using the following forms:</p>
+
+<p>因為 bash 允許賦值的陣列下標包含「間隔」，有時候確定哪個元素真正存在是很有用的。為做到這一點，可以使用以下形式的引數展開：</p>
+
+<p><em>${!array[*]}</em></p>
+
+<p><em>${!array[@]}</em></p>
+
+<p>where array is the name of an array variable. Like the other expansions that use * and @,
+the @ form enclosed in quotes is the most useful, as it expands into separate words:</p>
+
+<p>這裡的 array 是一個數組變數的名字。和其它使用符號 * 和 @ 的展開一樣，用引號引起來的 @ 格式是最有用的，
+因為它能展開成分離的詞。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=([2]=a [4]=b [6]=c)
+[me@linuxbox ~]$ for i in "${foo[@]}"; do echo $i; done
+a
+b
+c
+[me@linuxbox ~]$ for i in "${!foo[@]}"; do echo $i; done
+2
+4
+6
+</code></pre></div></div>
+
+<h4 id="在陣列末尾新增元素">在陣列末尾新增元素</h4>
+
+<p>Knowing the number of elements in an array is no help if we need to append values to the
+end of an array, since the values returned by the * and @ notations do not tell us the maxi-
+mum array index in use. Fortunately, the shell provides us with a solution. By using the
++= assignment operator, we can automatically append values to the end of an array. Here,
+we assign three values to the array foo, and then append three more.</p>
+
+<p>如果我們需要在陣列末尾附加資料，那麼知道陣列中元素的個數是沒用的，因為透過 * 和 @ 表示法返回的數值不能
+告訴我們使用的最大陣列索引。幸運地是，shell 為我們提供了一種解決方案。透過使用 += 賦值運算子，
+我們能夠自動地把值附加到陣列末尾。這裡，我們把三個值賦給陣列 foo，然後附加另外三個。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox~]$ foo=(a b c)
+[me@linuxbox~]$ echo ${foo[@]}
+a b c
+[me@linuxbox~]$ foo+=(d e f)
+[me@linuxbox~]$ echo ${foo[@]}
+a b c d e f
+</code></pre></div></div>
+
+<h4 id="陣列排序">陣列排序</h4>
+
+<p>Just as with spreadsheets, it is often necessary to sort the values in a column of data. The
+shell has no direct way of doing this, but it’s not hard to do with a little coding:</p>
+
+<p>就像電子表格，經常有必要對一列資料進行排序。Shell 沒有這樣做的直接方法，但是透過一點程式碼，並不難實現。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># array-sort : Sort an array</span>
+<span class="nv">a</span><span class="o">=(</span>f e d c b a<span class="o">)</span>
+<span class="nb">echo</span> <span class="s2">"Original array: </span><span class="k">${</span><span class="nv">a</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span>
+<span class="nv">a_sorted</span><span class="o">=(</span><span class="k">$(for </span>i <span class="k">in</span> <span class="s2">"</span><span class="k">${</span><span class="nv">a</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span><span class="p">;</span> <span class="k">do </span><span class="nb">echo</span> <span class="nv">$i</span><span class="p">;</span> <span class="k">done</span> | sort<span class="k">)</span><span class="o">)</span>
+<span class="nb">echo</span> <span class="s2">"Sorted array: </span><span class="k">${</span><span class="nv">a_sorted</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>When executed, the script produces this:</p>
+
+<p>當執行之後，指令碼產生這樣的結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ array-sort
+Original array: f e d c b a
+Sorted array:
+a b c d e f
+</code></pre></div></div>
+
+<p>The script operates by copying the contents of the original array (a) into a second array
+(a_sorted) with a tricky piece of command substitution. This basic technique can be
+used to perform many kinds of operations on the array by changing the design of the
+pipeline.</p>
+
+<p>指令碼執行成功，透過使用一個複雜的命令替換把原來的陣列（a）中的內容複製到第二個陣列（a_sorted）中。
+透過修改管道線的設計，這個基本技巧可以用來對陣列執行各種各樣的操作。</p>
+
+<h4 id="刪除陣列">刪除陣列</h4>
+
+<p>To delete an array, use the unset command:</p>
+
+<p>刪除一個數組，使用 unset 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=(a b c d e f)
+[me@linuxbox ~]$ echo ${foo[@]}
+a b c d e f
+[me@linuxbox ~]$ unset foo
+[me@linuxbox ~]$ echo ${foo[@]}
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>unset may also be used to delete single array elements:</p>
+
+<p>也可以使用 unset 命令刪除單個的陣列元素：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox~]$ foo=(a b c d e f)
+[me@linuxbox~]$ echo ${foo[@]}
+a b c d e f
+[me@linuxbox~]$ unset 'foo[2]'
+[me@linuxbox~]$ echo ${foo[@]}
+a b d e f
+</code></pre></div></div>
+
+<p>In this example, we delete the third element of the array, subscript 2. Remember, arrays
+start with subscript zero, not one! Notice also that the array element must be quoted to
+prevent the shell from performing pathname expansion.</p>
+
+<p>在這個例子中，我們刪除了陣列中的第三個元素，下標為2。記住，陣列下標開始於0，而不是1！也要注意陣列元素必須
+用引號引起來為的是防止 shell 執行路徑名展開操作。</p>
+
+<p>Interestingly, the assignment of an empty value to an array does not empty its contents:</p>
+
+<p>有趣地是，給一個數組賦空值不會清空陣列內容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=(a b c d e f)
+[me@linuxbox ~]$ foo=
+[me@linuxbox ~]$ echo ${foo[@]}
+b c d e f
+</code></pre></div></div>
+
+<p>Any reference to an array variable without a subscript refers to element zero of the array:</p>
+
+<p>任何沒有下標的對陣列變數的引用都指向陣列元素0：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox~]$ foo=(a b c d e f)
+[me@linuxbox~]$ echo ${foo[@]}
+a b c d e f
+[me@linuxbox~]$ foo=A
+[me@linuxbox~]$ echo ${foo[@]}
+A b c d e f
+</code></pre></div></div>
+
+<h3 id="關聯陣列">關聯陣列</h3>
+
+<p>Recent versions of bash now support associative arrays. Associative arrays use strings
+rather than integers as array indexes. This capability allow interesting new approaches to
+managing data. For example, we can create an array called “colors” and use color names
+as indexes:</p>
+
+<p>現在最新的 bash 版本支援關聯陣列了。關聯陣列使用字串而不是整數作為陣列索引。這種功能給出了一種有趣的新方法來管理資料。例如，我們可以建立一個叫做「colors」的陣列，並用顏色名字作為索引。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>declare -A colors
+colors["red"]="#ff0000"
+colors["green"]="#00ff00"
+colors["blue"]="#0000ff"
+</code></pre></div></div>
+
+<p>Unlike integer indexed arrays, which are created by merely referencing them, associative
+arrays must be created with the declare command using the new -A option.</p>
+
+<p>不同於整數索引的陣列，僅僅引用它們就能建立陣列，關聯陣列必須用帶有 -A 選項的 declare 命令建立。</p>
+
+<p>Associative array elements are accessed in much the same way as integer indexed arrays:</p>
+
+<p>訪問關聯陣列元素的方式幾乎與整數索引陣列相同：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo ${colors["blue"]}
+</code></pre></div></div>
+
+<p>In the next chapter, we will look at a script that makes good use of associative arrays to
+produce an interesting report.</p>
+
+<p>在下一章中，我們將看一個指令碼，很好地利用關聯陣列，生產出了一個有意思的報告。</p>
+
+<h3 id="總結">總結</h3>
+
+<p>If we search the bash man page for the word “array”, we find many instances of where
+bash makes use of array variables. Most of these are rather obscure,
+but they may provide occasional utility in some special circumstances.In fact, the entire topic of arrays is
+rather under-utilized in shell programming owing largely to the fact that the traditional
+Unix shell programs (such as sh) lacked any support for arrays. This lack of popularity is
+unfortunate because arrays are widely used in other programming languages and provide
+a powerful tool for solving many kinds of programming problems.</p>
+
+<p>如果我們在 bash 手冊頁中搜索單詞「array」的話，我們能找到許多 bash 在哪裡會使用陣列變數的範例。其中大部分相當晦澀難懂，
+但是它們可能在一些特殊場合提供臨時的工具。事實上，在 shell 程式設計中，整套陣列規則利用率相當低，很大程度上歸咎於
+傳統 Unix shell 程式（比如說 sh）缺乏對陣列的支援。這樣缺乏人氣是不幸的，因為陣列廣泛應用於其它程式語言，
+併為解決各種各樣的程式設計問題，提供了一個強大的工具。</p>
+
+<p>Arrays and loops have a natural affinity and are often used together. The</p>
+
+<p>陣列和迴圈有一種天然的姻親關係，它們經常被一起使用。該</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>for ((expr; expr; expr))
+</code></pre></div></div>
+
+<p>form of loop is particularly well-suited to calculating array subscripts.</p>
+
+<p>形式的迴圈尤其適合計算陣列下標。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>A couple of Wikipedia articles about the data structures found in this chapter:</p>
+  </li>
+  <li>
+    <p>Wikipedia 上面有兩篇關於在本章提到的資料結構的文章：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Scalar_(computing)">http://en.wikipedia.org/wiki/Scalar_(computing)</a></p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Associative_array">http://en.wikipedia.org/wiki/Associative_array</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

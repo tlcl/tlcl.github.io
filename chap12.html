@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">shell 環境</h1><br>
+<p>As we discussed earlier, the shell maintains a body of information during our shell
+session called the environment. Data stored in the environment is used by programs to
+determine facts about our configuration. While most programs use configuration files to
+store program settings, some programs will also look for values stored in the environment
+to adjust their behavior. Knowing this, we can use the environment to customize our
+shell experience.</p>
+
+<p>恰如我們之前所講的，shell 在 shell 會話中儲存著大量資訊。這些資訊被稱為 (shell 的) 環境。
+程式獲取環境中的資料（即環境變數）來了解本機的配置。雖然大多數程式用配置檔案來儲存程式設定，
+一些程式會根據環境變數來調整他們的行為。知道了這些，我們就可以用環境變數來自訂製 shell 體驗。</p>
+
+<p>In this chapter, we will work with the following commands:</p>
+
+<ul>
+  <li>
+    <p>printenv – Print part or all of the environment</p>
+  </li>
+  <li>
+    <p>set – Set shell options</p>
+  </li>
+  <li>
+    <p>export – Export environment to subsequently executed programs</p>
+  </li>
+  <li>
+    <p>alias – Create an alias for a command</p>
+  </li>
+</ul>
+
+<p>在這一章，我們將用到以下命令：</p>
+
+<ul>
+  <li>
+    <p>printenv - 列印部分或所有的環境變數</p>
+  </li>
+  <li>
+    <p>set - 設定 shell 選項</p>
+  </li>
+  <li>
+    <p>export — 匯出環境變數，讓隨後執行的程式知道。</p>
+  </li>
+  <li>
+    <p>alias - 建立命令別名</p>
+  </li>
+</ul>
+
+<h3 id="什麼儲存在環境變數中">什麼儲存在環境變數中？</h3>
+
+<p>The shell stores two basic types of data in the environment, though, with bash, the
+types are largely indistinguishable. They are environment variables and shell variables.
+Shell variables are bits of data placed there by bash, and environment variables are
+basically everything else. In addition to variables, the shell also stores some
+programmatic data, namely aliases and shell functions. We covered aliases in Chapter 6,
+and shell functions (which are related to shell scripting) will be covered in Part 5.</p>
+
+<p>shell 在環境中儲存了兩種基本型別的資料，雖然 bash 幾乎無法分辨這些資料的型別。
+它們是環境變數和 shell 變數。Shell 變數是 bash 存放的少量資料。剩下的都是
+環境變數。除了變數，shell 也儲存了一些可程式設計的資料，即別名和 shell 函式。我們
+已經在第六章討論了別名，而 shell 函式（涉及到 shell 指令碼）將會在本章第五部分敘述。</p>
+
+<h3 id="檢查環境變數">檢查環境變數</h3>
+
+<p>We can use either the set builtin in bash or the printenv program to see what is
+stored in the environment. The set command will show both the shell and environment
+variables, while printenv will only display the latter. Since the list of environment
+contents will be fairly long, it is best to pipe the output of either command into less:</p>
+
+<p>我們可以用 bash 的內建命令 set，或者是 printenv 程式來檢視環境變數。set 命令可以
+顯示 shell 或環境變數，而 printenv 只是顯示環境變數。因為環境變數列表比較長，最好
+把每個命令的輸出透過管道傳遞給 less 來閱讀：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ printenv | less
+</code></pre></div></div>
+
+<p>Doing so, we should get something that looks like this:</p>
+
+<p>執行以上命令之後，我們應該能得到類似以下內容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>KDE_MULTIHEAD=false
+SSH_AGENT_PID=6666
+HOSTNAME=linuxbox
+GPG_AGENT_INFO=/tmp/gpg-PdOt7g/S.gpg-agent:6689:1
+SHELL=/bin/bash
+TERM=xterm
+XDG_MENU_PREFIX=kde-
+HISTSIZE=1000
+XDG_SESSION_COOKIE=6d7b05c65846c3eaf3101b0046bd2b00-1208521990.996705
+-1177056199
+GTK2_RC_FILES=/etc/gtk-2.0/gtkrc:/home/me/.gtkrc-2.0:/home/me/.kde/sh
+are/config/gtkrc-2.0
+GTK_RC_FILES=/etc/gtk/gtkrc:/home/me/.gtkrc:/home/me/.kde/share/confi
+g/gtkrc
+GS_LIB=/home/me/.fonts
+WINDOWID=29360136
+QTDIR=/usr/lib/qt-3.3
+QTINC=/usr/lib/qt-3.3/include
+KDE_FULL_SESSION=true
+USER=me
+LS_COLORS=no=00:fi=00:di=00;34:ln=00;36:pi=40;33:so=00;35:bd=40;33;01
+:cd=40;33;01:or=01;05;37;41:mi=01;05;37;41:ex=00;32:\*.cmd=00;32:\*.exe:
+</code></pre></div></div>
+
+<p>What we see is a list of environment variables and their values. For example, we see a
+variable called USER, which contains the value “me”. The printenv command can
+also list the value of a specific variable:</p>
+
+<p>我們所看到的是環境變數及其數值的列表。例如，我們看到一個叫做 USER 的變數，這個變數值是
+“me”。printenv 命令也能夠列出特定變數的數值：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ printenv USER
+me
+</code></pre></div></div>
+
+<p>The set command, when used without options or arguments, will display both the shell
+and environment variables, as well as any defined shell functions. Unlike printenv,
+its output is courteously sorted in alphabetical order:</p>
+
+<p>當使用沒有帶選項和引數的 set 命令時，shell 變數，環境變數，和定義的 shell 函式
+都會被顯示。不同於 printenv 命令，set 命令的輸出很友好地按照首字母順序排列：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ set | less
+</code></pre></div></div>
+
+<p>It is also possible to view the contents of a variable using the echo command, like this:</p>
+
+<p>也可以透過 echo 命令來檢視一個變數的內容，像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo $HOME
+/home/me
+</code></pre></div></div>
+
+<p>One element of the environment that neither set nor printenv displays is aliases. To
+see them, enter the alias command without arguments:</p>
+
+<p>別名無法透過使用 set 或 printenv 來檢視。
+用不帶引數的 alias 來檢視別名:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ alias
+alias l.='ls -d .* --color=tty'
+alias ll='ls -l --color=tty'
+alias ls='ls --color=tty'
+alias vi='vim'
+alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
+</code></pre></div></div>
+
+<h3 id="一些有趣的環境變數">一些有趣的環境變數</h3>
+
+<p>The environment contains quite a few variables, and though your environment may differ
+from the one presented here, you will likely see the following variables in your
+environment:</p>
+
+<p>shell 環境中包含相當多的變數。雖然你的 shell 環境可能與這裡的不同，你可能會看到
+以下的環境變數：</p>
+
+<table class="multi">
+<caption class="cap">Table 12-1: Environment Variables</caption>
+<tr>
+<th class="title">Variable</th>
+<th class="title">Contents</th>
+</tr>
+<tr>
+<td valign="top" width="25%">DISPLAY </td>
+<td valign="top">The name of your display if you are running a graphical
+environment. Usually this is ":0", meaning the first display
+generated by the X server.</td>
+</tr>
+<tr>
+<td valign="top">EDITOR</td>
+<td valign="top">The name of the program to be used for text editing.</td>
+</tr>
+<tr>
+<td valign="top">SHELL</td>
+<td valign="top">The name of your shell program.</td>
+</tr>
+<tr>
+<td valign="top">HOME</td>
+<td valign="top">The pathname of your home directory.</td>
+</tr>
+<tr>
+<td valign="top">LANG</td>
+<td valign="top">Defines the character set and collation order of your language.</td>
+</tr>
+<tr>
+<td valign="top">OLD_PWD </td>
+<td valign="top">The previous working directory.</td>
+</tr>
+<tr>
+<td valign="top">PAGER</td>
+<td valign="top">The name of the program to be used for paging output. This is
+often set to /usr/bin/less.
+</td>
+</tr>
+<tr>
+<td valign="top">PATH</td>
+<td valign="top">A colon-separated list of directories that are searched when you
+enter the name of a executable program.
+</td>
+</tr>
+<tr>
+<td valign="top">PS1</td>
+<td valign="top">Prompt String 1. This defines the contents of your shell prompt. As
+we will later see, this can be extensively customized.
+</td>
+</tr>
+<tr>
+<td valign="top">PWD</td>
+<td valign="top">The current working directory.</td>
+</tr>
+<tr>
+<td valign="top">TERM </td>
+<td valign="top">The name of your terminal type. Unix-like systems support many
+terminal protocols; this variable sets the protocol to be used with
+your terminal emulator.</td>
+</tr>
+<tr>
+<td valign="top">TZ</td>
+<td valign="top">Specifies your timezone. Most Unix-like systems maintain the
+computer's internal clock in Coordinated Universal Time (UTC)
+and then displays the local time by applying an offset specified by
+this variable.</td>
+</tr>
+<tr>
+<td valign="top">USER</td>
+<td valign="top">Your user name.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表12-1: 環境變數</caption>
+<tr>
+<th class="title">變數</th>
+<th class="title">內容</th>
+</tr>
+<tr>
+<td valign="top" width="25%">DISPLAY </td>
+<td valign="top">如果你正在執行圖形介面環境，那麼這個變數就是你顯示器的名字。通常，它是 ":0"，
+意思是由 X 產生的第一個顯示器。</td>
+</tr>
+<tr>
+<td valign="top">EDITOR</td>
+<td valign="top">文字編輯器的名字。</td>
+</tr>
+<tr>
+<td valign="top">SHELL</td>
+<td valign="top">shell 程式的名字。</td>
+</tr>
+<tr>
+<td valign="top">HOME</td>
+<td valign="top">使用者家目錄。</td>
+</tr>
+<tr>
+<td valign="top">LANG</td>
+<td valign="top">定義了字符集以及語言編碼方式。</td>
+</tr>
+<tr>
+<td valign="top">OLD_PWD </td>
+<td valign="top">先前的工作目錄。</td>
+</tr>
+<tr>
+<td valign="top">PAGER</td>
+<td valign="top">頁輸出程式的名字。這經常設定為/usr/bin/less。
+</td>
+</tr>
+<tr>
+<td valign="top">PATH</td>
+<td valign="top">由冒號分開的目錄列表，當你輸入可執行程式名後，會搜尋這個目錄列表。
+</td>
+</tr>
+<tr>
+<td valign="top">PS1</td>
+<td valign="top">Prompt String 1. 這個定義了你的 shell 提示符的內容。隨後我們可以看到，這個變數
+內容可以全面地訂製。
+</td>
+</tr>
+<tr>
+<td valign="top">PWD</td>
+<td valign="top">當前工作目錄。</td>
+</tr>
+<tr>
+<td valign="top">TERM </td>
+<td valign="top">終端型別名。類別 Unix 的系統支援許多終端協議；這個變數設定你的終端模擬器所用的協議。
+</td>
+</tr>
+<tr>
+<td valign="top">TZ</td>
+<td valign="top">指定你所在的時區。大多數類別 Unix 的系統按照協調時間時 (UTC) 來維護計算機內部的時鐘
+，然後應用一個由這個變數指定的偏差來顯示本地時間。
+</td>
+</tr>
+<tr>
+<td valign="top">USER</td>
+<td valign="top">你的使用者名稱</td>
+</tr>
+</table>
+
+<p>Don’t worry if some of these values are missing. They vary by distribution.</p>
+
+<p>如果缺失了一些變數，不要擔心，這些變數會因發行版本的不同而不同。</p>
+
+<h3 id="如何建立-shell-環境">如何建立 shell 環境？</h3>
+
+<p>When we log on to the system, the bash program starts, and reads a series of
+configuration scripts called startup files, which define the default environment shared by
+all users. This is followed by more startup files in our home directory that define our
+personal environment. The exact sequence depends on the type of shell session being
+started. There are two kinds: a login shell session and a non-login shell session.</p>
+
+<p>當我們登入系統後， bash 程式啟動，並且會讀取一系列稱為啟動檔案的配置指令碼，
+這些檔案定義了預設的可供所有使用者共享的 shell 環境。然後是讀取更多位於我們自己家目錄中
+的啟動檔案，這些啟動檔案定義了使用者個人的 shell 環境。確切的啟動順序依賴於要執行的 shell 會話
+型別。有兩種 shell 會話型別：一個是登入 shell 會話，另一個是非登入 shell 會話。</p>
+
+<p>A login shell session is one in which we are prompted for our user name and password;
+when we start a virtual console session, for example. A non-login shell session typically
+occurs when we launch a terminal session in the GUI.</p>
+
+<p>登入 shell 會話會在其中提示使用者輸入使用者名稱和密碼；例如，我們啟動一個虛擬控制檯會話。
+非登入 shell 會話通常當我們在 GUI 下啟動終端會話時出現。</p>
+
+<p>Login shells read one or more startup files as shown in Table 12-2:</p>
+
+<p>登入 shell 會讀取一個或多個啟動檔案，正如表12－2所示：</p>
+
+<table class="multi">
+<caption class="cap">Table 12-2: Startup Files For Login Shell Sessions</caption>
+<tr>
+<th class="title">File</th>
+<th class="title">Contents</th>
+</tr>
+<tr>
+<td valign="top" width="25%">/etc/profile</td>
+<td valign="top">A global configuration script that applies to all users.</td>
+</tr>
+<tr>
+<td valign="top">~/.bash_profile </td>
+<td valign="top">A user's personal startup file. Can be used to extend or
+override settings in the global configuration script.</td>
+</tr>
+<tr>
+<td valign="top">~/.bash_login </td>
+<td valign="top">If ~/.bash_profile is not found, bash attempts to
+read this script.</td>
+</tr>
+<tr>
+<td valign="top">~/.profile </td>
+<td valign="top">If neither ~/.bash_profile nor ~/.bash_login
+is found, bash attempts to read this file. This is the
+default in Debian-based distributions, such as Ubuntu.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表12-2: 登入 shell 會話的啟動檔案</caption>
+<tr>
+<th class="title">檔案</th>
+<th class="title">內容</th>
+</tr>
+<tr>
+<td valign="top" width="25%">/etc/profile</td>
+<td valign="top">應用於所有使用者的全域性配置指令碼。</td>
+</tr>
+<tr>
+<td valign="top">~/.bash_profile </td>
+<td valign="top">使用者個人的啟動檔案。可以用來擴充套件或重寫全域性配置指令碼中的設定。</td>
+</tr>
+<tr>
+<td valign="top">~/.bash_login </td>
+<td valign="top">如果檔案 ~/.bash_profile 沒有找到，bash 會嘗試讀取這個指令碼。
+</td>
+</tr>
+<tr>
+<td valign="top">~/.profile </td>
+<td valign="top">如果檔案 ~/.bash_profile 或檔案 ~/.bash_login 都沒有找到，bash 會試圖讀取這個檔案。
+這是基於 Debian 發行版的預設設定，比方說 Ubuntu。
+</td>
+</tr>
+</table>
+
+<p>Non-login shell sessions read the following startup files:</p>
+
+<p>非登入 shell 會話會讀取以下啟動檔案：</p>
+
+<table class="multi">
+<caption class="cap">Table 12-3: Startup Files For Non-Login Shell Sessions</caption>
+<tr>
+<th class="title">File</th>
+<th class="title">Contents</th>
+</tr>
+<tr>
+<td valign="top" width="25%">/etc/bash.bashrc </td>
+<td valign="top">A global configuration script that applies to all users.</td>
+</tr>
+<tr>
+<td valign="top">~/.bashrc</td>
+<td valign="top">A user's personal startup file. Can be used to extend or
+override settings in the global configuration script.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表12-3: 非登入 shell 會話的啟動檔案</caption>
+<tr>
+<th class="title">檔案</th>
+<th class="title">內容</th>
+</tr>
+<tr>
+<td valign="top" width="25%">/etc/bash.bashrc </td>
+<td valign="top">應用於所有使用者的全域性配置檔案。</td>
+</tr>
+<tr>
+<td valign="top">~/.bashrc</td>
+<td valign="top">使用者個人的啟動檔案。可以用來擴充套件或重寫全域性配置指令碼中的設定。
+</td>
+</tr>
+</table>
+
+<p>In addition to reading the startup files above, non-login shells also inherit the
+environment from their parent process, usually a login shell.</p>
+
+<p>除了讀取以上啟動檔案之外，非登入 shell 會話也會繼承它們父程序的環境設定，通常是一個登入 shell。</p>
+
+<p>Take a look at your system and see which of these startup files you have. Remember—
+since most of the filenames listed above start with a period (meaning that they are
+hidden), you will need to use the “-a” option when using ls.</p>
+
+<p>瀏覽一下你的系統，看一看系統中有哪些啟動檔案。記住－因為上面列出的大多數檔名都以圓點開頭
+（意味著它們是隱藏檔案），你需要使用帶”-a”選項的 ls 命令。</p>
+
+<p>The ~/.bashrc file is probably the most important startup file from the
+ordinary user’s point of view, since it is almost always read. Non-login
+shells read it by default and most startup files for login shells are written
+in such a way as to read the ~/.bashrc file as well.</p>
+
+<p>在普通使用者看來，檔案 ~/.bashrc 可能是最重要的啟動檔案，因為它幾乎總是被讀取。非登入 shell 預設
+會讀取它，並且大多數登入 shell 的啟動檔案會以能讀取 ~/.bashrc 檔案的方式來書寫。</p>
+
+<h3 id="一個啟動檔案的內容">一個啟動檔案的內容</h3>
+
+<p>If we take a look inside a typical .bash_profile (taken from a CentOS 4 system), it
+looks something like this:</p>
+
+<p>如果我們看一下典型的 .bash_profile 檔案（來自於 CentOS 4 系統），它看起來像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># .bash_profile
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+. ~/.bashrc
+fi
+# User specific environment and startup programs
+PATH=$PATH:$HOME/bin
+export PATH
+</code></pre></div></div>
+
+<p>Lines that begin with a “#” are comments and are not read by the shell. These are there
+for human readability. The first interesting thing occurs on the fourth line, with the
+following code:</p>
+
+<p>以”#”開頭的行是註釋，shell 不會讀取它們。它們在那裡是為了方便人們閱讀。第一件有趣的事情
+發生在第四行，伴隨著以下程式碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if [ -f ~/.bashrc ]; then
+. ~/.bashrc
+fi
+</code></pre></div></div>
+
+<p>This is called an if compound command, which we will cover fully when we get to shell
+scripting in Part 5, but for now we will translate:</p>
+
+<p>這叫做一個 if 複合命令，我們將會在第五部分詳細地介紹它，現在我們對它翻譯一下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>If the file ~/.bashrc exists, then
+read the ~/.bashrc file.
+</code></pre></div></div>
+
+<p>We can see that this bit of code is how a login shell gets the contents of .bashrc. The
+next thing in our startup file has to do with the PATH variable.</p>
+
+<p>我們可以看到這一小段程式碼就是一個登入 shell 得到 .bashrc 檔案內容的方式。在我們啟動檔案中，
+下一件有趣的事與 PATH 變數有關係。</p>
+
+<p>Ever wonder how the shell knows where to find commands when we enter them on the
+command line? For example, when we enter ls, the shell does not search the entire
+computer to find /bin/ls (the full pathname of the ls command), rather, it searches a
+list of directories that are contained in the PATH variable.</p>
+
+<p>是否曾經對 shell 怎樣知道在哪裡找到我們在命令列中輸入的命令感到迷惑？例如，當我們輸入 ls 後，
+shell 不會查詢整個計算機系統來找到 /bin/ls（ls 命令的全路徑名），相反，它查詢一個目錄列表，
+這些目錄包含在 PATH 變數中。</p>
+
+<p>The PATH variable is often (but not always, depending on the distribution) set by the
+/etc/profile startup file and with this code:</p>
+
+<p>PATH 變數經常（但不總是，依賴於發行版）在 /etc/profile 啟動檔案中設定，透過這些程式碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PATH=$PATH:$HOME/bin
+</code></pre></div></div>
+
+<p>PATH is modified to add the directory $HOME/bin to the end of the list. This is an
+example of parameter expansion, which we touched on in Chapter 8. To demonstrate
+how this works, try the following:</p>
+
+<p>修改 PATH 變數，新增目錄 $HOME/bin 到目錄列表的末尾。這是一個引數展開的範例，
+引數展開我們在第八章中提到過。為了說明這是怎樣工作的，試試下面的例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo="This is some"
+[me@linuxbox ~]$ echo $foo
+This is some
+[me@linuxbox ~]$ foo="$foo text."
+[me@linuxbox ~]$ echo $foo
+This is some text.
+</code></pre></div></div>
+
+<p>Using this technique, we can append text to the end of a variable’s contents.
+By adding the string $HOME/bin to the end of the PATH variable’s contents, the
+directory $HOME/bin is added to the list of directories searched when a command is
+entered. This means that when we want to create a directory within our home directory
+for storing our own private programs, the shell is ready to accommodate us. All we have
+to do is call it bin, and we’re ready to go.</p>
+
+<p>使用這種技巧，我們可以把文字附加到一個變數值的末尾。透過新增字串 $HOME/bin 到 PATH 變數值
+的末尾，則目錄 $HOME/bin 就新增到了命令搜尋目錄列表中。這意味著當我們想要在自己的家目錄下，
+建立一個目錄來儲存我們自己的私人程式時，shell 已經給我們準備好了。我們所要做的事就是
+把建立的目錄叫做 bin，趕快行動吧。</p>
+
+<p>Note: Many distributions provide this PATH setting by default. Some Debian
+based distributions, such as Ubuntu, test for the existence of the ~/bin directory at
+login, and dynamically add it to the PATH variable if the directory is found.</p>
+
+<p>注意：很多發行版預設地提供了這個 PATH 設定。一些基於 Debian 的發行版，例如 Ubuntu，在登入
+的時候，會檢測目錄 ~/bin 是否存在，若找到目錄則把它動態地加到 PATH 變數中。</p>
+
+<p>Lastly, we have:</p>
+
+<p>最後，有下面一行程式碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export PATH
+</code></pre></div></div>
+
+<p>The export command tells the shell to make the contents of PATH available to child
+processes of this shell.</p>
+
+<p>這個 export 命令告訴 shell 讓這個 shell 的子程序可以使用 PATH 變數的內容。</p>
+
+<h3 id="修改-shell-環境">修改 shell 環境</h3>
+
+<p>Since we know where the startup files are and what they contain, we can modify them to
+customize our environment.</p>
+
+<p>既然我們知道了啟動檔案所在的位置和它們所包含的內容，我們就可以修改它們來訂製自己的 shell 環境。</p>
+
+<h3 id="我們應該修改哪個檔案">我們應該修改哪個檔案？</h3>
+
+<p>As a general rule, to add directories to your PATH, or define additional environment
+variables, place those changes in .bash_profile (or equivalent, according to your
+distribution. For example, Ubuntu uses .profile.) For everything else, place the
+changes in .bashrc. Unless you are the system administrator and need to change the
+defaults for all users of the system, restrict your modifications to the files in your home
+directory. It is certainly possible to change the files in /etc such as profile, and in
+many cases it would be sensible to do so, but for now, Let's play it safe.</p>
+
+<p>按照通常的規則，新增目錄到你的 PATH 變數或者是定義額外的環境變數，要把這些更改放置到
+ .bash_profile 檔案中（或者其替代檔案中，根據不同的發行版。例如，Ubuntu 使用 .profile 檔案）。
+對於其它的更改，要放到 .bashrc 檔案中。除非你是系統管理員，需要為系統中的所有使用者修改
+預設設定，那麼則限定你只能對自己家目錄下的檔案進行修改。當然，有可能會更改 /etc 目錄中的
+檔案，比如說 profile 檔案，而且在許多情況下，修改這些檔案也是明智的，但是現在，我們要謹慎行事。</p>
+
+<h3 id="文字編輯器">文字編輯器</h3>
+
+<p>To edit (i.e., modify) the shell’s startup files, as well as most of the other configuration
+files on the system, we use a program called a text editor. A text editor is a program that
+is, in some ways, like a word processor in that it allows you to edit the words on the
+screen with a moving cursor. It differs from a word processor by only supporting pure
+text, and often contains features designed for writing programs. Text editors are the
+central tool used by software developers to write code, and by system administrators to
+manage the configuration files that control the system.</p>
+
+<p>為了編輯（例如，修改）shell 的啟動檔案以及系統中大多數其它配置檔案，我們使用一個叫做文字編輯器的程式。
+文字編輯器是一個在某些方面類似於文書處理器的程式，允許你使用移動游標在螢幕上編輯文字。
+文字編輯器不同於文書處理器之處在於它只能支援純文字，並且經常包含為便於寫程式而設計的特性。
+文字編輯器是軟體開發人員用來寫程式碼，以及系統管理員用來管理控制系統的配置檔案的重要工具。</p>
+
+<p>There are a lot of different text editors available for Linux; your system probably has
+several installed. Why so many different ones? Probably because programmers like
+writing them, and since programmers use them extensively, they write editors to express
+their own desires as to how they should work.</p>
+
+<p>Linux 系統有許多不同型別的文字編輯器可用；你的系統中可能已經安裝了幾個。為什麼會有這麼
+多種呢？可能因為程式設計師喜歡編寫它們，又因為程式設計師們會頻繁地使用它們，所以程式設計師編寫編輯器讓
+它們按照程式設計師自己的願望工作。</p>
+
+<p>Text editors fall into two basic categories: graphical and text based. GNOME and KDE
+both include some popular graphical editors. GNOME ships with an editor called
+gedit, which is usually called “Text Editor” in the GNOME menu. KDE usually ships
+with three which are (in order of increasing complexity) kedit, kwrite, and kate.</p>
+
+<p>文字編輯器分為兩種基本型別：圖形化的和基於文字的編輯器。GNOME 和 KDE 兩者都包含一些流行的
+圖形化編輯器。GNOME 自帶了一個叫做 gedit 的編輯器，這個編輯器通常在 GNOME 選單中稱為”文字編輯器”。
+KDE 通常自帶了三種編輯器，分別是（按照複雜度遞增的順序排列）kedit，kwrite，kate。</p>
+
+<p>There are many text-based editors. The popular ones you will encounter are nano, vi,
+and emacs. The nano editor is a simple, easy-to-use editor designed as a replacement
+for the pico editor supplied with the PINE email suite. The vi editor (on most Linux
+systems replaced by a program named vim, which is short for “Vi IMproved”) is the
+traditional editor for Unix-like systems. It will be the subject of our next chapter. The
+emacs editor was originally written by Richard Stallman. It is a gigantic, all-purpose,
+does-everything programming environment. While readily available, it is seldom
+installed on most Linux systems by default.</p>
+
+<p>有許多基於文字的編輯器。你將會遇到一些流行的編輯器，它們是 nano、vi和 emacs。 nano 編輯器
+是一個簡單易用的編輯器，用於替代隨 PINE 郵件套件提供的 pico 編輯器。vi 編輯器
+（在大多數 Linux 系統中被 vim 替代，vim 是 “Vi IMproved”的簡寫）是類別 Unix 作業系統的傳統編輯器。
+vim 是我們下一章節的討論物件。emacs 編輯器最初由 Richard Stallman 寫成。它是一個龐大、多用途的，
+可做任何事情的程式設計環境。雖然 emacs 很容易獲取，但是大多數 Linux 系統很少預設安裝它。</p>
+
+<h3 id="使用文字編輯器">使用文字編輯器</h3>
+
+<p>All text editors can be invoked from the command line by typing the name of the editor
+followed by the name of the file you want to edit. If the file does not already exist, the
+editor will assume that you want to create a new file. Here is an example using gedit:</p>
+
+<p>所有的文字編輯器都可以透過在命令列中輸入編輯器的名字，加上你所想要編輯的檔案來喚醒。如果所
+輸入的檔名不存在，編輯器則會假定你想要建立一個新檔案。下面是一個使用 gedit 的例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ gedit some_file
+</code></pre></div></div>
+
+<p>This command will start the gedit text editor and load the file named “some_file”, if it
+exists.</p>
+
+<p>這條命令將會啟動 gedit 文字編輯器，同時載入名為 “some_file” 的檔案，如果這個檔案存在的話。</p>
+
+<p>All graphical text editors are pretty self-explanatory, so we won’t cover them here.
+Instead, we will concentrate on our first text-based text editor, nano. Let's fire up nano
+and edit the .bashrc file. But before we do that, Let's practice some “safe computing.”
+Whenever we edit an important configuration file, it is always a good idea to create a
+backup copy of the file first. This protects us in case we mess the file up while editing.
+To create a backup of the .bashrc file, do this:</p>
+
+<p>所有的圖形文字編輯器很大程度上都是不需要解釋的，所以我們在這裡不會介紹它們。反之，我們將集中精力在
+我們第一個基於文字的文字編輯器，nano。讓我們啟動 nano，並且編輯檔案 .bashrc。但是在我們這樣
+做之前，先練習一些”安全計算”。當我們編輯一個重要的配置檔案時，首先建立一個這個檔案的備份
+總是一個不錯的主意。這樣能避免我們在編輯檔案時弄亂檔案。建立檔案 .bashrc 的備份檔案，這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cp .bashrc .bashrc.bak
+</code></pre></div></div>
+
+<p>It doesn’t matter what you call the backup file, just pick an understandable name. The
+extensions “.bak”, “.sav”, “.old”, and “.orig”
+are all popular ways of indicating a backup
+file. Oh, and remember that cp will overwrite existing files silently.</p>
+
+<p>備份檔案的名字無關緊要，只要選擇一個容易理解的檔名。副檔名 “.bak”、”.sav”、
+“.old”和 “.orig” 都是用來指示備份檔案的流行方法。哦，記住 cp 命令會默默地覆蓋已經存在的同名檔案。</p>
+
+<p>Now that we have a backup file, we’ll start the editor:</p>
+
+<p>現在我們有了一個備份檔案，我們啟動 nano 編輯器吧：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ nano .bashrc
+</code></pre></div></div>
+
+<p>Once nano starts, we’ll get a screen like this:</p>
+
+<p>一旦 nano 編輯器啟動後，我們將會得到一個像下面一樣的螢幕：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GNU nano 2.0.3
+....
+</code></pre></div></div>
+
+<p>Note: If your system does not have nano installed, you may use a graphical editor
+instead.</p>
+
+<p>注意：如果你的系統中沒有安裝 nano 編輯器，你可以用一個圖形化的編輯器代替。</p>
+
+<p>The screen consists of a header at the top, the text of the file being edited in the middle
+and a menu of commands at the bottom. Since nano was designed to replace the text
+editor supplied with an email client, it is rather short on editing features.
+The first command you should learn in any text editor is how to exit the program. In the
+case of nano, you type Ctrl-x to exit. This is indicated in the menu at the bottom of
+the screen. The notation “^X” means Ctrl-x. This is a common notation for control
+characters used by many programs.</p>
+
+<p>這個螢幕由上面的標頭，中間正在編輯的檔案文字和下面的命令選單組成。因為設計 nano 是為了
+代替由電子郵件客戶端提供的編輯器的，所以它相當缺乏編輯特性。在任一款編輯器中，你應該
+學習的第一個命令是怎樣退出程式。以 nano 為例，你輸入 Ctrl-x 來退出 nano。在螢幕底層的選單中
+說明了這個命令。”^X” 表示法意思是 Ctrl-x。這是控制字元的常見表示法，許多程式都使用它。</p>
+
+<p>The second command we need to know is how to save our work. With nano it’s Ctrl-
+o. With this knowledge under our belts, we’re ready to do some editing. Using the down
+arrow key and / or the PageDown key, move the cursor to the end of the file, then add the
+following lines to the .bashrc file:</p>
+
+<p>第二個我們需要知道的命令是怎樣儲存我們的勞動成果。對於 nano 來說是 Ctrl-o。既然我們
+已經獲得了這些知識，接下來我們準備做些編輯工作。使用下箭頭按鍵和 / 或下翻頁按鍵，移動
+滑鼠到檔案的最後一行，然後新增以下幾行到檔案 .bashrc 中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>umask 0002
+export HISTCONTROL=ignoredups
+export HISTSIZE=1000
+alias l.='ls -d .* --color=auto'
+alias ll='ls -l --color=auto'
+</code></pre></div></div>
+
+<p>Note: Your distribution may already include some of these, but duplicates won’t
+hurt anything.</p>
+
+<p>注意：你的發行版在這之前可能已經包含其中的一些行，出現重複的程式碼不會有其他影響。</p>
+
+<p>Here is the meaning of our additions:</p>
+
+<p>下表是所新增行的意義：</p>
+
+<table class="multi">
+<caption class="cap">Table 12-4:</caption>
+<tr>
+<th class="title">Line</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top" width="25%">umask 0002 </td>
+<td valign="top">Sets the umask to solve the
+problem with shared directories</td>
+</tr>
+<tr>
+<td valign="top">export HISTCONTROL=ignoredups </td>
+<td valign="top">Causes the shell's history recording feature to ignore a command
+if the same command was just recorded.</td>
+</tr>
+<tr>
+<td valign="top" width="25%">export HISTSIZE=1000
+</td>
+<td valign="top">Increases the size of the command history from the default of
+500 lines to 1000 lines.</td>
+</tr>
+<tr>
+<td valign="top" width="25%">alias l.='ls -d .* --color=auto' </td>
+<td valign="top">Creates a new command called “l.” which displays all
+directory entries that begin with a dot.</td>
+</tr>
+<tr>
+<td valign="top" width="25%">alias ll='ls -l --color=auto'
+</td>
+<td valign="top">Creates a new command called “ll” which displays a long
+format directory listing.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表12-4:</caption>
+<tr>
+<th class="title">文字行</th>
+<th class="title">含義</th>
+</tr>
+<tr>
+<td valign="top" width="25%">umask 0002 </td>
+<td valign="top">設定掩碼來解決共享目錄的問題。</td>
+</tr>
+<tr>
+<td valign="top">export HISTCONTROL=ignoredups </td>
+<td valign="top">使得 shell 的歷史記錄功能忽略一個命令，如果相同的命令已被記錄。</td>
+</tr>
+<tr>
+<td valign="top" width="25%">export HISTSIZE=1000
+</td>
+<td valign="top">增加命令歷史的大小，從預設的 500 行擴大到 1000 行。</td>
+</tr>
+<tr>
+<td valign="top" width="25%">alias l.='ls -d .* --color=auto' </td>
+<td valign="top">建立一個新命令，叫做'l.'，這個命令會顯示所有以點開頭的目錄項。</td>
+</tr>
+<tr>
+<td valign="top" width="25%">alias ll='ls -l --color=auto'
+</td>
+<td valign="top">建立一個叫做'll'的命令，這個命令會顯示長格式目錄列表。</td>
+</tr>
+</table>
+
+<p>As we can see, many of our additions are not intuitively obvious, so it would be a good
+idea to add some comments to our .bashrc file to help explain things to the humans.
+Using the editor, change our additions to look like this:</p>
+
+<p>正如我們所看到的，我們新增的許多程式碼的意思直覺上並不是明顯的，所以添加註釋到我們的檔案 .bashrc 中是
+一個好主意，可以幫助人們理解。使用編輯器，更改我們新增的程式碼，讓它們看起來像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Change umask to make directory sharing easier
+umask 0002
+ # Ignore duplicates in command history and increase
+ # history size to 1000 lines
+export HISTCONTROL=ignoredups
+export HISTSIZE=1000
+ # Add some helpful aliases
+alias l.='ls -d .* --color=auto'
+alias ll='ls -l --color=auto'
+</code></pre></div></div>
+
+<p>Ah, much better! With our changes complete, type Ctrl-o to save our modified
+.bashrc file, and Ctrl-x to exit nano.</p>
+
+<p>啊，看起來好多了! 當我們完成修改後，輸入 Ctrl-o 來儲存我們修改的 .bashrc 檔案，輸入 Ctrl-x 退出 nano。</p>
+
+<blockquote>
+  <p>Why Comments Are Important</p>
+
+  <p><em>為什麼註釋很重要？</em></p>
+
+  <p>Whenever you modify configuration files it’s a good idea to add some comments
+to document your changes. Sure, you will remember what you changed
+tomorrow, but what about six months from now? Do yourself a favor and add
+some comments. While you’re at it, it’s not a bad idea to keep a log of what
+changes you make.</p>
+
+  <p>不管什麼時候你修改配置檔案時，給你所做的更改加上註釋都是一個好主意。的確，明天你會
+記得你修改了的內容，但是六個月之後會怎樣呢？幫自己一個忙，加上一些註釋吧。當你意識
+到這一點後，對你所做的修改做個日誌是個不錯的主意。</p>
+
+  <p>Shell scripts and bash startup files use a “#” symbol to begin a comment. Other
+configuration files may use other symbols. Most configuration files will have
+comments. Use them as a guide.</p>
+
+  <p>Shell 指令碼和 bash 啟動檔案都使用「#」符號來開始註釋。其它配置檔案可能使用其它的符號。
+大多數配置檔案都有註釋。把它們作為指南。</p>
+
+  <p>You will often see lines in configuration files that are commented out to prevent
+them from being used by the affected program. This is done to give the reader
+suggestions for possible configuration choices or examples of correct
+configuration syntax. For example, the .bashrc file of Ubuntu 8.04 contains
+these lines:</p>
+
+  <p>你會經常看到配置檔案中的一些行被註釋掉，以此防止它們被受影響的程式使用。這樣做
+是為了給讀者在可能的配置選項方面一些建議，或者給出正確的配置語法範例。例如，Ubuntu 8.04
+中的 .bashrc 檔案包含這些行：</p>
+
+  <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># some more ls aliases
+#alias ll='ls -l'
+#alias la='ls -A'
+#alias l='ls -CF'
+</code></pre></div>  </div>
+
+  <p>The last three lines are valid alias definitions that have been commented out. If
+you remove the leading “#” symbols from these three lines, a technique called
+uncommenting, you will activate the aliases. Conversely, if you add a “#”
+symbol to the beginning of a line, you can deactivate a configuration line while
+preserving the information it contains.</p>
+
+  <p>最後三行是有效的被註釋掉的別名定義。如果你刪除這三行開頭的「#」符號，此技術程稱為
+uncommenting (取消註釋)，這樣你就會啟用這些別名。相反地，如果你在一行的開頭加上「#」符號，
+你可以登出掉這一行，但會保留它所包含的資訊。</p>
+</blockquote>
+
+<h3 id="啟用我們的修改">啟用我們的修改</h3>
+
+<p>The changes we have made to our .bashrc will not take affect until we close our
+terminal session and start a new one, since the .bashrc file is only read at the
+beginning of a session. However, we can force bash to re-read the modified .bashrc
+file with the following command:</p>
+
+<p>我們對於檔案 .bashrc 的修改不會生效，直到我們關閉終端會話，再重新啟動一個新的會話，
+因為 .bashrc 檔案只是在剛開始啟動終端會話時讀取。然而，我們可以強迫 bash 重新讀取修改過的
+ .bashrc 檔案，使用下面的命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ source .bashrc
+</code></pre></div></div>
+
+<p>After doing this, we should be able to see the effect of our changes. Try out one of the
+new aliases:</p>
+
+<p>執行上面命令之後，我們就應該能夠看到所做修改的效果了。試試其中一個新的別名：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ll
+</code></pre></div></div>
+
+<h3 id="總結">總結</h3>
+
+<p>In this chapter we learned an essential skill—editing configuration files with a text
+editor. Moving forward, as we read man pages for commands, take note of the
+environment variables that commands support. There may be a gem or two. In later
+chapters, we will learn about shell functions, a powerful feature that you can also include
+in the bash startup files to add to your arsenal of custom commands.</p>
+
+<p>在這一章中，我們學到了用文字編輯器來編輯配置檔案的基本技巧。隨著學習的繼續，當我們
+瀏覽命令的手冊頁時，可以記錄下該命令所支援的環境變數。這樣或許我們能夠收穫一到兩個特別好用的寶貝命令。
+在隨後的章節裡面，我們將會學習 shell 函式，一個很強大的特性，你可以把它包含在 bash 啟動檔案裡面，
+以此來新增你自訂製的命令寶函式庫。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<p>The INVOCATION section of the bash man page covers the bash startup files
+in gory detail.</p>
+
+<p>bash 手冊頁的 INVOCATION 部分非常詳細地討論了 bash 啟動檔案。</p>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

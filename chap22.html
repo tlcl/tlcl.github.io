@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">格式化輸出</h1><br>
+<p>In this chapter, we continue our look at text related tools, focusing on programs that are
+used to format text output, rather than changing the text itself. These tools are often used
+to prepare text for eventual printing, a subject that we will cover in the next chapter. The
+programs that we will cover in this chapter include:</p>
+
+<p>在這章中，我們繼續著手於文字相關的工具，關注那些用來格式化輸出的程式，而不是改變文字自身。
+這些工具通常讓文字準備就緒列印，這是我們在下一章會提到的。我們在這章中會提到的工具有以下這些：</p>
+
+<ul>
+  <li>
+    <p>nl – Number lines</p>
+  </li>
+  <li>
+    <p>nl – 新增行號</p>
+  </li>
+  <li>
+    <p>fold – Wrap each line to a specified length</p>
+  </li>
+  <li>
+    <p>fold – 限制檔案列寬</p>
+  </li>
+  <li>
+    <p>fmt – A simple text formatter</p>
+  </li>
+  <li>
+    <p>fmt – 一個簡單的文字格式轉換器</p>
+  </li>
+  <li>
+    <p>pr – Prepare text for printing</p>
+  </li>
+  <li>
+    <p>pr – 讓文字為列印做好準備</p>
+  </li>
+  <li>
+    <p>printf – Format and print data</p>
+  </li>
+  <li>
+    <p>printf – 格式化資料並打印出來</p>
+  </li>
+  <li>
+    <p>groff – A document formatting system</p>
+  </li>
+  <li>
+    <p>groff – 一個檔案格式化系統</p>
+  </li>
+</ul>
+
+<h3 id="簡單的格式化工具">簡單的格式化工具</h3>
+
+<p>We’ll look at some of the simple formatting tools first. These are mostly single purpose
+programs, and a bit unsophisticated in what they do, but they can be used for small tasks
+and as parts of pipelines and scripts.</p>
+
+<p>我們將先著眼於一些簡單的格式工具。他們都是功能單一的程式，並且做法有一點單純，
+但是他們能被用於小任務並且作為指令碼和管道的一部分 。</p>
+
+<h4 id="nl---新增行號">nl - 新增行號</h4>
+
+<p>The nl program is a rather arcane tool used to perform a simple task. It numbers lines.
+In its simplest use, it resembles cat -n:</p>
+
+<p>nl 程式是一個相當神祕的工具，用作一個簡單的任務。它新增檔案的行數。在它最簡單的用途中，它相當於 cat -n:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ nl distros.txt | head
+</code></pre></div></div>
+
+<p>Like cat, nl can accept either multiple files as command line arguments, or standard
+input. However, nl has a number of options and supports a primitive form of markup to
+allow more complex kinds of numbering.</p>
+
+<p>像 cat，nl 既能接受多個檔案作為命令列引數，也能接受標準輸入。然而，nl 有一個相當數量的選項並支援一個簡單的標記方式去允許更多複雜的方式的計算。</p>
+
+<p>nl supports a concept called “logical pages” when numbering. This allows nl to reset
+(start over) the numerical sequence when numbering. Using options, it is possible to set
+the starting number to a specific value and, to a limited extent, its format. A logical page
+is further broken down into a header, body, and footer. Within each of these sections, line
+numbering may be reset and/or be assigned a different style. If nl is given multiple files,
+it treats them as a single stream of text. Sections in the text stream are indicated by the
+presence of some rather odd-looking markup added to the text:</p>
+
+<p>nl 在計算檔案行數的時候支援一個叫“邏輯頁面”的概念 。這允許nl在計算的時候去重設（再一次開始）可數的序列。用到那些選項
+的時候，可以設定一個特殊的開始值，並且在某個可限定的程度上還能設定它的格式。一個邏輯頁面被進一步分為 header,body 和 footer
+這樣的元素。在每一個部分中，數行數可以被重設，並且/或被設定成另外一個格式。如果nl同時處理多個檔案，它會把他們當成一個單一的
+文字流。文字流中的部分被一些相當古怪的標記的存在加進了文字：</p>
+
+<table class="multi">
+<caption class="cap">Table 22-1: nl Markup</caption>
+<tr>
+<th class="title">MarkUp</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top">\:\:\: </td>
+<td valign="top">Start of logical page header</td>
+</tr>
+<tr>
+<td valign="top">\:\:</td>
+<td valign="top">Start of logical page body</td>
+</tr>
+<tr>
+<td valign="top">\:</td>
+<td valign="top">Start of logical page footer</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">Table 22-1: nl 標記</caption>
+<tr>
+<th class="title">標記</th>
+<th class="title">含義</th>
+</tr>
+<tr>
+<td valign="top">\:\:\: </td>
+<td valign="top">邏輯頁頁首開始處</td>
+</tr>
+<tr>
+<td valign="top">\:\:</td>
+<td valign="top">邏輯頁主體開始處</td>
+</tr>
+<tr>
+<td valign="top">\:</td>
+<td valign="top">邏輯頁頁尾開始處</td>
+</tr>
+</table>
+
+<p>Each of the above markup elements must appear alone on its own line. After processing
+a markup element, nl deletes it from the text stream.</p>
+
+<p>每一個上述的標記元素肯定在自己的行中獨自出現。在處理完一個標記元素之後，nl 把它從文字流中刪除。</p>
+
+<p>Here are the common options for nl:</p>
+
+<p>這裡有一些常用的 nl 選項：</p>
+
+<table class="multi">
+<caption class="cap">Table 22-2: Common nl Options</caption>
+<tr>
+<th class="title">Option</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-b style</td>
+<td valign="top">Set body numbering to style, where style is one of the following:
+<p>a = number all lines</p>
+<p>t = number only non-blank lines. This is the default.</p>
+<p>n = none</p>
+<p>pregexp = number only lines matching basic regular expression regexp.</p>
+</td>
+</tr>
+<tr>
+<td valign="top">-f style </td>
+<td valign="top">Set footer numbering to style. Default is n (none).</td>
+</tr>
+<tr>
+<td valign="top">-h style </td>
+<td valign="top">Set header numbering to style. Default is n (none).</td>
+</tr>
+<tr>
+<td valign="top">-i number </td>
+<td valign="top">Set page numbering increment to number. Default is one.</td>
+</tr>
+<tr>
+<td valign="top">-n format </td>
+<td valign="top">Sets numbering format to format, where format is:
+<p>ln = left justified, without leading zeros.</p>
+<p>rn = right justified, without leading zeros. This is the default.</p>
+<p>rz = right justified, with leading zeros.</p></td>
+</tr>
+<tr>
+<td valign="top">-p</td>
+<td valign="top">Do not reset page numbering at the beginning of each logical page.</td>
+</tr>
+<tr>
+<td valign="top">-s string </td>
+<td valign="top">Add string to the end of each line number to create a separator.Default is a single tab character.</td>
+</tr>
+<tr>
+<td valign="top">-v number </td>
+<td valign="top">Set first line number of each logical page to number. Default is one.</td>
+</tr>
+<tr>
+<td valign="top">-w width  </td>
+<td valign="top">Set width of the line number field to width. Default is six.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表格 22-2: 常用 nl 選項 </caption>
+<tr>
+<th class="title">選項</th>
+<th class="title">含義</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-b style</td>
+<td valign="top">把 body 按被要求方式數行，可以是以下方式：
+<p>a = 數所有行</p>
+<p>t = 數非空行。這是預設設定。</p>
+<p>n = 無</p>
+<p>pregexp = 只數那些匹配了正則表示式的行</p>
+</td>
+</tr>
+<tr>
+<td valign="top">-f style </td>
+<td valign="top">將 footer 按被要求設定數。預設是無</td>
+</tr>
+<tr>
+<td valign="top">-h style </td>
+<td valign="top">將 header 按被要求設定數。預設是</td>
+</tr>
+<tr>
+<td valign="top">-i number </td>
+<td valign="top">將頁面增加量設定為數字。預設是一。</td>
+</tr>
+<tr>
+<td valign="top">-n format </td>
+<td valign="top">設定數數的格式，格式可以是：
+<p>ln = 左偏，沒有前導零。</p>
+<p>rn = 右偏，沒有前導零。</p>
+<p>rz = 右偏，有前導零。</p></td>
+</tr>
+<tr>
+<td valign="top">-p</td>
+<td valign="top">不要在沒一個邏輯頁面的開始重設頁面數。</td>
+</tr>
+<tr>
+<td valign="top">-s string </td>
+<td valign="top">在沒一個行的末尾加字元作分割符號。預設是單個的 tab。</td>
+</tr>
+<tr>
+<td valign="top">-v number </td>
+<td valign="top">將每一個邏輯頁面的第一行設定成數字。預設是一。</td>
+</tr>
+<tr>
+<td valign="top">-w width  </td>
+<td valign="top">將行數的寬度設定，預設是六。</td>
+</tr>
+</table>
+
+<p>Admittedly, we probably won’t be numbering lines that often, but we can use nl to look
+at how we can combine multiple tools to perform more complex tasks. We will build on
+our work in the previous chapter to produce a Linux distributions report. Since we will
+be using nl, it will be useful to include its header/body/footer markup. To do this, we
+will add it to the sed script from the last chapter. Using our text editor, we will change
+the script as follows and save it as distros-nl.sed:</p>
+
+<p>坦誠的說，我們大概不會那麼頻繁地去數行數，但是我們能用 nl 去檢視我們怎麼將多個工具結合在一個去完成更復雜的任務。
+我們將在之前章節的基礎上做一個 Linux 發行版的報告。因為我們將使用 nl，包含它的 header/body/footer 標記將會十分有用。
+我們將把它加到上一章的 sed 指令碼來做這個。使用我們的文字編輯器，我們將指令碼改成一下並且把它儲存成 distros-nl.sed:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># sed script to produce Linux distributions report
+1 i\
+\\:\\:\\:\
+\
+Linux Distributions Report\
+\
+Name
+Ver. Released\
+----
+---- --------\
+\\:\\:
+s/\([0-9]\{2\}\)\/\([0-9]\{2\}\)\/\([0-9]\{4\}\)$/\3-\1-\2/
+$ i\
+\\:\
+\
+End Of Report
+</code></pre></div></div>
+
+<p>The script now inserts the nl logical page markup and adds a footer at the end of the
+report. Note that we had to double up the backslashes in our markup, because they are
+normally interpreted as an escape character by sed.</p>
+
+<p>這個指令碼現在加入了 nl 的邏輯頁面標記並且在報告的最後加了一個 footer。記得我們在我們的標記中必須兩次使用反斜槓，
+因為他們通常被 sed 解釋成一個轉義字元。</p>
+
+<p>Next, we’ll produce our enhanced report by combining sort, sed, and nl:</p>
+
+<p>下一步，我們將結合 sort, sed, nl 來產生我們改進的報告：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sort -k 1,1 -k 2n distros.txt | sed -f distros-nl.sed | nl
+        Linux Distributions Report
+        Name    Ver.    Released
+        ----    ----    --------
+    1   Fedora  5       2006-03-20
+    2   Fedora  6       2006-10-24
+    3   Fedora  7       2007-05-31
+    4   Fedora  8       2007-11-08
+    5   Fedora  9       2008-05-13
+    6   Fedora  10      2008-11-25
+    7   SUSE    10.1    2006-05-11
+    8   SUSE    10.2    2006-12-07
+    9   SUSE    10.3    2007-10-04
+    10  SUSE    11.0    2008-06-19
+    11  Ubuntu  6.06    2006-06-01
+    12  Ubuntu  6.10    2006-10-26
+    13  Ubuntu  7.04    2007-04-19
+    14  Ubuntu  7.10    2007-10-18
+    15  Ubuntu  8.04    2008-04-24
+        End Of Report
+</code></pre></div></div>
+
+<p>Our report is the result of our pipeline of commands. First, we sort the list by distribution
+name and version (fields one and two), then we process the results with sed, adding the
+report header (including the logical page markup for nl) and footer. Finally, we process
+the result with nl, which, by default, only numbers the lines of the text stream that
+belong to the body section of the logical page.</p>
+
+<p>我們的報告是一串命令的結果，首先，我們給名單按發行版本和版本號（表格1和2處）進行排序，然後我們用 sed 生產結果，
+增加了 header（包括了為 nl 增加的邏輯頁面標記）和 footer。最後，我們按預設用 nl 生成了結果，只數了屬於邏輯頁面的 body 部分的
+文字流的行數。</p>
+
+<p>We can repeat the command and experiment with different options for nl. Some
+interesting ones are:</p>
+
+<p>我們能夠重複命令並且實驗不同的 nl 選項。一些有趣的方式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nl -n rz
+</code></pre></div></div>
+
+<p>and</p>
+
+<p>和</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nl -w 3 -s ' '
+</code></pre></div></div>
+
+<h4 id="fold---限制檔案行寬">fold - 限制檔案行寬</h4>
+
+<p>Folding is the process of breaking lines of text at a specified width. Like our other
+commands, fold accepts either one or more text files or standard input. If we send
+fold a simple stream of text, we can see how it works:</p>
+
+<p>摺疊是將文字的行限制到特定的寬的過程。像我們的其他命令，fold 接受一個或多個檔案及標準輸入。如果我們將
+一個簡單的文字流 fold，我們可以看到它工作的方式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "The quick brown fox jumped over the lazy dog." | fold -w 12
+The quick br
+own fox jump
+ed over the
+lazy dog.
+</code></pre></div></div>
+
+<p>Here we see fold in action. The text sent by the echo command is broken into
+segments specified by the -w option. In this example, we specify a line width of twelve
+characters. If no width is specified, the default is eighty characters. Notice how the lines
+are broken regardless of word boundaries. The addition of the -s option will cause
+fold to break the line at the last available space before the line width is reached:</p>
+
+<p>這裡我們看到了 fold 的行為。這個用 echo 命令傳送的文字用 -w 選項分解成塊。在這個例子中，我們設定了行寬為12個字元。
+如果沒有字元設定，預設是80。注意到文字行不會因為單詞邊界而不會被分解。增加的 -s 選項將讓 fold 分解到最後可用的空白
+字元，即會考慮單詞邊界。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "The quick brown fox jumped over the lazy dog."
+| fold -w 12 -s
+The quick
+brown fox
+jumped over
+the lazy
+dog.
+</code></pre></div></div>
+
+<h4 id="fmt---一個簡單的文字格式器">fmt - 一個簡單的文字格式器</h4>
+
+<p>The fmt program also folds text, plus a lot more. It accepts either files or standard input
+and performs paragraph formatting on the text stream. Basically, it fills and joins lines in
+text while preserving blank lines and indentation.</p>
+
+<p>fmt 程式同樣摺疊文字，外加很多功能。它接受文字或標準輸入並且在文字流上呈現照片轉換。它主要是填充和連線文字行，同時保留空白符和縮排。</p>
+
+<p>To demonstrate, we’ll need some text. Let's lift some from the fmt info page:</p>
+
+<p>為了解釋，我們將需要一些文字。讓我們抄一些 fmt 主頁上的東西吧：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>‘fmt’ reads from the specified FILE arguments (or standard input if
+none are given), and writes to standard output.
+
+   By default, blank lines, spaces between words, and indentation are
+preserved in the output; successive input lines with different
+indentation are not joined; tabs are expanded on input and introduced on
+output.
+
+   ‘fmt’ prefers breaking lines at the end of a sentence, and tries to
+avoid line breaks after the first word of a sentence or before the last
+word of a sentence.  A "sentence break" is defined as either the end of
+a paragraph or a word ending in any of ‘.?!’, followed by two spaces or
+end of line, ignoring any intervening parentheses or quotes.  Like TeX,
+‘fmt’ reads entire “paragraphs” before choosing line breaks; the
+algorithm is a variant of that given by Donald E. Knuth and Michael F.
+Plass in “Breaking Paragraphs Into Lines”, ‘Software—Practice &amp;
+Experience’ 11, 11 (November 1981), 1119–1184.
+</code></pre></div></div>
+
+<p>We’ll copy this text into our text editor and save the file as fmt-info.txt. Now, Let's
+say we wanted to reformat this text to fit a fifty character wide column. We could do this
+by processing the file with fmt and the -w option:</p>
+
+<p>我們將把這段文字複製進我們的文字編輯器並且儲存檔名為 fmt-info.txt。現在，讓我們重新格式這個文字並且讓它成為一個50
+個字元寬的專案。我們能用 -w 選項對檔案進行處理：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ fmt -w 50 fmt-info.txt | head
+'fmt' reads from the specified FILE arguments
+(or standard input if
+none are given), and writes to standard output.
+By default, blank lines, spaces between words,
+and indentation are
+preserved in the output; successive input lines
+with different indentation are not joined; tabs
+are expanded on input and introduced on output.
+</code></pre></div></div>
+
+<p>Well, that’s an awkward result. Perhaps we should actually read this text, since it explains what’s going on:</p>
+
+<p>好，這真是一個奇怪的結果。大概我們應該認真的閱讀這段文字，因為它恰好解釋了發生了什麼：</p>
+
+<p>“By default, blank lines, spaces between words, and indentation are preserved in the
+output; successive input lines with different indentation are not joined; tabs are
+expanded on input and introduced on output.”</p>
+
+<p>預設情況下，輸出會保留空行，單詞之間的空格，和縮排；持續輸入的具有不同縮排的文字行不會連線在一起；tab 字元在輸入時會展開，輸出時復原 。</p>
+
+<p>So, fmt is preserving the indentation of the first line. Fortunately, fmt provides an
+option to correct this:</p>
+
+<p>所以，fmt 會保留第一行的縮排。幸運的是，fmt 提供了一個選項來更正這種行為：</p>
+
+<p>Much better. By adding the -c option, we now have the desired result.</p>
+
+<p>好多了。透過新增 -c 選項，現在我們得到了所期望的結果。</p>
+
+<p>fmt has some interesting options:</p>
+
+<p>fmt 有一些有意思的選項：</p>
+
+<p>The -p option is particularly interesting. With it, we can format selected portions of a
+file, provided that the lines to be formatted all begin with the same sequence of
+characters. Many programming languages use the pound sign (#) to indicate the
+beginning of a comment and thus can be formatted using this option. Let's create a file
+that simulates a program that uses comments:</p>
+
+<p>這個 -p 選項尤為有趣。透過它，我們可以格式檔案選中的部分，透過在開頭使用一樣的符號。
+很多程式語言使用錨標記（#）去提醒註釋的開始，而且它可以透過這個選項來被格式。讓我們建立一個有用到註釋的程式。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat &gt; fmt-code.txt
+# This file contains code with comments.
+
+# This line is a comment.
+# Followed by another comment line.
+# And another.
+
+This, on the other hand, is a line of code.
+And another line of code.
+And another.
+</code></pre></div></div>
+
+<p>Our sample file contains comments which begin the string “# “ (a # followed by a space)
+and lines of “code” which do not. Now, using fmt, we can format the comments and
+leave the code untouched:</p>
+
+<p>我們的示例檔案包含了用「#」開始的註釋（一個 # 後跟著一個空白符）和程式碼。現在，使用 fmt，我們能格式註釋並且
+不讓程式碼被觸及。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ fmt -w 50 -p '# ' fmt-code.txt
+# This file contains code with comments.
+
+# This line is a comment. Followed by another
+# comment line. And another.
+
+This, on the other hand, is a line of code.
+And another line of code.
+And another.
+</code></pre></div></div>
+
+<p>Notice that the adjoining comment lines are joined, while the blank lines and the lines
+that do not begin with the specified prefix are preserved.</p>
+
+<p>注意相鄰的註釋行被合併了，空行和非註釋行被保留了。</p>
+
+<h4 id="pr--格式化列印文字">pr – 格式化列印文字</h4>
+
+<p>The pr program is used to paginate text. When printing text, it is often desirable to separate
+the pages of output with several lines of whitespace, to provide a top and bottom
+margin for each page. Further, this whitespace can be used to insert a header and footer
+on each page.</p>
+
+<p>pr 程式用來把文字分頁。當列印文字的時候，經常希望用幾個空行在輸出的頁面的頂部或底部新增空白。此外，這些空行能夠用來插入到每個頁面的頁首或頁尾。</p>
+
+<p>We’ll demonstrate pr by formatting our distros.txt file into a series of very short
+pages (only the first two pages are shown):</p>
+
+<p>下面我們將示範 pr 的用法。我們準備將 distros.txt 這個檔案分成若干張很短的頁面（僅展示前兩張頁面）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ pr -l 15 -w 65 distros.txt
+2008-12-11 18:27        distros.txt         Page 1
+
+
+SUSE        10.2     12/07/2006
+Fedora      10       11/25/2008
+SUSE        11.0     06/19/2008
+Ubuntu      8.04     04/24/2008
+Fedora      8        11/08/2007
+
+
+2008-12-11 18:27        distros.txt         Page 2
+
+
+SUSE        10.3     10/04/2007
+Ubuntu      6.10     10/26/2006
+Fedora      7        05/31/2007
+Ubuntu      7.10     10/18/2007
+Ubuntu      7.04     04/19/2007
+</code></pre></div></div>
+
+<p>In this example, we employ the -l option (for page length) and the -w option (page
+width) to define a “page” that is 65 columns wide and 15 lines long. pr paginates the
+contents of the distros.txt file, separates each page with several lines of whitespace
+and creates a default header containing the file modification time, filename, and page
+number. The pr program provides many options to control page layout. We’ll take a look
+at more of them in the next chapter.</p>
+
+<p>在上面的例子中，我們用 -l 選項（頁長）和 -w 選項（頁寬）定義了寬65列，長15行的一個“頁面”。 pr 為 distros.txt 中的內容編訂頁碼，用空行分開各頁面，生成了包含檔案修改時間、檔名、頁碼的預設頁首。 pr 指令擁有很多調整頁面佈局的選項，我們將在下一章中進一步探討。</p>
+
+<h4 id="printf--format-and-print-data">printf – Format And Print Data</h4>
+
+<p>Unlike the other commands in this chapter, the printf command is not used for pipelines
+(it does not accept standard input) nor does it find frequent application directly on
+the command line (it’s mostly used in scripts). So why is it important? Because it is so
+widely used.</p>
+
+<p>與本章中的其他指令不同， printf 並不用於流水線執行（不接受標準輸入）。在命令列中，它也鮮有運用（它通常被用於自動執行指令中）。所以為什麼它如此重要？因為它被廣泛使用。</p>
+
+<p>printf (from the phrase “print formatted”) was originally developed for the C programming
+language and has been implemented in many programming languages including
+the shell. In fact, in bash, printf is a builtin.
+printf works like this:</p>
+
+<p>printf (來自短語“格式化列印” “print formatted”) 最初為 C 語言設計，後來在包括 shell 的多種語言中運用。事實上，在 bash 中, printf 是內建的。
+printf 這樣工作:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>printf “format” arguments
+</code></pre></div></div>
+
+<p>The command is given a string containing a format description which is then applied to a
+list of arguments. The formatted result is sent to standard output. Here is a trivial example:</p>
+
+<p>首先，傳送包含有格式化描述的字串的指令，接著，這些描述被應用於引數列表上。格式化的結果在標準輸出中顯示。下面是一個小例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ printf "I formatted the string: %s\n" foo
+I formatted the string: foo
+</code></pre></div></div>
+
+<p>The format string may contain literal text (like “I formatted the string:”), escape sequences
+(such as \n, a newline character), and sequences beginning with the % character,
+which are called conversion specifications. In the example above, the conversion specification
+%s is used to format the string “foo” and place it in the command’s output. Here it
+is again:</p>
+
+<p>格式字串可能包含文字文字（如“我格式化了這個字串：” “I formatted the string:”），轉義序列（例如\n，換行符）和以％字元開頭的序列，這被稱為轉換規範。在上面的例子中，轉換規範 ％s 用於格式化字串 “foo” 並將其輸出在命令列中。我們再來看一遍：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ printf "I formatted '%s' as a string.\n" foo
+I formatted 'foo' as a string.
+</code></pre></div></div>
+
+<p>As we can see, the %s conversion specification is replaced by the string “foo” in the command’s
+output. The s conversion is used to format string data. There are other specifiers
+for other kinds of data. This table lists the commonly used data types:</p>
+
+<p>我們可以看到，在命令列輸出中，轉換規範 ％s 被字串 “foo” 所替代。s 轉換用於格式化字串資料。還有其他轉換符用於其他型別的資料。此表列出了常用的資料型別：</p>
+
+<table class="multi">
+<caption class="cap">Table 22-5: printf Conversion Specification Components </caption>
+<tr>
+<th class="title">Component</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top">d</td>
+<td valign="top">Format a number as a signed decimal integer.</td>
+</tr>
+<tr>
+<td valign="top">f</td>
+<td valign="top">Format and output a floating point number.</td>
+</tr>
+<tr>
+<td valign="top">o</td>
+<td valign="top">Format an integer as an octal number.</td>
+</tr>
+<tr>
+<td valign="top">s</td>
+<td valign="top">Format a string.</td>
+</tr>
+<tr>
+<td valign="top">x</td>
+<td valign="top">Format an integer as a hexadecimal number using lowercase a-f where
+needed.</td>
+</tr>
+<tr>
+<td valign="top">X</td>
+<td valign="top">Same as x but use uppercase letters.</td>
+</tr>
+<tr>
+<td valign="top">%</td>
+<td valign="top">Print a literal % symbol (i.e., specify “%%”)</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 22-5: printf 轉換規範元件 </caption>
+<tr>
+<th class="title">元件</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top">d</td>
+<td valign="top">將數字格式化為帶符號的十進位制整數</td>
+</tr>
+<tr>
+<td valign="top">f</td>
+<td valign="top">格式化並輸出浮點數</td>
+</tr>
+<tr>
+<td valign="top">o</td>
+<td valign="top">將整數格式化為八進位制數</td>
+</tr>
+<tr>
+<td valign="top">s</td>
+<td valign="top">將字串格式化</td>
+</tr>
+<tr>
+<td valign="top">x</td>
+<td valign="top">將整數格式化為十六進位制數，必要時使用小寫a-f</td>
+</tr>
+<tr>
+<td valign="top">X</td>
+<td valign="top">與 x 相同，但變為大寫</td>
+</tr>
+<tr>
+<td valign="top">%</td>
+<td valign="top">列印 % 符號 (比如，指定 “%%”)</td>
+</tr>
+</table>
+
+<p>We’ll demonstrate the effect each of the conversion specifiers on the string “380”:</p>
+
+<p>下面我們以字串「380」為例，展示每種轉換符的效果。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ printf "%d, %f, %o, %s, %x, %X\n" 380 380 380 380 380 380
+380, 380.000000, 574, 380, 17c, 17C
+</code></pre></div></div>
+
+<p>Since we specified six conversion specifiers, we must also supply six arguments for
+printf to process. The six results show the effect of each specifier.
+Several optional components may be added to the conversion specifier to adjust its output.
+A complete conversion specification may consist of the following:</p>
+
+<p>由於我們指定了六個轉換符，我們還必須為 printf 提供六個引數進行處理。下面六個結果展示了每個轉換符的效果。
+可將可選元件新增到轉換符以調整輸出。
+完整的轉換規範包含以下內容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>%[flags][width][.precision]conversion_specification
+</code></pre></div></div>
+
+<p>Multiple optional components, when used, must appear in the order specified above to be
+properly interpreted. Here is a description of each:</p>
+
+<p>使用多個可選元件時，必須按照上面指定的順序，以便準確編譯。以下是每個可選元件的描述：</p>
+
+<table class="multi">
+<caption class="cap">Table 22-5: printf Conversion Specification Components</caption>
+<tr>
+<th class="title">Component</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="25%">flags</td>
+<td valign="top">There are five different flags:
+<p># – Use the “alternate format” for output. This varies by data
+type. For o (octal number) conversion, the output is prefixed with
+0. For x and X (hexadecimal number) conversions, the output is
+prefixed with 0x or 0X respectively.</p>
+<p>0–(zero) Pad the output with zeros. This means that the field will
+be filled with leading zeros, as in “000380”.</p>
+<p>- – (dash) Left-align the output. By default, printf right-aligns
+output.</p>
+<p>‘ ’ – (space) Produce a leading space for positive numbers.</p>
+<p>+ – (plus sign) Sign positive numbers. By default, printf only signs negative numbers.</p>
+</td>
+</tr>
+<tr>
+<td valign="top">width</td>
+<td valign="top">A number specifying the minimum field width.</td>
+</tr>
+<tr>
+<td valign="top">.precision</td>
+<td valign="top">For floating point numbers, specify the number of digits of
+precision to be output after the decimal point. For string conversion, precision specifies the number of characters to output.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 22-5: printf 轉換規範元件</caption>
+<tr>
+<th class="title">元件</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top" width="25%">flags</td>
+<td valign="top">有5種不同的標誌:
+<p># – 使用“備用格式”輸出。這取決於資料型別。對於o（八進位制數）轉換，輸出以0為字首.對於x和X（十六進位制數）轉換，輸出分別以0x或0X為字首。</p>
+<p>0–(零) 用零填充輸出。這意味著該欄位將填充前導零，比如“000380”。</p>
+<p>- – (破折號) 左對齊輸出。預設情況下，printf右對齊輸出。</p>
+<p>‘ ’ – (空格) 在正數前空一格。</p>
+<p>+ – (加號) 在正數前新增加號。預設情況下，printf 只在負數前新增符號。</p>
+</td>
+</tr>
+<tr>
+<td valign="top">width</td>
+<td valign="top">指定最小欄位寬度的數。</td>
+</tr>
+<tr>
+<td valign="top">.precision</td>
+<td valign="top">對於浮點數，指定小數點後的精度位數。對於字串轉換，指定要輸出的字元數。</td>
+</tr>
+</table>
+
+<p>Here are some examples of different formats in action:</p>
+
+<p>以下是不同格式的一些示例：</p>
+
+<table class="multi">
+<caption class="cap">Table 22-6: print Conversion Specification Examples</caption>
+<tr>
+<th class="title">Argument</th>
+<th class="title">Format</th>
+<th class="title">Result</th>
+<th class="title">Notes</th>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%d"</td>
+<td valign="top">380</td>
+<td valign="top">Simple formatting of an integer.</td>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%#x"</td>
+<td valign="top">0x17c</td>
+<td valign="top">Integer formatted as a hexadecimal number using the “alternate format” flag.</td>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%05d"</td>
+<td valign="top">00380</td>
+<td valign="top">Integer formatted with leading zeros (padding) and a minimum field width of five characters.</td>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%05.5f"</td>
+<td valign="top">380.00000</td>
+<td valign="top">Number formatted as a floating point number with padding and five decimal places of precision. Since the specified minimum field width (5) is less than the actual width of the formatted number, the padding has no effect.</td>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%010.5f"</td>
+<td valign="top">0380.00000</td>
+<td valign="top">By increasing the minimum field width to 10 the padding is now visible.</td>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%+d"</td>
+<td valign="top">+380</td>
+<td valign="top">The + flag signs a positive number.</td>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%-d"</td>
+<td valign="top">380</td>
+<td valign="top">The - flag left aligns the formatting.</td>
+</tr>
+<tr>
+<td valign="top">abcdefghijk</td>
+<td valign="top">"%5s"</td>
+<td valign="top">abcedfghijk</td>
+<td valign="top">A string formatted with a minimum field width.</td>
+</tr>
+<tr>
+<td valign="top">abcdefghijk</td>
+<td valign="top">"%d"</td>
+<td valign="top">abcde</td>
+<td valign="top">By applying precision to a string, it is truncated.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 22-6: print 轉換規範示例</caption>
+<tr>
+<th class="title">自變數</th>
+<th class="title">格式</th>
+<th class="title">結果</th>
+<th class="title">備註</th>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%d"</td>
+<td valign="top">380</td>
+<td valign="top">簡單格式化整數。</td>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%#x"</td>
+<td valign="top">0x17c</td>
+<td valign="top">使用“替代格式”標誌將整數格式化為十六進位制數。</td>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%05d"</td>
+<td valign="top">00380</td>
+<td valign="top">用前導零（padding）格式化整數，且最小欄位寬度為五個字元。</td>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%05.5f"</td>
+<td valign="top">380.00000</td>
+<td valign="top">使用前導零和五位小數位精度格式化數字為浮點數。由於指定的最小欄位寬度（5）小於格式化後數字的實際寬度，因此前導零這一命令實際上沒有起到作用。</td>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%010.5f"</td>
+<td valign="top">0380.00000</td>
+<td valign="top">將最小欄位寬度增加到10，前導零現在變得可見。</td>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%+d"</td>
+<td valign="top">+380</td>
+<td valign="top">使用+標誌標記正數。</td>
+</tr>
+<tr>
+<td valign="top">380</td>
+<td valign="top">"%-d"</td>
+<td valign="top">380</td>
+<td valign="top">使用-標誌左對齊</td>
+</tr>
+<tr>
+<td valign="top">abcdefghijk</td>
+<td valign="top">"%5s"</td>
+<td valign="top">abcedfghijk</td>
+<td valign="top">用最小欄位寬度格式化字串。</td>
+</tr>
+<tr>
+<td valign="top">abcdefghijk</td>
+<td valign="top">"%d"</td>
+<td valign="top">abcde</td>
+<td valign="top">對字串應用精度，它被從中截斷。</td>
+</tr>
+</table>
+
+<p>Again, printf is used mostly in scripts where it is employed to format tabular data,
+rather than on the command line directly. But we can still show how it can be used to
+solve various formatting problems. First, Let's output some fields separated by tab characters:</p>
+
+<p>再次強調，printf 主要用在指令碼中，用於格式化表格資料，而不是直接用於命令列。但是我們仍然可以展示如何使用它來解決各種格式化問題。
+首先，我們輸出一些由製表符分隔的欄位：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ printf "%s\t%s\t%s\n" str1 str2 str3
+str1 str2 str3
+</code></pre></div></div>
+
+<p>By inserting \t (the escape sequence for a tab), we achieve the desired effect. Next,
+some numbers with neat formatting:</p>
+
+<p>透過插入\t（tab 的轉義序列），我們實現了所需的效果。接下來，我們讓一些數字的格式變得整齊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ printf "Line: %05d %15.3f Result: %+15d\n" 1071
+3.14156295 32589
+Line: 01071 3.142 Result: +32589
+</code></pre></div></div>
+
+<p>This shows the effect of minimum field width on the spacing of the fields. Or how about
+formatting a tiny web page:</p>
+
+<p>這顯示了最小字元寬度對字元間距的影響。或者，讓我們看看如何格式化一個小網頁：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ printf "<span class="nt">&lt;html&gt;</span>\n\t<span class="nt">&lt;head&gt;</span>\n\t\t<span class="nt">&lt;title&gt;</span>%s<span class="nt">&lt;/title&gt;</span>\n
+\t<span class="nt">&lt;/head&gt;</span>\n\t<span class="nt">&lt;body&gt;</span>\n\t\t<span class="nt">&lt;p&gt;</span>%s<span class="nt">&lt;/p&gt;</span>\n\t<span class="nt">&lt;/body&gt;</span>\n<span class="nt">&lt;/html&gt;</span>\n" "Page Tit
+le" "Page Content"
+<span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+<span class="nt">&lt;title&gt;</span>Page Title<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+<span class="nt">&lt;p&gt;</span>Page Content<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<h3 id="document-formatting-systems">Document Formatting Systems</h3>
+<h3 id="檔案格式化系統">檔案格式化系統</h3>
+<p>So far, we have examined the simple text-formatting tools. These are good for small, simple tasks, but what about larger jobs? One of the reasons that Unix became a popular operating
+system among technical and scientific users (aside from providing a powerful
+multitasking, multiuser environment for all kinds of software development) is that it offered
+tools that could be used to produce many types of documents, particularly scientific
+and academic publications. In fact, as the GNU documentation describes, document
+preparation was instrumental to the development of Unix:</p>
+
+<p>到目前為止，我們已經查看了簡單的文字格式化工具。這些對於小而簡單的任務是有好處的，但更大的工作呢？
+Unix在技術和科學使用者中流行的原因之一（除了為各種軟體開發提供強大的多工多使用者環境之外），
+是它提供了可用於產生許多型別文件的工具，特別是科學和學術出版物。事實上，正如GNU文件所描述的那樣，文件準備對於Unix的開發起到了促進作用：</p>
+
+<p>The first version of UNIX was developed on a PDP-7 which was sitting around Bell
+Labs. In 1971 the developers wanted to get a PDP-11 for further work on the
+operating system. In order to justify the cost for this system, they proposed that they
+would implement a document formatting system for the AT&amp;T patents division. This
+first formatting program was a reimplementation of McIllroy’s `roff’, written by J.
+F. Ossanna.</p>
+
+<p>UNIX 的第一個版本是在位於貝爾實驗室的 PDP-7 上開發的。在1971年，開發人員想要獲得 PDP-11 進一步開發作業系統。
+為了證明這個系統的成本是合理的，他們建議為 AT＆T 專利部門建立檔案格式化系統。
+第一個格式化程式是由 J. F. Ossanna 撰寫的，重新實現了 McIllroy 的 “roff” 的。</p>
+
+<p>Two main families of document formatters dominate the field: those descended from the
+original roff program, including nroff and troff, and those based on Donald
+Knuth’s TEX (pronounced “tek”) typesetting system. And yes, the dropped “E” in the
+middle is part of its name.</p>
+
+<p>兩個檔案格式化程式的主要家族佔據了該領域：繼承自原始 roff 程式的，包括 nroff 和 troff；以及
+基於 Donald Knuth 的 TEX（發音“tek”）排版系統。是的，中間那個掉下來的“E”是其名稱的一部分。</p>
+
+<p>The name “roff” is derived from the term “run off” as in, “I’ll run off a copy for you.”
+The nroff program is used to format documents for output to devices that use
+monospaced fonts, such as character terminals and typewriter-style printers. At the time
+of its introduction, this included nearly all printing devices attached to computers. The
+later troff program formats documents for output on typesetters, devices used to produce
+“camera-ready” type for commercial printing. Most computer printers today are able
+to simulate the output of typesetters. The roff family also includes some other programs
+that are used to prepare portions of documents. These include eqn (for mathematical
+equations) and tbl (for tables).</p>
+
+<p>名稱 “roff” 源於術語 “run off” ，如“I’ll run off a copy for you.”（“我將為您執行副本”）。
+nroff 程式用於格式化文件以輸出到使用等寬字型的裝置，如字元終端和打字機式印表機。
+在它剛面世時，這幾乎包括了所有連線在計算機上的列印裝置。
+稍後的 troff 程式格式化用於排版機輸出的文件，也就是“camera-ready”（可供拍攝成印刷版的）型別的用於商業列印的裝置。
+今天的大多數電腦印表機都能夠模擬排版機的輸出。roff 家族還包括一些用於準備文件部分的程式。這些包括 eqn（用於數學方程）和 tbl（用於表）。</p>
+
+<p>The TEX system (in stable form) first appeared in 1989 and has, to some degree, displaced
+troff as the tool of choice for typesetter output. We won’t be covering TEX
+here, due both to its complexity (there are entire books about it) and to the fact that it is
+not installed by default on most modern Linux systems.</p>
+
+<p>TEX 系統（穩定形式）首先在1989年出現，並在某種程度上取代了 troff 作為排版機輸出的首選工具。
+由於其複雜性（整本書都講不完）以及在大多數現代 Linux 系統上預設情況下不安裝的事實，我們不會在此討論 TEX。</p>
+
+<hr />
+
+<p>Tip: For those interested in installing TEX, check out the texlive package
+which can be found in most distribution repositories, and the LyX graphical content
+editor.</p>
+
+<p>提示：對於有興趣安裝 TEX 的使用者，請檢視大多數分發版本中可以找到的 texlive 軟體包，以及 LyX 圖形內容編輯器。</p>
+
+<hr />
+
+<h4 id="groff">groff</h4>
+
+<p>groff is a suite of programs containing the GNU implementation of troff. It also includes
+a script that is used to emulate nroff and the rest of the roff family as well.</p>
+
+<p>groff 是一套用GNU實現 troff 的程式。它還包括一個指令碼，用來模仿 nroff 和其他 roff 家族。</p>
+
+<p>While roff and its descendants are used to make formatted documents, they do it in a
+way that is rather foreign to modern users. Most documents today are produced using
+word processors that are able to perform both the composition and layout of a document
+in a single step. Prior to the advent of the graphical word processor, documents were often
+produced in a two-step process involving the use of a text editor to perform composition,
+and a processor, such as troff, to apply the formatting. Instructions for the formatting
+program were embedded into the composed text through the use of a markup language.
+The modern analog for such a process is the web page, which is composed using a
+text editor of some kind and then rendered by a web browser using HTML as the markup
+language to describe the final page layout.</p>
+
+<p>roff 及其後繼製作格式化文件的方式對現代使用者來說是相當陌生的。今天的大部分檔案都是由能夠一次性完成排字和佈局的文書處理器產生的。
+在圖形文書處理器出現之前，需要兩步來產生文件。首先用文字編輯器排字，接著用諸如 troff 之類別的處理器來格式化。
+格式化程式的說明透過標記語言的形式插入到已排好字的文本當中。
+類似這種過程的現代例子是網頁。它首先由某種文字編輯器排好字，然後由使用 HTML 作為標記語言的 Web 瀏覽器渲染出最終的頁面佈局。</p>
+
+<p>We’re not going to cover groff in its entirety, as many elements of its markup language
+deal with rather arcane details of typography. Instead we will concentrate on one of its
+macro packages that remains in wide use. These macro packages condense many of its
+low-level commands into a smaller set of high-level commands that make using groff
+much easier.</p>
+
+<p>我們不會講解 groff 的全部內容，因為它的標記語言被用來處理少有人懂的排字細節。我們將專注於其中的一個仍然廣泛使用的巨集包。這些巨集包將
+低階命令轉換少量高階命令，從而簡化 groff 的使用。</p>
+
+<p>For a moment, Let's consider the humble man page. It lives in the /usr/share/man
+directory as a gzip compressed text file. If we were to examine its uncompressed contents,
+we would see the following (the man page for ls in section 1 is shown):</p>
+
+<p>現在，我們來看一下這個簡單的手冊頁。它位於/usr/share/man目錄，是一個gzip壓縮文字檔案。解壓後，我們將看到以下內容（顯示了 ls 手冊的第1節）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ zcat /usr/share/man/man1/ls.1.gz | head
+.\" DO NOT MODIFY THIS FILE! It was generated by help2man 1.35.
+.TH LS "1" "April 2008" "GNU coreutils 6.10" "User Commands"
+.SH NAME
+ls \- list directory contents
+.SH SYNOPSIS
+.B ls
+[\fIOPTION\fR]... [\fIFILE\fR]...
+.SH DESCRIPTION
+.\" Add any additional description here
+.PP
+</code></pre></div></div>
+
+<p>Compared to the man page in its normal presentation, we can begin to see a correlation
+between the markup language and its results:</p>
+
+<p>與預設手冊頁進行比較，我們可以開始看到標記語言與其結果之間的相關性：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ man ls | head
+LS(1) User Commands LS(1)
+NAME
+ls - list directory contents
+
+SYNOPSIS
+ls [OPTION]... [FILE]...
+</code></pre></div></div>
+
+<p>The reason this is of interest is that man pages are rendered by groff, using the mandoc
+macro package. In fact, we can simulate the man command with the following pipeline:</p>
+
+<p>令人感興趣的原因是手冊頁由 groff 渲染，使用 mandoc 巨集包。事實上，我們可以用以下流水線來模擬 man 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ zcat /usr/share/man/man1/ls.1.gz | groff -mandoc -T
+ascii | head
+LS(1) User Commands LS(1)
+NAME
+ls - list directory contents
+SYNOPSIS
+ls [OPTION]... [FILE]...
+</code></pre></div></div>
+
+<p>Here we use the groff program with the options set to specify the mandoc macro
+package and the output driver for ASCII. groff can produce output in several formats.
+If no format is specified, PostScript is output by default:</p>
+
+<p>在這裡，我們使用 groff 程式和選項集來指定 mandoc 巨集程式包和 ASCII 的輸出驅動程式。groff 可以產生多種格式的輸出。
+如果沒有指定格式，預設情況下會輸出 PostScript格式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ zcat /usr/share/man/man1/ls.1.gz | groff -mandoc |
+head
+%!PS-Adobe-3.0
+%%Creator: groff version 1.18.1
+%%CreationDate: Thu Feb 5 13:44:37 2009
+%%DocumentNeededResources: font Times-Roman
+%%+ font Times-Bold
+%%+ font Times-Italic
+%%DocumentSuppliedResources: procset grops 1.18 1
+%%Pages: 4
+%%PageOrder: Ascend
+%%Orientation: Portrait
+</code></pre></div></div>
+
+<p>We briefly mentioned PostScript in the previous chapter, and will again in the next chapter.
+PostScript is a page description language that is used to describe the contents of a
+printed page to a typesetter-like device. If we take the output of our command and store it
+to a file (assuming that we are using a graphical desktop with a Desktop directory):</p>
+
+<p>我們在前一章中簡要介紹了PostScript，並將在下一章中再次介紹。
+PostScript 是一種頁面描述語言，用於將列印頁面的內容描述給類似排字機的裝置。
+如果我們輸出命令並將其儲存到一個檔案中（假設我們正在使用帶有 Desktop 目錄的圖形桌面）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ zcat /usr/share/man/man1/ls.1.gz | groff -mandoc &gt;
+~/Desktop/foo.ps
+</code></pre></div></div>
+
+<p>An icon for the output file should appear on the desktop. By double-clicking the icon, a
+page viewer should start up and reveal the file in its rendered form:</p>
+
+<p>輸出檔案的圖示應該出現在桌面上。雙擊圖示，頁面檢視器將啟動，並顯示渲染後的檔案：</p>
+
+<p>Figure 4: Viewing PostScript Output With A Page Viewer In GNOME</p>
+
+<p>圖4：在GNOME中使用頁面檢視器檢視 PostScript 輸出</p>
+
+<p>What we see is a nicely typeset man page for ls! In fact, it’s possible to convert the Post-
+Script file into a PDF (Portable Document Format) file with this command:</p>
+
+<p>我們看到的是一個排版很好的 ls 手冊頁面！事實上，可以使用以下命令將 PostScript 輸出的檔案轉換為PDF（行動式文件格式）檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ps2pdf ~/Desktop/foo.ps ~/Desktop/ls.pdf
+</code></pre></div></div>
+
+<p>The ps2pdf program is part of the ghostscript package, which is installed on most
+Linux systems that support printing.</p>
+
+<p>ps2pdf 程式是 ghostscript 包的一部分，它安裝在大多數支援列印的 Linux 系統上。</p>
+
+<hr />
+
+<p>Tip: Linux systems often include many command line programs for file format
+conversion. They are often named using the convention of format2format. Try using the command
+提示：Linux 系統通常包含許多用於檔案格式轉換的命令列程式。它們通常以 format2format 命名。嘗試使用該命令</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ls /usr/bin/*[[:alpha:]]2[[:alpha:]]*
+</code></pre></div></div>
+
+<p>to identify them. Also try searching for programs named formattoformat.</p>
+
+<p>去識別它們。同樣也可以嘗試搜尋 formattoformat 程式。</p>
+
+<hr />
+
+<p>For our last exercise with groff, we will revisit our old friend distros.txt once
+more. This time, we will use the tbl program which is used to format tables to typeset
+our list of Linux distributions. To do this, we are going to use our earlier sed script to
+add markup to a text stream that we will feed to groff.</p>
+
+<p>groff 的最後一個練習，將再次訪問我們的老朋友 distros.txt。這一次，我們將使用能夠將表格格式化的 tbl 程式，來輸出
+Linux 發行版本列表。為此，我們將使用早期的 sed 指令碼新增一個文字流的標記，提供給 groff。</p>
+
+<p>First, we need to modify our sed script to add the necessary requests that tbl requires.
+Using a text editor, we will change distros.sed to the following:</p>
+
+<p>首先，我們需要修改我們的 sed 指令碼來新增 tbl 所需的請求。
+使用文字編輯器，我們將將 distros.sed 更改為以下內容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># sed script to produce Linux distributions report
+1 i\
+.TS\
+center box;\
+cb s s\
+cb cb cb\
+l n c.\
+Linux Distributions Report\
+=\
+Name Version Released\
+_
+s/\([0-9]\{2\}\)\/\([0-9]\{2\}\)\/\([0-9]\{4\}\)$/\3-\1-\2/
+$ a\
+.TE
+</code></pre></div></div>
+
+<p>Note that for the script to work properly, care must been taken to see that the words
+“Name Version Released” are separated by tabs, not spaces. We’ll save the resulting file
+as distros-tbl.sed. tbl uses the .TS and .TE requests to start and end the table.
+The rows following the .TS request define global properties of the table which, for our
+example, are centered horizontally on the page and surrounded by a box. The remaining
+lines of the definition describe the layout of each table row. Now, if we run our reportgenerating
+pipeline again with the new sed script, we’ll get the following :</p>
+
+<p>請注意，為使指令碼正常工作，必須注意單詞“Name Version Released”由 tab 分隔，而不是空格。
+我們將產生的檔案儲存為 distros-tbl.sed. tbl 使用 .TS 和 .TE 請求來啟動和結束表格。
+.TS 請求後面的行定義了表格的全域性屬性，就我們的示例而言，它在頁面上水平居中並含外邊框。
+定義的其餘行描述每行的佈局。現在，如果我們再次使用新的 sed 指令碼執行我們新的報告產生流水線，我們將得到以下內容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sort -k 1,1 -k 2n distros.txt | sed -f distros-tbl
+.sed | groff -t -T ascii 2&gt;/dev/null
++------------------------------+
+| Linux Distributions Report |
++------------------------------+
+| Name Version Released |
++------------------------------+
+|Fedora 5 2006-03-20 |
+|Fedora 6 2006-10-24 |
+|Fedora 7 2007-05-31 |
+|Fedora 8 2007-11-08 |
+|Fedora 9 2008-05-13 |
+|Fedora 10 2008-11-25 |
+|SUSE 10.1 2006-05-11 |
+|SUSE 10.2 2006-12-07 |
+|SUSE 10.3 2007-10-04 |
+|SUSE 11.0 2008-06-19 |
+|Ubuntu 6.06 2006-06-01 |
+|Ubuntu 6.10 2006-10-26 |
+|Ubuntu 7.04 2007-04-19 |
+|Ubuntu 7.10 2007-10-18 |
+|Ubuntu 8.04 2008-04-24 |
+|Ubuntu 8.10 2008-10-30 |
++------------------------------+
+</code></pre></div></div>
+
+<p>Adding the -t option to groff instructs it to pre-process the text stream with tbl.
+Likewise, the -T option is used to output to ASCII rather than the default output medium,
+PostScript.</p>
+
+<p>將 -t 選項新增到 groff 指示它用 tbl 預處理文字流。同樣地，-T 選項用於輸出到 ASCII ，而不是預設的輸出介質 PostScript。</p>
+
+<p>The format of the output is the best we can expect if we are limited to the capabilities of a
+terminal screen or typewriter-style printer. If we specify PostScript output and graphically
+view the resulting output, we get a much more satisfying result:</p>
+
+<p>如果僅限於終端螢幕或打字機式印表機，這樣的輸出格式是我們能期望的最好的。
+如果我們指定 PostScript 輸出並以圖形方式檢視產生的輸出，我們將得到一個更加滿意的結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sort -k 1,1 -k 2n distros.txt | sed -f distros-tbl
+.sed | groff -t &gt; ~/Desktop/foo.ps
+</code></pre></div></div>
+
+<p>Figure 5: Viewing The Finished Table
+圖5：檢視產生的表格</p>
+
+<h3 id="summing-up">Summing Up</h3>
+
+<p>Given that text is so central to the character of Unix-like operating systems, it makes
+sense that there would be many tools that are used to manipulate and format text. As we
+have seen, there are! The simple formatting tools like fmt and pr will find many uses in
+scripts that produce short documents, while groff (and friends) can be used to write
+books. We may never write a technical paper using command line tools (though there are
+many people who do!), but it’s good to know that we could.</p>
+
+<h3 id="小節">小節</h3>
+
+<p>文字是 類別 Unix 系統的核心特性，一定會有許多修改和格式化文字的工具。正如我們所看到的那樣，的確很多！像 fmt 和 pr 這種比較簡單的格式化工具會在
+產生比較短的檔案時發揮很多用途，而 groff 和其他工具則會在寫書的時候用上。我們也許永遠不會用命令列工具來寫一篇技術文章（儘管有很多人在這麼做！），
+但是知道我們可以這麼做也是極好的。</p>
+
+<h3 id="further-reading">Further Reading</h3>
+
+<ul>
+  <li>
+    <p>groff User’s Guide</p>
+
+    <p><a href="http://www.gnu.org/software/groff/manual/">http://www.gnu.org/software/groff/manual/</a></p>
+  </li>
+  <li>
+    <p>Writing Papers With nroff Using -me:</p>
+
+    <p><a href="http://docs.freebsd.org/44doc/usd/19.memacros/paper.pdf">http://docs.freebsd.org/44doc/usd/19.memacros/paper.pdf</a></p>
+  </li>
+  <li>
+    <p>-me Reference Manual:</p>
+
+    <p><a href="http://docs.freebsd.org/44doc/usd/20.meref/paper.pdf">http://docs.freebsd.org/44doc/usd/20.meref/paper.pdf</a></p>
+  </li>
+  <li>
+    <p>Tbl – A Program To Format Tables:</p>
+
+    <p><a href="http://plan9.bell-labs.com/10thEdMan/tbl.pdf">http://plan9.bell-labs.com/10thEdMan/tbl.pdf</a></p>
+  </li>
+  <li>
+    <p>And, of course, try the following articles at Wikipedia:</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/TeX">http://en.wikipedia.org/wiki/TeX</a></p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Donald_Knuth">http://en.wikipedia.org/wiki/Donald_Knuth</a></p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Typesetting">http://en.wikipedia.org/wiki/Typesetting</a></p>
+  </li>
+</ul>
+
+<h3 id="閱讀更多">閱讀更多</h3>
+
+<ul>
+  <li>
+    <p>groff 使用者指南</p>
+
+    <p><a href="http://www.gnu.org/software/groff/manual/">http://www.gnu.org/software/groff/manual/</a></p>
+  </li>
+  <li>
+    <p>運用 nroff 指令中的 -me 選項寫論文:</p>
+
+    <p><a href="http://docs.freebsd.org/44doc/usd/19.memacros/paper.pdf">http://docs.freebsd.org/44doc/usd/19.memacros/paper.pdf</a></p>
+  </li>
+  <li>
+    <p>-me 參考手冊:</p>
+
+    <p><a href="http://docs.freebsd.org/44doc/usd/20.meref/paper.pdf">http://docs.freebsd.org/44doc/usd/20.meref/paper.pdf</a></p>
+  </li>
+  <li>
+    <p>Tbl – 一個格式化表格的指令:</p>
+
+    <p><a href="http://plan9.bell-labs.com/10thEdMan/tbl.pdf">http://plan9.bell-labs.com/10thEdMan/tbl.pdf</a></p>
+  </li>
+  <li>
+    <p>當然，你也可以試試下面列出的維基百科中的內容:</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/TeX">http://en.wikipedia.org/wiki/TeX</a></p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Donald_Knuth">http://en.wikipedia.org/wiki/Donald_Knuth</a></p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Typesetting">http://en.wikipedia.org/wiki/Typesetting</a></p>
+  </li>
+</ul>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

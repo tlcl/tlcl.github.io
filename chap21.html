@@ -1,0 +1,2790 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">文字處理</h1><br>
+<p>All Unix-like operating systems rely heavily on text files for several types of data
+storage. So it makes sense that there are many tools for manipulating text. In this
+chapter, we will look at programs that are used to “slice and dice” text. In the next
+chapter, we will look at more text processing, focusing on programs that are used to
+format text for printing and other kinds of human consumption.</p>
+
+<p>所有類別 Unix 的作業系統都嚴重依賴於幾種資料儲存型別的文字檔案。所以，
+有許多用於處理文字的工具就說的通了。在這一章中，我們將看一些被用來“切割”文字的程式。在下一章中，
+我們將檢視更多的文字處理程式，但主要集中於文字格式化輸出程式和其它一些人們需要的工具。</p>
+
+<p>This chapter will revisit some old friends and introduce us to some new ones:</p>
+
+<p>這一章會重新拜訪一些老朋友，並且會給我們介紹一些新朋友：</p>
+
+<ul>
+  <li>
+    <p>cat – Concatenate files and print on the standard output</p>
+  </li>
+  <li>
+    <p>cat – 連線檔案並且列印到標準輸出</p>
+  </li>
+  <li>
+    <p>sort – Sort lines of text files</p>
+  </li>
+  <li>
+    <p>sort – 給文字行排序</p>
+  </li>
+  <li>
+    <p>uniq – Report or omit repeated lines</p>
+  </li>
+  <li>
+    <p>uniq – 報告或者省略重複行</p>
+  </li>
+  <li>
+    <p>cut – Remove sections from each line of files</p>
+  </li>
+  <li>
+    <p>cut – 從每行中刪除文字區域</p>
+  </li>
+  <li>
+    <p>paste – Merge lines of files</p>
+  </li>
+  <li>
+    <p>paste – 合併檔案文字行</p>
+  </li>
+  <li>
+    <p>join – Join lines of two files on a common field</p>
+  </li>
+  <li>
+    <p>join – 基於某個共享欄位來聯合兩個檔案的文字行</p>
+  </li>
+  <li>
+    <p>comm – Compare two sorted files line by line</p>
+  </li>
+  <li>
+    <p>comm – 逐行比較兩個有序的檔案</p>
+  </li>
+  <li>
+    <p>diff – Compare files line by line</p>
+  </li>
+  <li>
+    <p>diff – 逐行比較檔案</p>
+  </li>
+  <li>
+    <p>patch – Apply a diff file to an original</p>
+  </li>
+  <li>
+    <p>patch – 給原始檔案打補丁</p>
+  </li>
+  <li>
+    <p>tr – Translate or delete characters</p>
+  </li>
+  <li>
+    <p>tr – 翻譯或刪除字元</p>
+  </li>
+  <li>
+    <p>sed – Stream editor for filtering and transforming text</p>
+  </li>
+  <li>
+    <p>sed – 用於篩選和轉換文字的流編輯器</p>
+  </li>
+  <li>
+    <p>aspell – Interactive spell checker</p>
+  </li>
+  <li>
+    <p>aspell – 互動式拼寫檢查器</p>
+  </li>
+</ul>
+
+<h3 id="文字應用程式">文字應用程式</h3>
+
+<p>So far, we have learned a couple of text editors (nano and vim), looked a bunch of
+configuration files, and have witnessed the output of dozens of commands, all in text.
+But what else is text used for? For many things, it turns out.</p>
+
+<p>到目前為止，我們已經知道了一對文字編輯器（nano 和 vim），看過一堆配置檔案，並且目睹了
+許多命令的輸出都是文字格式。但是文字還被用來做什麼？ 它可以做很多事情。</p>
+
+<h4 id="文件">文件</h4>
+
+<p>Many people write documents using plain text formats. While it is easy to see how a
+small text file could be useful for keeping simple notes, it is also possible to write large
+documents in text format, as well. One popular approach is to write a large document in
+a text format and then use a <code class="highlighter-rouge">markup language</code> to describe the formatting of the finished
+document. Many scientific papers are written using this method, as Unix-based text
+processing systems were among the first systems that supported the advanced
+typographical layout needed by writers in technical disciplines.</p>
+
+<p>許多人使用純文字格式來編寫文件。雖然很容易看到一個小的文字檔案對於儲存簡單的筆記會
+很有幫助，但是也有可能用文字格式來編寫大的文件。一個流行的方法是先用文字格式來編寫一個
+大的文件，然後使用一種標記語言來描述已完成文件的格式。許多科學論文就是用這種方法編寫的，
+因為基於 Unix 的文字處理系統位於支援技術學科作家所需要的高階排版佈局的一流系統之列。</p>
+
+<h4 id="網頁">網頁</h4>
+
+<p>The world’s most popular type of electronic document is probably the web page. Web
+pages are text documents that use either HTML (Hypertext Markup Language) or XML
+(Extensible Markup Language) as markup languages to describe the document’s visual
+format.</p>
+
+<p>世界上最流行的電子文件型別可能就是網頁了。網頁是文字文件，它們使用 HTML（超文字標記語言）或者是 XML
+（可擴充套件的標記語言）作為標記語言來描述文件的可視格式。</p>
+
+<h4 id="電子郵件">電子郵件</h4>
+
+<p>Email is an intrinsically text-based medium. Even non-text attachments are converted
+into a text representation for transmission. We can see this for ourselves by downloading
+an email message and then viewing it in less. We will see that the message begins with
+a header that describes the source of the message and the processing it received during its
+journey, followed by the body of the message with its content.</p>
+
+<p>從本質上來說，email 是一個基於文字的媒介。為了傳輸，甚至非文字的附件也被轉換成文字表示形式。
+我們能看到這些，透過下載一個 email 資訊，然後用 less 來瀏覽它。我們將會看到這條資訊開始於一個標題，
+其描述了資訊的來源以及在傳輸過程中它接受到的處理，然後是資訊的正文內容。</p>
+
+<h4 id="列印輸出">列印輸出</h4>
+
+<p>On Unix-like systems, output destined for a printer is sent as plain text or, if the page
+contains graphics, is converted into a text format page description language known as
+PostScript, which is then sent to a program that generates the graphic dots to be printed.</p>
+
+<p>在類別 Unix 的系統中，輸出會以純文字格式傳送到印表機，或者如果頁面包含圖形，其會被轉換成
+一種文字格式的頁面描述語言，以 PostScript 著稱，然後再被髮送給一款能產生圖形點陣的程式，
+最後被打印出來。</p>
+
+<h4 id="程式原始碼">程式原始碼</h4>
+
+<p>Many of the command line programs found on Unix-like systems were created to support
+system administration and software development, and text processing programs are no
+exception. Many of them are designed to solve software development problems. The
+reason text processing is important to software developers is that all software starts out as
+text. Source code, the part of the program the programmer actually writes, is always in
+text format.</p>
+
+<p>在類別 Unix 系統中會發現許多命令列程式被用來支援系統管理和軟體開發，並且文字處理程式也不例外。
+許多文字處理程式被設計用來解決軟體開發問題。文字處理對於軟體開發者而言至關重要是因為所有的軟體
+都起始於文字格式。原始碼，程式設計師實際編寫的一部分程式，總是文字格式。</p>
+
+<h3 id="回顧一些老朋友">回顧一些老朋友</h3>
+
+<p>Back in Chapter 7 (Redirection), we learned about some commands that are able to
+accept standard input in addition to command line arguments. We only touched on them
+briefly then, but now we will take a closer look at how they can be used to perform text
+processing.</p>
+
+<p>回到第7章（重新導向），我們已經知道一些命令除了接受命令列引數之外，還能夠接受標準輸入。
+那時候我們只是簡單地介紹了它們，但是現在我們將仔細地看一下它們是怎樣被用來執行文字處理的。</p>
+
+<h4 id="cat">cat</h4>
+
+<p>The cat program has a number of interesting options. Many of them are used to help
+better visualize text content. One example is the -A option, which is used to display non-
+printing characters in the text. There are times when we want to know if control
+characters are embedded in our otherwise visible text. The most common of these are tab
+characters (as opposed to spaces) and carriage returns, often present as end-of-line
+characters in MS-DOS style text files. Another common situation is a file containing
+lines of text with trailing spaces.</p>
+
+<p>這個 cat 程式具有許多有趣的選項。其中許多選項用來幫助更好的視覺化文字內容。一個例子是-A 選項，
+其用來在文字中顯示非列印字元。有些時候我們想知道是否控制字元嵌入到了我們的可見文字中。
+最常用的控制字元是 tab 字元（而不是空格）和回車字元，在 MS-DOS 風格的文字檔案中回車符經常作為
+結束符出現。另一種常見情況是檔案中包含末尾帶有空格的文字行。</p>
+
+<p>Let's create a test file using cat as a primitive word processor. To do this, we’ll just
+enter the command cat (along with specifying a file for redirected output) and type our
+text, followed by Enter to properly end the line, then Ctrl-d, to indicate to cat that
+we have reached end-of-file. In this example, we enter a leading tab character and follow
+the line with some trailing spaces:</p>
+
+<p>讓我們建立一個測試檔案，用 cat 程式作為一個簡單的文書處理器。為此，我們將鍵入 cat 命令（隨後指定了
+用於重新導向輸出的檔案），然後輸入我們的文字，最後按下 Enter 鍵來結束這一行，然後按下組合鍵 Ctrl-d，
+來指示 cat 程式，我們已經到達檔案末尾了。在這個例子中，我們文字行的開頭和末尾分別鍵入了一個 tab 字元以及一些空格。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat &gt; foo.txt
+    The quick brown fox jumped over the lazy dog.
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>Next, we will use cat with the -A option to display the text:</p>
+
+<p>下一步，我們將使用帶有-A 選項的 cat 命令來顯示這個文字：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat -A foo.txt
+^IThe quick brown fox jumped over the lazy dog.       $
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>As we can see in the results, the tab character in our text is represented by ^I. This is a
+common notation that means “Control-I” which, as it turns out, is the same as a tab
+character. We also see that a $ appears at the true end of the line, indicating that our text
+contains trailing spaces.</p>
+
+<p>在輸出結果中我們看到，這個 tab 字元在我們的文字中由^I 字元來表示。這是一種常見的表示方法，意思是
+“Control-I”，結果證明，它和 tab 字元是一樣的。我們也看到一個$字元出現在文字行真正的結尾處，
+表明我們的文字包含末尾的空格。</p>
+
+<blockquote>
+  <p>MS-DOS Text Vs. Unix Text</p>
+
+  <p>MS-DOS 文字 Vs. Unix 文字</p>
+
+  <p>One of the reasons you may want to use cat to look for non-printing characters
+in text is to spot hidden carriage returns. Where do hidden carriage returns come
+from? DOS and Windows! Unix and DOS don’t define the end of a line the
+same way in text files. Unix ends a line with a linefeed character (ASCII 10)
+while MS-DOS and its derivatives use the sequence carriage return (ASCII 13)
+and linefeed to terminate each line of text.</p>
+
+  <p>可能你想用 cat 程式在文字中檢視非列印字元的一個原因是發現隱藏的回車符。那麼
+隱藏的回車符來自於哪裡呢？它們來自於 DOS 和 Windows！Unix 和 DOS 在文字檔案中定義每行
+結束的方式不相同。Unix 透過一個換行符（ASCII 10）來結束一行，然而 MS-DOS 和它的
+衍生品使用回車（ASCII 13）和換行字元序列來終止每個文字行。</p>
+
+  <p>There are a several ways to convert files from DOS to Unix format. On many
+Linux systems, there are programs called dos2unix and unix2dos, which can
+convert text files to and from DOS format. However, if you don’t have
+dos2unix on your system, don’t worry. The process of converting text from
+DOS to Unix format is very simple; it simply involves the removal of the
+offending carriage returns. That is easily accomplished by a couple of the
+programs discussed later in this chapter.</p>
+
+  <p>有幾種方法能夠把檔案從 DOS 格式轉變為 Unix 格式。在許多 Linux 系統中，有兩個
+程式叫做 dos2unix 和 unix2dos，它們能在兩種格式之間轉變文字檔案。然而，如果你
+的系統中沒有安裝 dos2unix 程式，也不要擔心。檔案從 DOS 格式轉變為 Unix 格式的過程非常
+簡單；它只簡單地涉及到刪除違規的回車符。透過隨後本章中討論的一些程式，這個工作很容易
+完成。</p>
+</blockquote>
+
+<p>cat also has options that are used to modify text. The two most prominent are -n,
+which numbers lines, and -s, which suppresses the output of multiple blank lines. We
+can demonstrate thusly:</p>
+
+<p>cat 程式也包含用來修改文字的選項。最著名的兩個選項是-n，其給文字行新增行號和-s，
+禁止輸出多個空白行。我們這樣來說明：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat &gt; foo.txt
+The quick brown fox
+
+
+jumped over the lazy dog.
+[me@linuxbox ~]$ cat -ns foo.txt
+1   The quick brown fox
+2
+3   jumped over the lazy dog.
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>In this example, we create a new version of our foo.txt test file, which contains two
+lines of text separated by two blank lines. After processing by cat with the -ns options,
+the extra blank line is removed and the remaining lines are numbered. While this is not
+much of a process to perform on text, it is a process.</p>
+
+<p>在這個例子裡，我們建立了一個測試檔案 foo.txt 的新版本，其包含兩行文字，由兩個空白行分開。
+經由帶有-ns 選項的 cat 程式處理之後，多餘的空白行被刪除，並且對保留的文字行進行編號。
+然而這並不是多個程序在操作這個文字，只有一個程序。</p>
+
+<h4 id="sort">sort</h4>
+
+<p>The sort program sorts the contents of standard input, or one or more files specified on
+the command line, and sends the results to standard output. Using the same technique
+that we used with cat, we can demonstrate processing of standard input directly from
+the keyboard:</p>
+
+<p>這個 sort 程式對標準輸入的內容，或命令列中指定的一個或多個檔案進行排序，然後把排序
+結果傳送到標準輸出。使用與 cat 命令相同的技巧，我們能夠示範如何用 sort 程式來處理標準輸入：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sort &gt; foo.txt
+c
+b
+a
+[me@linuxbox ~]$ cat foo.txt
+a
+b
+c
+</code></pre></div></div>
+
+<p>After entering the command, we type the letters “c”, “b”, and “a”, followed once again by
+Ctrl-d to indicate end-of-file. We then view the resulting file and see that the lines
+now appear in sorted order.</p>
+
+<p>輸入命令之後，我們鍵入字母“c”，“b”，和“a”，然後再按下 Ctrl-d 組合鍵來表示檔案的結尾。
+隨後我們檢視產生的檔案，看到文字行有序地顯示。</p>
+
+<p>Since sort can accept multiple files on the command line as arguments, it is possible to
+merge multiple files into a single sorted whole. For example, if we had three text files
+and wanted to combine them into a single sorted file, we could do something like this:</p>
+
+<p>因為 sort 程式能接受命令列中的多個檔案作為引數，所以有可能把多個檔案合併成一個有序的檔案。例如，
+如果我們有三個文字檔案，想要把它們合併為一個有序的檔案，我們可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sort file1.txt file2.txt file3.txt &gt; final_sorted_list.txt
+</code></pre></div></div>
+
+<p>sort has several interesting options. Here is a partial list:</p>
+
+<p>sort 程式有幾個有趣的選項。這裡只是一部分列表：</p>
+
+<table class="multi">
+<caption class="cap">Table 21-1: Common sort Options</caption>
+<tr>
+<th class="title" width="10%">Option</th>
+<th class="title" width="23%">Long Option</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top">-b</td>
+<td valign="top">--ignore-leading-blanks </td>
+<td valign="top">By default, sorting is performed on the entire line,
+starting with the first character in the line. This option causes sort to
+ignore leading spaces in lines and calculates sorting based on the first
+non-whitespace character on the line.</td>
+</tr>
+<tr>
+<td valign="top">-f</td>
+<td valign="top">--ignore-case </td>
+<td valign="top">Makes sorting case insensitive.</td>
+</tr>
+<tr>
+<td valign="top">-n</td>
+<td valign="top">--numeric-sort</td>
+<td valign="top">Performs sorting based on the numeric evaluation of a string.
+Using this option allows sorting to be performed on numeric values rather than
+alphabetic values.  </td>
+</tr>
+<tr>
+<td valign="top">-r</td>
+<td valign="top">--reverse </td>
+<td valign="top">Sort in reverse order. Results are
+in descending rather than ascending order.</td>
+</tr>
+<tr>
+<td valign="top">-k</td>
+<td valign="top">--key=field1[,field2] </td>
+<td valign="top">Sort based on a key field located from field1 to field2
+rather than the entire line. See discussion below.</td>
+</tr>
+<tr>
+<td valign="top">-m</td>
+<td valign="top">--merge</td>
+<td valign="top">Treat each argument as the name of a presorted file.
+Merge multiple files into a single sorted result without performing any
+additional sorting. </td>
+</tr>
+<tr>
+<td valign="top">-o</td>
+<td valign="top">--output=file </td>
+<td valign="top">Send sorted output to file rather than standard output.</td>
+</tr>
+<tr>
+<td valign="top">-t</td>
+<td valign="top">--field-separator=char </td>
+<td valign="top">Define the field separator character. By default fields are
+separated by spaces or tabs.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表21-1: 常見的 sort 程式選項</caption>
+<tr>
+<th class="title" width="10%">選項</th>
+<th class="title" width="23%">長選項</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top" width="15%">-b</td>
+<td valign="top">--ignore-leading-blanks </td>
+<td valign="top"> 預設情況下，對整行進行排序，從每行的第一個字元開始。這個選項導致 sort 程式忽略
+每行開頭的空格，從第一個非空白字元開始排序。</td>
+</tr>
+<tr>
+<td valign="top">-f</td>
+<td valign="top">--ignore-case </td>
+<td valign="top">讓排序不區分大小寫。</td>
+</tr>
+<tr>
+<td valign="top">-n</td>
+<td valign="top">--numeric-sort</td>
+<td valign="top">基於字串的數值來排序。使用此選項允許根據數字值執行排序，而不是字母值。</td>
+</tr>
+<tr>
+<td valign="top">-r</td>
+<td valign="top">--reverse </td>
+<td valign="top">按相反順序排序。結果按照降序排列，而不是升序。</td>
+</tr>
+<tr>
+<td valign="top">-k</td>
+<td valign="top">--key=field1[,field2] </td>
+<td valign="top">對從 field1到 field2之間的字元排序，而不是整個文字行。看下面的討論。 </td>
+</tr>
+<tr>
+<td valign="top">-m</td>
+<td valign="top">--merge</td>
+<td valign="top">把每個引數看作是一個預先排好序的檔案。把多個檔案合併成一個排好序的檔案，而沒有執行額外的排序。</td>
+</tr>
+<tr>
+<td valign="top">-o</td>
+<td valign="top">--output=file </td>
+<td valign="top">把排好序的輸出結果傳送到檔案，而不是標準輸出。</td>
+</tr>
+<tr>
+<td valign="top">-t</td>
+<td valign="top">--field-separator=char </td>
+<td valign="top">定義域分隔字元。預設情況下，域由空格或製表符分隔。</td>
+</tr>
+</table>
+
+<p>Although most of the options above are pretty self-explanatory, some are not. First, Let's
+look at the -n option, used for numeric sorting. With this option, it is possible to sort
+values based on numeric values. We can demonstrate this by sorting the results of the du
+command to determine the largest users of disk space. Normally, the du command lists
+the results of a summary in pathname order:</p>
+
+<p>雖然以上大多數選項的含義是不言自喻的，但是有些也不是。首先，讓我們看一下 -n 選項，被用做數值排序。
+透過這個選項，有可能基於數值進行排序。我們透過對 du 命令的輸出結果排序來說明這個選項，du 命令可以
+確定最大的磁碟空間使用者。通常，這個 du 命令列出的輸出結果按照路徑名來排序：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ du -s /usr/share/* | head
+252     /usr/share/aclocal
+96      /usr/share/acpi-support
+8       /usr/share/adduser
+196     /usr/share/alacarte
+344     /usr/share/alsa
+8       /usr/share/alsa-base
+12488   /usr/share/anthy
+8       /usr/share/apmd
+21440   /usr/share/app-install
+48      /usr/share/application-registry
+</code></pre></div></div>
+
+<p>In this example, we pipe the results into head to limit the results to the first ten lines.
+We can produce a numerically sorted list to show the ten largest consumers of space this
+way:</p>
+
+<p>在這個例子裡面，我們把結果管道到 head 命令，把輸出結果限制為前 10 行。我們能夠產生一個按數值排序的
+列表，來顯示 10 個最大的空間消費者：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ du -s /usr/share/* | sort -nr | head
+509940         /usr/share/locale-langpack
+242660         /usr/share/doc
+197560         /usr/share/fonts
+179144         /usr/share/gnome
+146764         /usr/share/myspell
+144304         /usr/share/gimp
+135880         /usr/share/dict
+76508          /usr/share/icons
+68072          /usr/share/apps
+62844          /usr/share/foomatic
+</code></pre></div></div>
+
+<p>By using the -nr options, we produce a reverse numerical sort, with the largest values
+appearing first in the results. This sort works because the numerical values occur at the
+beginning of each line. But what if we want to sort a list based on some value found
+within the line? For example, the results of an ls -l:</p>
+
+<p>透過使用此 -nr 選項，我們產生了一個反向的數值排序，最大數值排列在第一位。這種排序起作用是
+因為數值出現在每行的開頭。但是如果我們想要基於檔案行中的某個數值排序，又會怎樣呢？
+例如，命令 ls -l 的輸出結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /usr/bin | head
+total 152948
+-rwxr-xr-x 1 root   root     34824  2008-04-04  02:42 [
+-rwxr-xr-x 1 root   root    101556  2007-11-27  06:08 a2p
+...
+</code></pre></div></div>
+
+<p>Ignoring, for the moment, that ls can sort its results by size, we could use sort to sort
+this list by file size, as well:</p>
+
+<p>此刻，忽略 ls 程式能按照檔案大小對輸出結果進行排序，我們也能夠使用 sort 程式來完成此任務：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /usr/bin | sort -nr -k 5 | head
+-rwxr-xr-x 1 root   root   8234216  2008-04-0717:42 inkscape
+-rwxr-xr-x 1 root   root   8222692  2008-04-07 17:42 inkview
+...
+</code></pre></div></div>
+
+<p>Many uses of sort involve the processing of tabular data, such as the results of the ls
+command above. If we apply database terminology to the table above, we would say that
+each row is a record and that each record consists of multiple fields, such as the file
+attributes, link count, filename, file size and so on. sort is able to process individual
+fields. In database terms, we are able to specify one or more key fields to use as sort keys.
+In the example above, we specify the n and r options to perform a reverse numerical sort
+and specify -k 5 to make sort use the fifth field as the key for sorting.</p>
+
+<p>sort 程式的許多用法都涉及到處理表格資料，例如上面 ls 命令的輸出結果。如果我們
+把資料庫這個術語應用到上面的表格中，我們會說每行是一條記錄，並且每條記錄由多個欄位組成，
+例如檔案屬性，連結數，檔名，檔案大小等等。sort 程式能夠處理獨立的欄位。在資料庫術語中，
+我們能夠指定一個或者多個關鍵欄位，來作為排序的關鍵值。在上面的例子中，我們指定
+n 和 r 選項來執行相反的數值排序，並且指定 -k 5，讓 sort 程式使用第五欄位作為排序的關鍵值。</p>
+
+<p>The k option is very interesting and has many features, but first we need to talk about
+how sort defines fields. Let's consider a very simple text file consisting of a single line
+containing the author’s name:</p>
+
+<p>這個 k 選項非常有趣，而且還有很多特點，但是首先我們需要講講 sort 程式怎樣來定義欄位。
+讓我們考慮一個非常簡單的文字檔案，只有一行包含作者名字的文字。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>William      Shotts
+</code></pre></div></div>
+
+<p>By default, sort sees this line as having two fields. The first field contains the characters:</p>
+
+<p>預設情況下，sort 程式把此行看作有兩個欄位。第一個欄位包含字元：</p>
+
+<p>“William”</p>
+
+<p>and the second field contains the characters:</p>
+
+<p>和第二個欄位包含字元：</p>
+
+<p>“     Shotts”</p>
+
+<p>meaning that whitespace characters (spaces and tabs) are used as delimiters between
+fields and that the delimiters are included in the field when sorting is performed.
+Looking again at a line from our ls output, we can see that a line contains eight fields
+and that the fifth field is the file size:</p>
+
+<p>意味著空白字元（空格和製表符）被當作是欄位間的界定符，當執行排序時，界定符會被
+包含在欄位當中。再看一下 ls 命令的輸出，我們看到每行包含八個欄位，並且第五個欄位是檔案大小：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-rwxr-xr-x 1 root root 8234216 2008-04-07 17:42 inkscape
+</code></pre></div></div>
+
+<p>For our next series of experiments, Let's consider the following file containing the history
+of three popular Linux distributions released from 2006 to 2008. Each line in the file has
+three fields: the distribution name, version number, and date of release in
+MM/DD/YYYY format:</p>
+
+<p>讓我們考慮用下面的檔案，其包含從 2006 年到 2008 年三款流行的 Linux 發行版的發行歷史，來做一系列實驗。
+檔案中的每一行都有三個欄位：發行版的名稱，版本號，和 MM/DD/YYYY 格式的發行日期：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SUSE        10.2   12/07/2006
+Fedora          10     11/25/2008
+SUSE            11.04  06/19/2008
+Ubuntu          8.04   04/24/2008
+Fedora          8      11/08/2007
+SUSE            10.3   10/04/2007
+...
+</code></pre></div></div>
+
+<p>Using a text editor (perhaps vim), we’ll enter this data and name the resulting file
+distros.txt.</p>
+
+<p>使用一個文字編輯器（可能是 vim），我們將輸入這些資料，並把產生的檔案命名為 distros.txt。</p>
+
+<p>Next, we’ll try sorting the file and observe the results:</p>
+
+<p>下一步，我們將試著對這個檔案進行排序，並觀察輸出結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sort distros.txt
+Fedora          10     11/25/2008
+Fedora          5     03/20/2006
+Fedora          6     10/24/2006
+Fedora          7     05/31/2007
+Fedora          8     11/08/2007
+...
+</code></pre></div></div>
+
+<p>Well, it mostly worked. The problem occurs in the sorting of the Fedora version
+numbers. Since a “1” comes before a “5” in the character set, version “10” ends up at the
+top while version “9” falls to the bottom.</p>
+
+<p>恩，大部分正確。問題出現在 Fedora 的版本號上。因為在字符集中「1」出現在「5」之前，版本號「10」在
+最頂端，然而版本號「9」卻掉到底端。</p>
+
+<p>To fix this problem we are going to have to sort on multiple keys. We want to perform an
+alphabetic sort on the first field and then a numeric sort on the third field. sort allows
+multiple instances of the -k option so that multiple sort keys can be specified. In fact, a
+key may include a range of fields. If no range is specified (as has been the case with our
+previous examples), sort uses a key that begins with the specified field and extends to
+the end of the line. Here is the syntax for our multi-key sort:</p>
+
+<p>為了解決這個問題，我們必須依賴多個鍵值來排序。我們想要對第一個欄位執行字母排序，然後對
+第三個欄位執行數值排序。sort 程式允許多個 -k 選項的範例，所以可以指定多個排序關鍵值。事實上，
+一個關鍵值可能包括一個欄位區域。如果沒有指定區域（如同之前的例子），sort 程式會使用一個鍵值，
+其始於指定的欄位，一直擴充套件到行尾。下面是多鍵值排序的語法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sort --key=1,1 --key=2n distros.txt
+Fedora         5     03/20/2006
+Fedora         6     10/24/2006
+Fedora         7     05/31/2007
+...
+</code></pre></div></div>
+
+<p>Though we used the long form of the option for clarity, -k 1,1 -k 2n would be
+exactly equivalent. In the first instance of the key option, we specified a range of fields
+to include in the first key. Since we wanted to limit the sort to just the first field, we
+specified 1,1 which means “start at field one and end at field one.” In the second
+instance, we specified 2n, which means that field two is the sort key and that the sort
+should be numeric. An option letter may be included at the end of a key specifier to
+indicate the type of sort to be performed. These option letters are the same as the global
+options for the sort program: b (ignore leading blanks), n (numeric sort), r (reverse
+sort), and so on.</p>
+
+<p>雖然為了清晰，我們使用了選項的長格式，但是 -k 1,1 -k 2n 格式是等價的。在第一個 key 選項的範例中，
+我們指定了一個欄位區域。因為我們只想對第一個欄位排序，我們指定了 1,1，
+意味著“始於並且結束於第一個欄位。”在第二個範例中，我們指定了 2n，意味著第二個欄位是排序的鍵值，
+並且按照數值排序。一個選項字母可能被包含在一個鍵值說明符的末尾，其用來指定排序的種類。這些
+選項字母和 sort 程式的全域性選項一樣：b（忽略開頭的空格），n（數值排序），r（逆向排序），等等。</p>
+
+<p>The third field in our list contains a date in an inconvenient format for sorting. On
+computers, dates are usually formatted in YYYY-MM-DD order to make chronological
+sorting easy, but ours are in the American format of MM/DD/YYYY. How can we sort
+this list in chronological order?</p>
+
+<p>我們列表中第三個欄位包含的日期格式不利於排序。在計算機中，日期通常設定為 YYYY-MM-DD 格式，
+這樣使按時間順序排序變得容易，但是我們的日期為美國格式 MM/DD/YYYY。那麼我們怎樣能按照
+時間順序來排列這個列表呢？</p>
+
+<p>Fortunately, sort provides a way. The key option allows specification of offsets within
+fields, so we can define keys within fields:</p>
+
+<p>幸運地是，sort 程式提供了一種方式。這個 key 選項允許在欄位中指定偏移量，所以我們能在欄位中
+定義鍵值。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sort -k 3.7nbr -k 3.1nbr -k 3.4nbr distros.txt
+Fedora         10    11/25/2008
+Ubuntu         8.10  10/30/2008
+SUSE           11.0  06/19/2008
+...
+</code></pre></div></div>
+
+<p>By specifying -k 3.7 we instruct sort to use a sort key that begins at the seventh
+character within the third field, which corresponds to the start of the year. Likewise, we
+specify -k 3.1 and -k 3.4 to isolate the month and day portions of the date. We also
+add the n and r options to achieve a reverse numeric sort. The b option is included to
+suppress the leading spaces (whose numbers vary from line to line, thereby affecting the
+outcome of the sort) in the date field.</p>
+
+<p>透過指定 -k 3.7，我們指示 sort 程式使用一個排序鍵值，其始於第三個欄位中的第七個字元，對應於
+年的開頭。同樣地，我們指定 -k 3.1和 -k 3.4來分離日期中的月和日。
+我們也添加了 n 和 r 選項來實現一個逆向的數值排序。這個 b 選項用來刪除日期欄位中開頭的空格（
+行與行之間的空格數迥異，因此會影響 sort 程式的輸出結果）。</p>
+
+<p>Some files don’t use tabs and spaces as field delimiters; for example, the /etc/passwd
+file:</p>
+
+<p>一些檔案不會使用 tabs 和空格做為欄位界定符；例如，這個 /etc/passwd 檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ head /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/bin/sh
+bin:x:2:2:bin:/bin:/bin/sh
+sys:x:3:3:sys:/dev:/bin/sh
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/bin/sh
+man:x:6:12:man:/var/cache/man:/bin/sh
+lp:x:7:7:lp:/var/spool/lpd:/bin/sh
+mail:x:8:8:mail:/var/mail:/bin/sh
+news:x:9:9:news:/var/spool/news:/bin/sh
+</code></pre></div></div>
+
+<p>The fields in this file are delimited with colons (:), so how would we sort this file using a
+key field? sort provides the -t option to define the field separator character. To sort
+the passwd file on the seventh field (the account’s default shell), we could do this:</p>
+
+<p>這個檔案的欄位之間透過冒號分隔開，所以我們怎樣使用一個 key 欄位來排序這個檔案？sort 程式提供
+了一個 -t 選項來定義分隔符。按照第七個欄位（帳戶的預設 shell）來排序此 passwd 檔案，我們可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sort -t ':' -k 7 /etc/passwd | head
+me:x:1001:1001:Myself,,,:/home/me:/bin/bash
+root:x:0:0:root:/root:/bin/bash
+dhcp:x:101:102::/nonexistent:/bin/false
+gdm:x:106:114:Gnome Display Manager:/var/lib/gdm:/bin/false
+hplip:x:104:7:HPLIP system user,,,:/var/run/hplip:/bin/false
+klog:x:103:104::/home/klog:/bin/false
+messagebus:x:108:119::/var/run/dbus:/bin/false
+polkituser:x:110:122:PolicyKit,,,:/var/run/PolicyKit:/bin/false
+pulse:x:107:116:PulseAudio daemon,,,:/var/run/pulse:/bin/false
+</code></pre></div></div>
+
+<p>By specifying the colon character as the field separator, we can sort on the seventh field.</p>
+
+<p>透過指定冒號字元做為欄位分隔符，我們能按照第七個欄位來排序。</p>
+
+<h4 id="uniq">uniq</h4>
+
+<p>Compared to sort, the uniq program is a lightweight. uniq performs a seemingly
+trivial task. When given a sorted file (including standard input), it removes any duplicate
+lines and sends the results to standard output. It is often used in conjunction with sort
+to clean the output of duplicates.</p>
+
+<p>與 sort 程式相比，這個 uniq 程式是個輕量級程式。uniq 執行一個看似瑣碎的行為。當給定一個
+排好序的檔案（包括標準輸出），uniq 會刪除任意重複行，並且把結果傳送到標準輸出。
+它常常和 sort 程式一塊使用，來清理重複的輸出。</p>
+
+<hr />
+
+<p>Tip: While uniq is a traditional Unix tool often used with sort, the
+GNU version of sort supports a -u option, which removes duplicates from the
+sorted output.</p>
+
+<p>uniq 程式是一個傳統的 Unix 工具，經常與 sort 程式一塊使用，但是這個 GNU 版本的 sort 程式支援一個 -u 選項，其可以從排好序的輸出結果中刪除重複行。</p>
+
+<hr />
+
+<p>Let's make a text file to try this out:</p>
+
+<p>讓我們建立一個文字檔案，來實驗一下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat &gt; foo.txt
+a
+b
+c
+a
+b
+c
+</code></pre></div></div>
+
+<p>Remember to type Ctrl-d to terminate standard input. Now, if we run uniq on our
+text file:</p>
+
+<p>記住輸入 Ctrl-d 來終止標準輸入。現在，如果我們對文字檔案執行 uniq 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ uniq foo.txt
+a
+b
+c
+a
+b
+c
+</code></pre></div></div>
+
+<p>the results are no different from our original file; the duplicates were not removed. For
+uniq to actually do its job, the input must be sorted first:</p>
+
+<p>輸出結果與原始檔案沒有差異；重複行沒有被刪除。實際上，uniq 程式能完成任務，其輸入必須是排好序的資料，</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sort foo.txt | uniq
+a
+b
+c
+</code></pre></div></div>
+
+<p>This is because uniq only removes duplicate lines which are adjacent to each other.
+uniq has several options. Here are the common ones:</p>
+
+<p>這是因為 uniq 只會刪除相鄰的重複行。uniq 程式有幾個選項。這裡是一些常用選項：</p>
+
+<table class="multi">
+<caption class="cap">Table 21-2: Common uniq Options</caption>
+<tr>
+<th class="title">Option</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-c</td>
+<td valign="top">Output a list of duplicate lines preceded by the number of times the
+line occurs.</td>
+</tr>
+<tr>
+<td valign="top">-d</td>
+<td valign="top">Only output repeated lines, rather than unique lines.</td>
+</tr>
+<tr>
+<td valign="top">-f n</td>
+<td valign="top">Ignore n leading fields in each line. Fields are separated by
+whitespace as they are in sort; however, unlike sort, uniq has
+no option for setting an alternate field separator.</td>
+</tr>
+<tr>
+<td valign="top">-i</td>
+<td valign="top">Ignore case during the line comparisons.</td>
+</tr>
+<tr>
+<td valign="top">-s n</td>
+<td valign="top">Skip (ignore) the leading n characters of each line.</td>
+</tr>
+<tr>
+<td valign="top">-u</td>
+<td valign="top">Only output unique lines. This is the default.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表21-2: 常用的 uniq 選項</caption>
+<tr>
+<th class="title">選項</th>
+<th class="title">說明</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-c</td>
+<td valign="top">輸出所有的重複行，並且每行開頭顯示重複的次數。 </td>
+</tr>
+<tr>
+<td valign="top">-d</td>
+<td valign="top">只輸出重複行，而不是特有的文字行。</td>
+</tr>
+<tr>
+<td valign="top">-f n</td>
+<td valign="top">忽略每行開頭的 n 個欄位，欄位之間由空格分隔，正如 sort 程式中的空格分隔符；然而，
+不同於 sort 程式，uniq 沒有選項來設定備用的欄位分隔符。 </td>
+</tr>
+<tr>
+<td valign="top">-i</td>
+<td valign="top">在比較文字行的時候忽略大小寫。</td>
+</tr>
+<tr>
+<td valign="top">-s n</td>
+<td valign="top">跳過（忽略）每行開頭的 n 個字元。</td>
+</tr>
+<tr>
+<td valign="top">-u</td>
+<td valign="top">只輸出獨有的文字行。這是預設的。</td>
+</tr>
+</table>
+
+<p>Here we see uniq used to report the number of duplicates found in our text file, using
+the -c option:</p>
+
+<p>這裡我們看到 uniq 被用來報告文字檔案中重複行的次數，使用這個-c 選項：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sort foo.txt | uniq -c
+        2 a
+        2 b
+        2 c
+</code></pre></div></div>
+
+<h3 id="切片和切塊">切片和切塊</h3>
+
+<p>The next three programs we will discuss are used to peel columns of text out of files and
+recombine them in useful ways.</p>
+
+<p>下面我們將要討論的三個程式用來從檔案中獲得文字列，並且以有用的方式重組它們。</p>
+
+<h4 id="cut">cut</h4>
+
+<p>The cut program is used to extract a section of text from a line and output the extracted
+section to standard output. It can accept multiple file arguments or input from standard
+input.</p>
+
+<p>這個 cut 程式被用來從文字行中抽取文字，並把其輸出到標準輸出。它能夠接受多個檔案引數或者
+標準輸入。</p>
+
+<p>Specifying the section of the line to be extracted is somewhat awkward and is specified
+using the following options:</p>
+
+<p>從文字行中指定要抽取的文字有些麻煩，使用以下選項：</p>
+
+<table class="multi">
+<caption class="cap">Table 21-3: cut Selection Options</caption>
+<tr>
+<th class="title">Option</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-c char_list </td>
+<td valign="top">Extract the portion of the line defined by char_list. The list
+may consist of one or more comma-separated numerical ranges.</td>
+</tr>
+<tr>
+<td valign="top">-f field_list</td>
+<td valign="top">Extract one or more fields from the line as defined by
+field_list. The list may contain one or more fields or field
+ranges separated by commas.</td>
+</tr>
+<tr>
+<td valign="top">-d delim_char </td>
+<td valign="top">When -f is specified, use delim_char as the field delimiting
+character. By default, fields must be separated by a single tab
+character.</td>
+</tr>
+<tr>
+<td valign="top">--complement </td>
+<td valign="top">Extract the entire line of text, except for those portions
+specified by -c and/or -f.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表21-3: cut 程式選擇項</caption>
+<tr>
+<th class="title">選項</th>
+<th class="title">說明</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-c char_list </td>
+<td valign="top">從文字行中抽取由 char_list 定義的文字。這個列表可能由一個或多個逗號
+分隔開的數值區間組成。</td>
+</tr>
+<tr>
+<td valign="top">-f field_list</td>
+<td valign="top">從文字行中抽取一個或多個由 field_list 定義的欄位。這個列表可能
+包括一個或多個欄位，或由逗號分隔開的欄位區間。 </td>
+</tr>
+<tr>
+<td valign="top">-d delim_char </td>
+<td valign="top">當指定-f 選項之後，使用 delim_char 做為欄位分隔符。預設情況下，
+欄位之間必須由單個 tab 字元分隔開。</td>
+</tr>
+<tr>
+<td valign="top">--complement </td>
+<td valign="top">抽取整個文字行，除了那些由-c 和／或-f 選項指定的文字。 </td>
+</tr>
+</table>
+
+<p>As we can see, the way cut extracts text is rather inflexible. cut is best used to extract
+text from files that are produced by other programs, rather than text directly typed by
+humans. We’ll take a look at our distros.txt file to see if it is “clean” enough to be
+a good specimen for our cut examples. If we use cat with the -A option, we can see if
+the file meets our requirements of tab separated fields:</p>
+
+<p>正如我們所看到的，cut 程式抽取文字的方式相當不靈活。cut 命令最好用來從其它程式產生的檔案中
+抽取文字，而不是從人們直接輸入的文字中抽取。我們將會看一下我們的 distros.txt 檔案，看看
+是否它足夠「整齊」成為 cut 範例的一個好樣本。如果我們使用帶有 -A 選項的 cat 命令，我們能檢視是否這個
+檔案符號由 tab 字元分離欄位的要求。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat -A distros.txt
+SUSE^I10.2^I12/07/2006$
+Fedora^I10^I11/25/2008$
+SUSE^I11.0^I06/19/2008$
+Ubuntu^I8.04^I04/24/2008$
+Fedora^I8^I11/08/2007$
+SUSE^I10.3^I10/04/2007$
+Ubuntu^I6.10^I10/26/2006$
+Fedora^I7^I05/31/2007$
+Ubuntu^I7.10^I10/18/2007$
+Ubuntu^I7.04^I04/19/2007$
+SUSE^I10.1^I05/11/2006$
+Fedora^I6^I10/24/2006$
+Fedora^I9^I05/13/2008$
+Ubuntu^I6.06^I06/01/2006$
+Ubuntu^I8.10^I10/30/2008$
+Fedora^I5^I03/20/2006$
+</code></pre></div></div>
+
+<p>It looks good. No embedded spaces, just single tab characters between the fields. Since
+the file uses tabs rather than spaces, we’ll use the -f option to extract a field:</p>
+
+<p>看起來不錯。欄位之間僅僅是單個 tab 字元，沒有嵌入空格。因為這個檔案使用了 tab 而不是空格，
+我們將使用 -f 選項來抽取一個欄位：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cut -f 3 distros.txt
+12/07/2006
+11/25/2008
+06/19/2008
+04/24/2008
+11/08/2007
+10/04/2007
+10/26/2006
+05/31/2007
+10/18/2007
+04/19/2007
+05/11/2006
+10/24/2006
+05/13/2008
+06/01/2006
+10/30/2008
+03/20/2006
+</code></pre></div></div>
+
+<p>Because our distros file is tab-delimited, it is best to use cut to extract fields rather
+than characters. This is because when a file is tab-delimited, it is unlikely that each line
+will contain the same number of characters, which makes calculating character positions
+within the line difficult or impossible. In our example above, however, we now have
+extracted a field that luckily contains data of identical length, so we can show how
+character extraction works by extracting the year from each line:</p>
+
+<p>因為我們的 distros 檔案是由 tab 分隔開的，最好用 cut 來抽取欄位而不是字元。這是因為一個由 tab 分離的檔案，
+每行不太可能包含相同的字元數，這就使計算每行中字元的位置變得困難或者是不可能。在以上事例中，然而，
+我們已經抽取了一個欄位，幸運地是其包含地日期長度相同，所以透過從每行中抽取年份，我們能展示怎樣
+來抽取字元：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cut -f 3 distros.txt | cut -c 7-10
+2006
+2008
+2008
+2008
+2007
+2007
+2006
+2007
+2007
+2007
+2006
+2006
+2008
+2006
+2008
+2006
+</code></pre></div></div>
+
+<p>By running cut a second time on our list, we are able to extract character positions 7
+through 10, which corresponds to the year in our date field. The 7-10 notation is an
+example of a range. The cut man page contains a complete description of how ranges
+can be specified.</p>
+
+<p>透過對我們的列表再次執行 cut 命令，我們能夠抽取從位置7到10的字元，其對應於日期欄位的年份。
+這個 7-10 表示法是一個區間的例子。cut 命令手冊包含了一個如何指定區間的完整描述。</p>
+
+<blockquote>
+  <p>Expanding Tabs</p>
+
+  <p>展開 Tabs</p>
+
+  <p>Our distros.txt file is ideally formatted for extracting fields using cut. But
+what if we wanted a file that could be fully manipulated with cut by characters,
+rather than fields? This would require us to replace the tab characters within the
+file with the corresponding number of spaces. Fortunately, the GNU Coreutils
+package includes a tool for that. Named expand, this program accepts either
+one or more file arguments or standard input, and outputs the modified text to
+standard output.</p>
+
+  <p>distros.txt 的檔案格式很適合使用 cut 程式來抽取欄位。但是如果我們想要 cut 程式
+按照字元，而不是欄位來操作一個檔案，那又怎樣呢？這要求我們用相應數目的空格來
+代替 tab 字元。幸運地是，GNU 的 Coreutils 軟體包有一個工具來解決這個問題。這個
+程式名為 expand，它既可以接受一個或多個檔案引數，也可以接受標準輸入，並且把
+修改過的文字送到標準輸出。</p>
+
+  <p>If we process our distros.txt file with expand, we can use the cut -c to
+extract any range of characters from the file. For example, we could use the
+following command to extract the year of release from our list, by expanding the
+file and using cut to extract every character from the twenty-third position to the
+end of the line:</p>
+
+  <p>如果我們透過 expand 來處理 distros.txt 檔案，我們能夠使用 cut -c 命令來從檔案中抽取
+任意區間內的字元。例如，我們能夠使用以下命令來從列表中抽取發行年份，透過展開
+此檔案，再使用 cut 命令，來抽取從位置 23 開始到行尾的每一個字元：</p>
+
+  <p><em>[me@linuxbox ~]$ expand distros.txt | cut -c 23-</em></p>
+
+  <p>Coreutils also provides the unexpand program to substitute tabs for spaces.</p>
+
+  <p>Coreutils 軟體包也提供了 unexpand 程式，用 tab 來代替空格。</p>
+</blockquote>
+
+<p>When working with fields, it is possible to specify a different field delimiter rather than
+the tab character. Here we will extract the first field from the /etc/passwd file:</p>
+
+<p>當操作欄位的時候，有可能指定不同的欄位分隔符，而不是 tab 字元。這裡我們將會從/etc/passwd 檔案中
+抽取第一個欄位：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cut -d ':' -f 1 /etc/passwd | head
+root
+daemon
+bin
+sys
+sync
+games
+man
+lp
+mail
+news
+</code></pre></div></div>
+
+<p>Using the -d option, we are able to specify the colon character as the field delimiter.</p>
+
+<p>使用-d 選項，我們能夠指定冒號做為欄位分隔符。</p>
+
+<h4 id="paste">paste</h4>
+
+<p>The paste command does the opposite of cut. Rather than extracting a column of text
+from a file, it adds one or more columns of text to a file. It does this by reading multiple
+files and combining the fields found in each file into a single stream on standard output.
+Like cut, paste accepts multiple file arguments and/or standard input. To demonstrate
+how paste operates, we will perform some surgery on our distros.txt file to
+produce a chronological list of releases.</p>
+
+<p>這個 paste 命令的功能正好與 cut 相反。它會新增一個或多個文字列到檔案中，而不是從檔案中抽取文字列。
+它透過讀取多個檔案，然後把每個檔案中的欄位整合成單個文字流，輸入到標準輸出。類似於 cut 命令，
+paste 接受多個檔案引數和 ／ 或標準輸入。為了說明 paste 是怎樣工作的，我們將會對 distros.txt 檔案
+動手術，來產生髮行版的年代表。</p>
+
+<p>From our earlier work with sort, we will first produce a list of distros sorted by date
+and store the result in a file called distros-by-date.txt:</p>
+
+<p>從我們之前使用 sort 的工作中，首先我們將產生一個按照日期排序的發行版列表，並把結果
+儲存在一個叫做 distros-by-date.txt 的檔案中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sort -k 3.7nbr -k 3.1nbr -k 3.4nbr distros.txt &gt; distros-by-date.txt
+</code></pre></div></div>
+
+<p>Next, we will use cut to extract the first two fields from the file (the distro name and
+version), and store that result in a file named distro-versions.txt:</p>
+
+<p>下一步，我們將會使用 cut 命令從檔案中抽取前兩個欄位（發行版名字和版本號），並把結果儲存到
+一個名為 distro-versions.txt 的檔案中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cut -f 1,2 distros-by-date.txt &gt; distros-versions.txt
+[me@linuxbox ~]$ head distros-versions.txt
+Fedora     10
+Ubuntu     8.10
+SUSE       11.0
+Fedora     9
+Ubuntu     8.04
+Fedora     8
+Ubuntu     7.10
+SUSE       10.3
+Fedora     7
+Ubuntu     7.04
+</code></pre></div></div>
+
+<p>The final piece of preparation is to extract the release dates and store them a file named
+distro-dates.txt:</p>
+
+<p>最後的準備步驟是抽取發行日期，並把它們儲存到一個名為 distro-dates.txt 檔案中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cut -f 3 distros-by-date.txt &gt; distros-dates.txt
+[me@linuxbox ~]$ head distros-dates.txt
+11/25/2008
+10/30/2008
+06/19/2008
+05/13/2008
+04/24/2008
+11/08/2007
+10/18/2007
+10/04/2007
+05/31/2007
+04/19/2007
+</code></pre></div></div>
+
+<p>We now have the parts we need. To complete the process, use paste to put the column
+of dates ahead of the distro names and versions, thus creating a chronological list. This is
+done simply by using paste and ordering its arguments in the desired arrangement:</p>
+
+<p>現在我們擁有了我們所需要的文字了。為了完成這個過程，使用 paste 命令來把日期列放到發行版名字
+和版本號的前面，這樣就建立了一個年代列表。透過使用 paste 命令，然後按照期望的順序來安排它的
+引數，就能很容易完成這個任務。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ paste distros-dates.txt distros-versions.txt
+11/25/2008	Fedora     10
+10/30/2008	Ubuntu     8.10
+06/19/2008	SUSE       11.0
+05/13/2008	Fedora     9
+04/24/2008	Ubuntu     8.04
+11/08/2007	Fedora     8
+10/18/2007	Ubuntu     7.10
+10/04/2007	SUSE       10.3
+05/31/2007	Fedora     7
+04/19/2007	Ubuntu     7.04
+</code></pre></div></div>
+
+<h4 id="join">join</h4>
+
+<p>In some ways, join is like paste in that it adds columns to a file, but it uses a unique
+way to do it. A join is an operation usually associated with relational databases where
+data from multiple tables with a shared key field is combined to form a desired result.
+The join program performs the same operation. It joins data from multiple files based
+on a shared key field.</p>
+
+<p>在某些方面，join 命令類似於 paste，它會往檔案中新增列，但是它使用了獨特的方法來完成。
+一個 join 操作通常與關係型資料庫有關聯，在關係型資料庫中來自多個享有共同關鍵域的表格的
+資料結合起來，得到一個期望的結果。這個 join 程式執行相同的操作。它把來自於多個基於共享
+關鍵域的檔案的資料結合起來。</p>
+
+<p>To see how a join operation is used in a relational database, Let's imagine a very small
+database consisting of two tables each containing a single record. The first table, called
+CUSTOMERS, has three fields: a customer number (CUSTNUM), the customer’s first
+name (FNAME) and the customer’s last name (LNAME):</p>
+
+<p>為了知道在關係資料庫中是怎樣使用 join 操作的，讓我們想象一個很小的資料庫，這個資料庫由兩個
+表格組成，每個表格包含一條記錄。第一個表格，叫做 CUSTOMERS，有三個資料域：一個客戶號（CUSTNUM），
+客戶的名字（FNAME）和客戶的姓（LNAME）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CUSTNUM	    FNAME       ME
+========    =====       ======
+4681934	    John        Smith
+</code></pre></div></div>
+
+<p>The second table is called ORDERS and contains four fields: an order number
+(ORDERNUM), the customer number (CUSTNUM), the quantity (QUAN), and the item
+ordered (ITEM).</p>
+
+<p>第二個表格叫做 ORDERS，其包含四個資料域：訂單號（ORDERNUM），客戶號（CUSTNUM），數量（QUAN），
+和訂購的貨品（ITEM）。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ORDERNUM        CUSTNUM     QUAN ITEM
+========        =======     ==== ====
+3014953305      4681934     1    Blue Widget
+</code></pre></div></div>
+
+<p>Note that both tables share the field CUSTNUM. This is important, as it allows a
+relationship between the tables.</p>
+
+<p>注意兩個表格共享資料域 CUSTNUM。這很重要，因為它使表格之間建立了聯絡。</p>
+
+<p>Performing a join operation would allow us to combine the fields in the two tables to
+achieve a useful result, such as preparing an invoice. Using the matching values in the
+CUSTNUM fields of both tables, a join operation could produce the following:</p>
+
+<p>執行一個 join 操作將允許我們把兩個表格中的資料域結合起來，得到一個有用的結果，例如準備
+一張發貨單。透過使用兩個表格 CUSTNUM 數字域中匹配的數值，一個 join 操作會產生以下結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FNAME       LNAME       QUAN ITEM
+=====       =====       ==== ====
+John        Smith       1    Blue Widget
+</code></pre></div></div>
+
+<p>To demonstrate the join program, we’ll need to make a couple of files with a shared
+key. To do this, we will use our distros-by-date.txt file. From this file, we will
+construct two additional files, one containing the release date (which will be our shared
+key for this demonstration) and the release name:</p>
+
+<p>為了說明 join 程式，我們需要建立一對包含共享鍵值的檔案。為此，我們將使用我們的 distros.txt 檔案。
+從這個檔案中，我們將建構額外兩個檔案，一個包含發行日期（其會成為共享鍵值）和發行版名稱：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cut -f 1,1 distros-by-date.txt &gt; distros-names.txt
+[me@linuxbox ~]$ paste distros-dates.txt distros-names.txt &gt; distros-key-names.txt
+[me@linuxbox ~]$ head distros-key-names.txt
+11/25/2008 Fedora
+10/30/2008 Ubuntu
+06/19/2008 SUSE
+05/13/2008 Fedora
+04/24/2008 Ubuntu
+11/08/2007 Fedora
+10/18/2007 Ubuntu
+10/04/2007 SUSE
+05/31/2007 Fedora
+04/19/2007 Ubuntu
+</code></pre></div></div>
+
+<p>and the second file, which contains the release dates and the version numbers:</p>
+
+<p>第二個檔案包含發行日期和版本號：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cut -f 2,2 distros-by-date.txt &gt; distros-vernums.txt
+[me@linuxbox ~]$ paste distros-dates.txt distros-vernums.txt &gt; distros-key-vernums.txt
+[me@linuxbox ~]$ head distros-key-vernums.txt
+11/25/2008 10
+10/30/2008 8.10
+06/19/2008 11.0
+05/13/2008 9
+04/24/2008 8.04
+11/08/2007 8
+10/18/2007 7.10
+10/04/2007 10.3
+05/31/2007 7
+04/19/2007 7.04
+</code></pre></div></div>
+
+<p>We now have two files with a shared key (the “release date” field). It is important to
+point out that the files must be sorted on the key field for join to work properly.</p>
+
+<p>現在我們有兩個具有共享鍵值（「發行日期」資料域 ）的檔案。有必要指出，為了使 join 命令
+能正常工作，所有檔案必須按照關鍵資料域排序。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ join distros-key-names.txt distros-key-vernums.txt | head
+11/25/2008 Fedora 10
+10/30/2008 Ubuntu 8.10
+06/19/2008 SUSE 11.0
+05/13/2008 Fedora 9
+04/24/2008 Ubuntu 8.04
+11/08/2007 Fedora 8
+10/18/2007 Ubuntu 7.10
+10/04/2007 SUSE 10.3
+05/31/2007 Fedora 7
+04/19/2007 Ubuntu 7.04
+</code></pre></div></div>
+
+<p>Note also that, by default, join uses whitespace as the input field delimiter and a single
+space as the output field delimiter. This behavior can be modified by specifying options.
+See the join man page for details.</p>
+
+<p>也要注意，預設情況下，join 命令使用空白字元做為輸入欄位的界定符，一個空格作為輸出欄位
+的界定符。這種行為可以透過指定的選項來修改。詳細資訊，參考 join 命令手冊。</p>
+
+<h3 id="比較文字">比較文字</h3>
+
+<p>It is often useful to compare versions of text files. For system administrators and
+software developers, this is particularly important. A system administrator may, for
+example, need to compare an existing configuration file to a previous version to diagnose
+a system problem. Likewise, a programmer frequently needs to see what changes have
+been made to programs over time.</p>
+
+<p>通常比較文字檔案的版本很有幫助。對於系統管理員和軟體開發者來說，這個尤為重要。
+一名系統管理員可能，例如，需要拿現有的配置檔案與先前的版本做比較，來診斷一個系統錯誤。
+同樣的，一名程式設計師經常需要檢視程式的修改。</p>
+
+<h4 id="comm">comm</h4>
+
+<p>The comm program compares two text files and displays the lines that are unique to each
+one and the lines they have in common. To demonstrate, we will create two nearly
+identical text files using cat:</p>
+
+<p>這個 comm 程式會比較兩個文字檔案，並且會顯示每個檔案特有的文字行和共有的文把行。
+為了說明問題，透過使用 cat 命令，我們將會建立兩個內容幾乎相同的文字檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat &gt; file1.txt
+a
+b
+c
+d
+[me@linuxbox ~]$ cat &gt; file2.txt
+b
+c
+d
+e
+</code></pre></div></div>
+
+<p>Next, we will compare the two files using comm:</p>
+
+<p>下一步，我們將使用 comm 命令來比較這兩個檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ comm file1.txt file2.txt
+a
+        b
+        c
+        d
+    e
+</code></pre></div></div>
+
+<p>As we can see, comm produces three columns of output. The first column contains lines
+unique to the first file argument; the second column, the lines unique to the second file
+argument; the third column contains the lines shared by both files. comm supports
+options in the form -n where n is either 1, 2 or 3. When used, these options specify
+which column(s) to suppress. For example, if we only wanted to output the lines shared
+by both files, we would suppress the output of columns one and two:</p>
+
+<p>正如我們所見到的，comm 命令產生了三列輸出。第一列包含第一個檔案獨有的文字行；第二列，
+文字行是第二列獨有的；第三列包含兩個檔案共有的文字行。comm 支援 -n 形式的選項，這裡 n 代表
+1，2 或 3。這些選項使用的時候，指定了要隱藏的列。例如，如果我們只想輸出兩個檔案共享的文字行，
+我們將隱藏第一列和第二列的輸出結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ comm -12 file1.txt file2.txt
+b
+c
+d
+</code></pre></div></div>
+
+<h4 id="diff">diff</h4>
+
+<p>Like the comm program, diff is used to detect the differences between files. However,
+diff is a much more complex tool, supporting many output formats and the ability to
+process large collections of text files at once. diff is often used by software developers
+to examine changes between different versions of program source code, and thus has the
+ability to recursively examine directories of source code often referred to as source trees.
+One common use for diff is the creation of diff files or patches that are used by
+programs such as patch (which we’ll discuss shortly) to convert one version of a file (or
+files) to another version.</p>
+
+<p>類似於 comm 程式，diff 程式被用來監測檔案之間的差異。然而，diff 是一款更加複雜的工具，它支援
+許多輸出格式，並且一次能處理許多文字檔案。軟體開發員經常使用 diff 程式來檢查不同程式原始碼
+版本之間的更改，diff 能夠遞迴地檢查原始碼目錄，經常稱之為原始碼樹。diff 程式的一個常見用例是
+建立 diff 檔案或者補丁，它會被其它程式使用，例如 patch 程式（我們一會討論），來把檔案
+從一個版本轉換為另一個版本。</p>
+
+<p>If we use diff to look at our previous example files:</p>
+
+<p>如果我們使用 diff 程式，來檢視我們之前的檔案範例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ diff file1.txt file2.txt
+1d0
+&lt; a
+4a4
+&gt; e
+</code></pre></div></div>
+
+<p>we see its default style of output: a terse description of the differences between the two
+files. In the default format, each group of changes is preceded by a change command in
+the form of <em>range operation range</em> to describe the positions and type of changes required
+to convert the first file to the second file:</p>
+
+<p>我們看到 diff 程式的預設輸出風格：對兩個檔案之間差異的簡短描述。在預設格式中，
+每組的更改之前都是一個更改命令，其形式為 <em>range operation range</em> ，
+用來描述要求更改的位置和型別，從而把第一個檔案轉變為第二個檔案：</p>
+
+<table class="multi">
+<caption class="cap">Table 21-4: diff Change Commands</caption>
+<tr>
+<th class="title">Change</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="25%">r1ar2</td>
+<td valign="top">Append the lines at the position r2 in the second file to the position
+r1 in the first file.</td>
+</tr>
+<tr>
+<td valign="top">r1cr2</td>
+<td valign="top">Change (replace) the lines at position r1 with the lines at the
+position r2 in the second file.</td>
+</tr>
+<tr>
+<td valign="top">r1dr2</td>
+<td valign="top">Delete the lines in the first file at position r1, which would have
+appeared at range r2 in the second file.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表21-4: diff 更改命令</caption>
+<tr>
+<th class="title">改變</th>
+<th class="title">說明</th>
+</tr>
+<tr>
+<td valign="top" width="25%">r1ar2</td>
+<td valign="top">把第二個檔案中位置 r2 處的檔案行新增到第一個檔案中的 r1 處。</td>
+</tr>
+<tr>
+<td valign="top">r1cr2</td>
+<td valign="top">用第二個檔案中位置 r2 處的文字行更改（替代）位置 r1 處的文字行。</td>
+</tr>
+<tr>
+<td valign="top">r1dr2</td>
+<td valign="top">刪除第一個檔案中位置 r1 處的文字行，這些文字行將會出現在第二個檔案中位置 r2 處。</td>
+</tr>
+</table>
+
+<p>In this format, a range is a comma separated list of the starting line and the ending line.
+While this format is the default (mostly for POSIX compliance and backward
+compatibility with traditional Unix versions of diff), it is not as widely used as other,
+optional formats. Two of the more popular formats are the <em>context format</em> and the <em>unified
+format</em>.</p>
+
+<p>在這種格式中，一個範圍就是由逗號分隔開的開頭行和結束行的列表。雖然這種格式是預設情況（主要是
+為了服從 POSIX 標準且向後與傳統的 Unix diff 命令相容），
+但是它並不像其它可選格式一樣被廣泛地使用。最流行的兩種格式是上下文模式和統一模式。</p>
+
+<p>When viewed using the <em>context format</em> (the -c option), we will see this:</p>
+
+<p>當使用上下文模式（帶上 -c 選項），我們將看到這些：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ diff -c file1.txt file2.txt
+*** file1.txt    2008-12-23 06:40:13.000000000 -0500
+--- file2.txt   2008-12-23 06:40:34.000000000 -0500
+***************
+*** 1,4 ****
+- a
+  b
+  c
+  d
+--- 1,4 ----
+  b
+  c
+  d
+  + e
+</code></pre></div></div>
+
+<p>The output begins with the names of the two files and their timestamps. The first file is
+marked with asterisks and the second file is marked with dashes. Throughout the
+remainder of the listing, these markers will signify their respective files. Next, we see
+groups of changes, including the default number of surrounding context lines. In the first
+group, we see:</p>
+
+<p>這個輸出結果以兩個檔名和它們的時間戳開頭。第一個檔案用星號做標記，第二個檔案用短橫線做標記。
+縱觀列表的其它部分，這些標記將象徵它們各自代表的檔案。下一步，我們看到幾組修改，
+包括預設的周圍上下文行數。在第一組中，我們看到：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>*** 1,4 ***
+</code></pre></div></div>
+
+<p>which indicates lines one through four in the first file. Later we see:</p>
+
+<p>其表示第一個檔案中從第一行到第四行的文字行。隨後我們看到：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">--- 1,4 ---
+</span></code></pre></div></div>
+
+<p>which indicates lines one through four in the second file. Within a change group, lines
+begin with one of four indicators:</p>
+
+<p>這表示第二個檔案中從第一行到第四行的文字行。在更改組內，文字行以四個指示符之一開頭：</p>
+
+<table class="multi">
+<caption class="cap">Table 21-5: diff Context Format Change Indicators</caption>
+<tr>
+<th class="title">Indicator</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top" width="25%">blank</td>
+<td valign="top">A line shown for context. It does not indicate a difference between the two files.</td>
+</tr>
+<tr>
+<td valign="top">-</td>
+<td valign="top">A line deleted. This line will appear in the first file but not in the second file.</td>
+</tr>
+<tr>
+<td valign="top">+</td>
+<td valign="top">A line added. This line will appear in the second file but not in the first file.</td>
+</tr>
+<tr>
+<td valign="top">!</td>
+<td valign="top">A line changed. The two versions of the line will be displayed, each
+in its respective section of the change group.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表21-5: diff 上下文模式更改指示符</caption>
+<tr>
+<th class="title">指示符</th>
+<th class="title">意思</th>
+</tr>
+<tr>
+<td valign="top" width="25%">blank</td>
+<td valign="top">上下文顯示行。它並不表示兩個檔案之間的差異。</td>
+</tr>
+<tr>
+<td valign="top">-</td>
+<td valign="top">刪除行。這一行將會出現在第一個檔案中，而不是第二個檔案內。</td>
+</tr>
+<tr>
+<td valign="top">+</td>
+<td valign="top">新增行。這一行將會出現在第二個檔案內，而不是第一個檔案中。</td>
+</tr>
+<tr>
+<td valign="top">!</td>
+<td valign="top">更改行。將會顯示某個文字行的兩個版本，每個版本會出現在更改組的各自部分。</td>
+</tr>
+</table>
+
+<p>The <em>unified format</em> is similar to the <em>context format</em>, but is more concise. It is specified
+with the -u option:</p>
+
+<p>這個統一模式相似於上下文模式，但是更加簡潔。透過 -u 選項來指定它：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ diff -u file1.txt file2.txt
+--- file1.txt 2008-12-23 06:40:13.000000000 -0500
++++ file2.txt 2008-12-23 06:40:34.000000000 -0500
+@@ -1,4 +1,4 @@
+-a
+ b
+ c
+ d
++e
+</code></pre></div></div>
+
+<p>The most notable difference between the context and unified formats is the elimination of
+the duplicated lines of context, making the results of the unified format shorter than the
+context format. In our example above, we see file timestamps like those of the context
+format, followed by the string @@ -1,4 +1,4 @@. This indicates the lines in the first
+file and the lines in the second file described in the change group. Following this are the
+lines themselves, with the default three lines of context. Each line starts with one of three
+possible characters:</p>
+
+<p>上下文模式和統一模式之間最顯著的差異就是重複上下文的消除，這就使得統一模式的輸出結果要比上下文
+模式的輸出結果簡短。在我們上述範例中，我們看到類似於上下文模式中的檔案時間戳，其緊緊跟隨字串
+@@ -1,4 +1,4 @@。這行字串表示了在更改組中描述的第一個檔案中的文字行和第二個檔案中的文字行。
+這行字串之後就是文字行本身，與三行預設的上下文。每行以可能的三個字元中的一個開頭：</p>
+
+<table class="multi">
+<caption class="cap">Table 21-6: diff Unified Format Change Indicators</caption>
+<tr>
+<th class="title">Character</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top" width="25%">blank</td>
+<td valign="top">This line is shared by both files.</td>
+</tr>
+<tr>
+<td valign="top">-</td>
+<td valign="top">This line was removed from the first file.</td>
+</tr>
+<tr>
+<td valign="top">+</td>
+<td valign="top">This line was added to the first file.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表21-6: diff 統一模式更改指示符</caption>
+<tr>
+<th class="title">字元</th>
+<th class="title">意思</th>
+</tr>
+<tr>
+<td valign="top" width="25%">空格</td>
+<td valign="top">兩個檔案都包含這一行。</td>
+</tr>
+<tr>
+<td valign="top">-</td>
+<td valign="top">在第一個檔案中刪除這一行。</td>
+</tr>
+<tr>
+<td valign="top">+</td>
+<td valign="top">新增這一行到第一個檔案中。</td>
+</tr>
+</table>
+
+<h4 id="patch">patch</h4>
+
+<p>The patch program is used to apply changes to text files. It accepts output from diff
+and is generally used to convert older version of files into newer versions. Let's consider
+a famous example. The Linux kernel is developed by a large, loosely organized team of
+contributors who submit a constant stream of small changes to the source code. The
+Linux kernel consists of several million lines of code, while the changes that are made by
+one contributor at one time are quite small. It makes no sense for a contributor to send
+each developer an entire kernel source tree each time a small change is made. Instead, a
+diff file is submitted. The diff file contains the change from the previous version of the
+kernel to the new version with the contributor’s changes. The receiver then uses the
+patch program to apply the change to his own source tree. Using diff/patch offers
+two significant advantages:</p>
+
+<p>這個 patch 程式被用來把更改應用到文字檔案中。它接受從 diff 程式的輸出，並且通常被用來
+把較老的檔案版本轉變為較新的檔案版本。讓我們考慮一個著名的例子。Linux 核心是由一個
+大型的，組織鬆散的貢獻者團隊開發而成，這些貢獻者會提交固定的少量更改到原始碼包中。
+這個 Linux 核心由幾百萬行程式碼組成，雖然每個貢獻者每次所做的修改相當少。對於一個貢獻者
+來說，每做一個修改就給每個開發者傳送整個的核心原始碼樹，這是沒有任何意義的。相反，
+提交一個 diff 檔案。一個 diff 檔案包含先前的核心版本與帶有貢獻者修改的新版本之間的差異。
+然後一個接受者使用 patch 程式，把這些更改應用到他自己的原始碼樹中。使用 diff/patch 組合提供了
+兩個重大優點：</p>
+
+<ol>
+  <li>
+    <p>The diff file is very small, compared to the full size of the source tree.</p>
+  </li>
+  <li>
+    <p>The diff file concisely shows the change being made, allowing reviewers of the patch to quickly evaluate it.</p>
+  </li>
+</ol>
+<ol>
+  <li>
+    <p>一個 diff 檔案非常小，與整個原始碼樹的大小相比較而言。</p>
+  </li>
+  <li>
+    <p>一個 diff 檔案簡潔地顯示了所做的修改，從而允許程式補丁的審閱者能快速地評估它。</p>
+  </li>
+</ol>
+
+<p>Of course, diff/patch will work on any text file, not just source code. It would be
+equally applicable to configuration files or any other text.</p>
+
+<p>當然，diff/patch 能工作於任何文字檔案，不僅僅是原始碼檔案。它同樣適用於配置檔案或任意其它文字。</p>
+
+<p>To prepare a diff file for use with patch, the GNU documentation (see Further Reading
+below) suggests using diff as follows:</p>
+
+<p>準備一個 diff 檔案供 patch 程式使用，GNU 文件（檢視下面的拓展閱讀部分）建議這樣使用 diff 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gh">diff -Naur old_file new_file &gt; diff_file
+</span></code></pre></div></div>
+
+<p>Where old_file and new_file are either single files or directories containing files. The r
+option supports recursion of a directory tree.</p>
+
+<p>old_file 和 new_file 部分不是單個檔案就是包含檔案的目錄。這個 r 選項支援遞迴目錄樹。</p>
+
+<p>Once the diff file has been created, we can apply it to patch the old file into the new file:</p>
+
+<p>一旦建立了 diff 檔案，我們就能應用它，把舊檔案修補成新檔案。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>patch &lt; diff_file
+</code></pre></div></div>
+
+<p>We’ll demonstrate with our test file:</p>
+
+<p>我們將使用測試檔案來說明：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ diff -Naur file1.txt file2.txt &gt; patchfile.txt
+[me@linuxbox ~]$ patch &lt; patchfile.txt
+patching file file1.txt
+[me@linuxbox ~]$ cat file1.txt
+b
+c
+d
+e
+</code></pre></div></div>
+
+<p>In this example, we created a diff file named patchfile.txt and then used the
+patch program to apply the patch. Note that we did not have to specify a target file to
+patch, as the diff file (in unified format) already contains the filenames in the header.
+Once the patch is applied, we can see that file1.txt now matches file2.txt.</p>
+
+<p>在這個例子中，我們建立了一個名為 patchfile.txt 的 diff 檔案，然後使用 patch 程式，
+來應用這個補丁。注意我們沒有必要指定一個要修補的目標檔案，因為 diff 檔案（在統一模式中）已經
+在標題行中包含了檔名。一旦應用了補丁，我們能看到，現在 file1.txt 與 file2.txt 檔案相匹配了。</p>
+
+<p>patch has a large number of options, and there are additional utility programs that can
+be used to analyze and edit patches.</p>
+
+<p>patch 程式有大量的選項，而且還有額外的實用程式可以被用來分析和編輯補丁。</p>
+
+<h3 id="執行時編輯">執行時編輯</h3>
+
+<p>Our experience with text editors has been largely interactive, meaning that we manually
+move a cursor around, then type our changes. However, there are non-interactive ways to
+edit text as well. It’s possible, for example, to apply a set of changes to multiple files
+with a single command.</p>
+
+<p>我們對於文字編輯器的經驗是它們主要是互動式的，意思是我們手動移動游標，然後輸入我們的修改。
+然而，也有非互動式的方法來編輯文字。有可能，例如，透過單個命令把一系列修改應用到多個檔案中。</p>
+
+<h4 id="tr">tr</h4>
+
+<p>The tr program is used to transliterate characters. We can think of this as a sort of
+character-based search-and-replace operation. Transliteration is the process of changing
+characters from one alphabet to another. For example, converting characters from
+lowercase to uppercase is transliteration. We can perform such a conversion with tr as
+follows:</p>
+
+<p>這個 tr 程式被用來更改字元。我們可以把它看作是一種基於字元的查詢和替換操作。
+換字是一種把字元從一個字母轉換為另一個字母的過程。例如，把小寫字母轉換成大寫字母就是
+換字。我們可以透過 tr 命令來執行這樣的轉換，如下所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "lowercase letters" | tr a-z A-Z
+LOWERCASE LETTERS
+</code></pre></div></div>
+
+<p>As we can see, tr operates on standard input, and outputs its results on standard output.
+tr accepts two arguments: a set of characters to convert from and a corresponding set of
+characters to convert to. Character sets may be expressed in one of three ways:</p>
+
+<p>正如我們所見，tr 命令操作標準輸入，並把結果輸出到標準輸出。tr 命令接受兩個引數：要被轉換的字符集以及
+相對應的轉換後的字符集。字符集可以用三種方式來表示：</p>
+
+<ol>
+  <li>
+    <p>An enumerated list. For example, ABCDEFGHIJKLMNOPQRSTUVWXYZ</p>
+  </li>
+  <li>
+    <p>A character range. For example, A-Z. Note that this method is sometimes
+subject to the same issues as other commands, due to the locale collation order,
+and thus should be used with caution.</p>
+  </li>
+  <li>
+    <p>POSIX character classes. For example, [:upper:].</p>
+  </li>
+</ol>
+<ol>
+  <li>
+    <p>一個列舉列表。例如， ABCDEFGHIJKLMNOPQRSTUVWXYZ</p>
+  </li>
+  <li>
+    <p>一個字元域。例如，A-Z 。注意這種方法有時候面臨與其它命令相同的問題，歸因於
+語系的排序規則，因此應該謹慎使用。</p>
+  </li>
+  <li>
+    <p>POSIX 字元類別。例如，[:upper:]</p>
+  </li>
+</ol>
+
+<p>In most cases, both character sets should be of equal length; however, it is possible for
+the first set to be larger than the second, particularly if we wish to convert multiple
+characters to a single character:</p>
+
+<p>大多數情況下，兩個字符集應該長度相同；然而，有可能第一個集合大於第二個，尤其如果我們
+想要把多個字元轉換為單個字元：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "lowercase letters" | tr [:lower:] A
+AAAAAAAAA AAAAAAA
+</code></pre></div></div>
+
+<p>In addition to transliteration, tr allows characters to simply be deleted from the input
+stream. Earlier in this chapter, we discussed the problem of converting MS-DOS text
+files to Unix style text. To perform this conversion, carriage return characters need to be
+removed from the end of each line. This can be performed with tr as follows:</p>
+
+<p>除了換字之外，tr 命令能允許字元從輸入流中簡單地被刪除。在之前的章節中，我們討論了轉換
+MS-DOS 文字檔案為 Unix 風格文字的問題。為了執行這個轉換，每行末尾的回車符需要被刪除。
+這個可以透過 tr 命令來執行，如下所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tr -d '\r' &lt; dos_file &gt; unix_file
+</code></pre></div></div>
+
+<p>where dos_file is the file to be converted and unix_file is the result. This form of the
+command uses the escape sequence \r to represent the carriage return character. To see
+a complete list of the sequences and character classes tr supports, try:</p>
+
+<p>這裡的 dos_file 是需要被轉換的檔案，unix_file
+是轉換後的結果。這種形式的命令使用轉義序列 \r 來代表回車符。檢視 tr
+命令所支援地完整的轉義序列和字元類別列表，試試下面的命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ tr --help
+</code></pre></div></div>
+
+<blockquote>
+  <p>ROT13: The Not-So-Secret Decoder Ring</p>
+
+  <p>ROT13: 不那麼祕密的編碼環</p>
+
+  <p>One amusing use of tr is to perform ROT13 encoding of text. ROT13 is a trivial
+type of encryption based on a simple substitution cipher. Calling ROT13
+“encryption” is being generous; “text obfuscation” is more accurate. It is used
+sometimes on text to obscure potentially offensive content. The method simply
+moves each character thirteen places up the alphabet. Since this is half way up
+the possible twenty-six characters, performing the algorithm a second time on the
+text restores it to its original form. To perform this encoding with tr:</p>
+
+  <p>tr 命令的一個有趣的用法是執行 ROT13文字編碼。ROT13是一款微不足道的基於一種簡易的替換暗碼的
+加密型別。把 ROT13稱為“加密”是過譽了；稱其為“文字模糊處理”則更準確些。有時候它被用來隱藏文字中潛在的攻擊內容。
+這個方法就是簡單地把每個字元在字母表中向前移動13位。因為移動的位數是可能的26個字元的一半，
+所以對文字再次執行這個演算法，就恢復到了它最初的形式。透過 tr 命令來執行這種編碼：</p>
+
+  <table>
+    <tbody>
+      <tr>
+        <td>echo “secret text”</td>
+        <td>tr a-zA-Z n-za-mN-ZA-M</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>frperg grkg</p>
+
+  <p>Performing the same procedure a second time results in the translation:</p>
+
+  <p>再次執行相同的過程，得到翻譯結果：</p>
+
+  <table>
+    <tbody>
+      <tr>
+        <td>echo “frperg grkg”</td>
+        <td>tr a-zA-Z n-za-mN-ZA-M</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>secret text</p>
+
+  <p>A number of email programs and USENET news readers support ROT13
+encoding. Wikipedia contains a good article on the subject:</p>
+
+  <p>大量的 email 程式和 USENET 新聞讀者都支援 ROT13 編碼。Wikipedia 上面有一篇關於這個主題的好文章：</p>
+
+  <p><a href="http://en.wikipedia.org/wiki/ROT13">http://en.wikipedia.org/wiki/ROT13</a></p>
+</blockquote>
+
+<p>tr can perform another trick, too. Using the -s option, tr can “squeeze” (delete)
+repeated instances of a character:</p>
+
+<p>tr 也可以完成另一個技巧。使用-s 選項，tr 命令能“擠壓”（刪除）重複的字元範例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "aaabbbccc" | tr -s ab
+abccc
+</code></pre></div></div>
+
+<p>Here we have a string containing repeated characters. By specifying the set “ab” to tr,
+we eliminate the repeated instances of the letters in the set, while leaving the character
+that is missing from the set (“c”) unchanged. Note that the repeating characters must be
+adjoining. If they are not:</p>
+
+<p>這裡我們有一個包含重複字元的字串。透過給 tr 命令指定字符集“ab”，我們能夠消除字符集中
+字母的重複範例，然而會留下不屬於字符集的字元（“c”）無更改。注意重複的字元必須是相鄰的。
+如果它們不相鄰：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "abcabcabc" | tr -s ab
+abcabcabc
+</code></pre></div></div>
+
+<p>the squeezing will have no effect.</p>
+
+<p>那麼擠壓會沒有效果。</p>
+
+<h4 id="sed">sed</h4>
+
+<p>The name sed is short for stream editor. It performs text editing on a stream of text,
+either a set of specified files or standard input. sed is a powerful and somewhat complex
+program (there are entire books about it), so we will not cover it completely here.</p>
+
+<p>名字 sed 是 stream editor（流編輯器）的簡稱。它對文字流，即一系列指定的檔案或標準輸入進行編輯。sed 是一款強大的，並且有些複雜的程式（有整本內容都是關於 sed 程式的書籍），所以在這裡我們不會詳盡的討論它。</p>
+
+<p>In general, the way that sed works is that it is given either a single editing command (on
+the command line) or the name of a script file containing multiple commands, and it then
+performs these commands upon each line in the stream of text. Here is a very simple
+example of sed in action:</p>
+
+<p>總之，sed 的工作方式是要不給出單個編輯命令（在命令列中）要不就是包含多個命令的指令碼檔名，
+然後它就按行來執行這些命令。這裡有一個非常簡單的 sed 範例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "front" | sed 's/front/back/'
+back
+</code></pre></div></div>
+
+<p>In this example, we produce a one word stream of text using echo and pipe it into sed.
+sed, in turn, carries out the instruction s/front/back/ upon the text in the stream
+and produces the output “back” as a result. We can also recognize this command as
+resembling the “substitution” (search and replace) command in vi.</p>
+
+<p>在這個例子中，我們使用 echo 命令產生了一個單詞的文字流，然後把它管道給 sed 命令。sed，依次，
+對流文字執行指令 s/front/back/，隨後輸出“back”。我們也能夠把這個命令認為是相似於 vi 中的“替換”
+（查詢和替代）命令。</p>
+
+<p>Commands in sed begin with a single letter. In the example above, the substitution
+command is represented by the letter s and is followed by the search and replace strings,
+separated by the slash character as a delimiter. The choice of the delimiter character is
+arbitrary. By convention, the slash character is often used, but sed will accept any
+character that immediately follows the command as the delimiter. We could perform the
+same command this way:</p>
+
+<p>sed 中的命令開始於單個字元。在上面的例子中，這個替換命令由字母 s 來代表，其後跟著查詢
+和替代字串，斜槓字元做為分隔符。分隔符的選擇是隨意的。按照慣例，經常使用斜槓字元，
+但是 sed 將會接受緊隨命令之後的任意字元做為分隔符。我們可以按照這種方式來執行相同的命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "front" | sed 's_front_back_'
+back
+</code></pre></div></div>
+
+<p>By using the underscore character immediately after the command, it becomes the
+delimiter. The ability to set the delimiter can be used to make commands more readable,
+as we shall see.</p>
+
+<p>透過緊跟命令之後使用下劃線字元，則它變成界定符。sed 可以設定界定符的能力，使命令的可讀性更強，
+正如我們將看到的.</p>
+
+<p>Most commands in sed may be preceded by an address, which specifies which line(s) of
+the input stream will be edited. If the address is omitted, then the editing command is
+carried out on every line in the input stream. The simplest form of address is a line
+number. We can add one to our example:</p>
+
+<p>sed 中的大多數命令之前都會帶有一個地址，其指定了輸入流中要被編輯的文字行。如果省略了地址，
+然後會對輸入流的每一行執行編輯命令。最簡單的地址形式是一個行號。我們能夠新增一個地址
+到我們例子中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "front" | sed '1s/front/back/'
+back
+</code></pre></div></div>
+
+<p>Adding the address 1 to our command causes our substitution to be performed on the first
+line of our one-line input stream. If we specify another number:</p>
+
+<p>給我們的命令新增地址 1，就導致只對僅有一行文字的輸入流的第一行執行替換操作。如果我們指定另一
+個數字：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "front" | sed '2s/front/back/'
+front
+</code></pre></div></div>
+
+<p>we see that the editing is not carried out, since our input stream does not have a line two.
+Addresses may be expressed in many ways. Here are the most common:</p>
+
+<p>我們看到沒有執行這個編輯命令，因為我們的輸入流沒有第二行。地址可以用許多方式來表達。這裡是
+最常用的：</p>
+
+<table class="multi">
+<caption class="cap">Table 21-7: sed Address Notation</caption>
+<tr>
+<th class="title">Address</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="25%">n</td>
+<td valign="top">A line number where n is a positive integer.</td>
+</tr>
+<tr>
+<td valign="top">$</td>
+<td valign="top">The last line.</td>
+</tr>
+<tr>
+<td valign="top">/regexp/ </td>
+<td valign="top">Lines matching a POSIX basic regular expression. Note that
+the regular expression is delimited by slash characters.
+Optionally, the regular expression may be delimited by an
+alternate character, by specifying the expression with
+\cregexpc, where c is the alternate character.</td>
+</tr>
+<tr>
+<td valign="top">addr1,addr2 </td>
+<td valign="top">A range of lines from addr1 to addr2, inclusive. Addresses
+may be any of the single address forms above.</td>
+</tr>
+<tr> a range of line numbers
+<td valign="top">first~step </td>
+<td valign="top">Match the line represented by the number first, then each
+subsequent line at step intervals. For example 1~2 refers to
+each odd numbered line, 5~5 refers to the fifth line and every
+fifth line thereafter.</td>
+</tr>
+<tr>
+<td valign="top">addr1,+n </td>
+<td valign="top">Match addr1 and the following n lines.</td>
+</tr>
+<tr>
+<td valign="top">addr! </td>
+<td valign="top">Match all lines except addr, which may be any of the forms above.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表21-7: sed 地址表示法</caption>
+<tr>
+<th class="title">地址</th>
+<th class="title">說明</th>
+</tr>
+<tr>
+<td valign="top" width="25%">n</td>
+<td valign="top">行號，n 是一個正整數。</td>
+</tr>
+<tr>
+<td valign="top">$</td>
+<td valign="top">最後一行。</td>
+</tr>
+<tr>
+<td valign="top">/regexp/ </td>
+<td valign="top">所有匹配一個 POSIX 基本正則表示式的文字行。注意正則表示式透過
+斜槓字元界定。選擇性地，這個正則表示式可能由一個備用字元界定，透過\cregexpc 來
+指定表示式，這裡 c 就是一個備用的字元。</td>
+</tr>
+<tr>
+<td valign="top">addr1,addr2 </td>
+<td valign="top">從 addr1 到 addr2 範圍內的文字行，包含地址 addr2 在內。地址可能是上述任意
+單獨的地址形式。</td>
+</tr>
+<tr>
+<td valign="top">first~step </td>
+<td valign="top">匹配由數字 first 代表的文字行，然後隨後的每個在 step 間隔處的文字行。例如
+1~2 是指每個位於偶數行號的文字行，5~5 則指第五行和之後每五行位置的文字行。</td>
+</tr>
+<tr>
+<td valign="top">addr1,+n </td>
+<td valign="top">匹配地址 addr1 和隨後的 n 個文字行。</td>
+</tr>
+<tr>
+<td valign="top">addr! </td>
+<td valign="top">匹配所有的文字行，除了 addr 之外，addr 可能是上述任意的地址形式。</td>
+</tr>
+</table>
+
+<p>We’ll demonstrate different kinds of addresses using the distros.txt file from earlier
+in this chapter. First, a range of line numbers:</p>
+
+<p>透過使用這一章中早前的 distros.txt 檔案，我們將示範不同種類的地址表示法。首先，一系列行號：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sed -n '1,5p' distros.txt
+SUSE           10.2     12/07/2006
+Fedora         10       11/25/2008
+SUSE           11.0     06/19/2008
+Ubuntu         8.04     04/24/2008
+Fedora         8        11/08/2007
+</code></pre></div></div>
+
+<p>In this example, we print a range of lines, starting with line one and continuing to line
+five. To do this, we use the p command, which simply causes a matched line to be
+printed. For this to be effective however, we must include the option -n (the no auto-
+print option) to cause sed not to print every line by default.</p>
+
+<p>在這個例子中，我們打印出一系列的文字行，開始於第一行，直到第五行。為此，我們使用 p 命令，
+其就是簡單地把匹配的文字行打印出來。然而為了高效，我們必須包含選項 -n（不自動列印選項），
+讓 sed 不要預設地列印每一行。</p>
+
+<p>Next, we’ll try a regular expression:</p>
+
+<p>下一步，我們將試用一下正則表示式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sed -n '/SUSE/p' distros.txt
+SUSE         10.2     12/07/2006
+SUSE         11.0     06/19/2008
+SUSE         10.3     10/04/2007
+SUSE         10.1     05/11/2006
+</code></pre></div></div>
+
+<p>By including the slash-delimited regular expression /SUSE/, we are able to isolate the
+lines containing it in much the same manner as grep.</p>
+
+<p>透過包含由斜槓界定的正則表示式 \/SUSE\/，我們能夠孤立出包含它的文字行，和 grep 程式的功能
+是相同的。</p>
+
+<p>Finally, we’ll try negation by adding an ! to the address:</p>
+
+<p>最後，我們將試著否定上面的操作，透過給這個地址新增一個感嘆號：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sed -n '/SUSE/!p' distros.txt
+Fedora         10       11/25/2008
+Ubuntu         8.04     04/24/2008
+Fedora         8        11/08/2007
+Ubuntu         6.10     10/26/2006
+Fedora         7        05/31/2007
+Ubuntu         7.10     10/18/2007
+Ubuntu         7.04     04/19/2007
+Fedora         6        10/24/2006
+Fedora         9        05/13/2008
+Ubuntu         6.06     06/01/2006
+Ubuntu         8.10     10/30/2008
+Fedora         5        03/20/2006
+</code></pre></div></div>
+
+<p>Here we see the expected result: all of the lines in the file except the ones matched by the
+regular expression.</p>
+
+<p>這裡我們看到期望的結果：輸出了檔案中所有的文字行，除了那些匹配這個正則表示式的文字行。</p>
+
+<p>So far, we’ve looked at two of the sed editing commands, s and p. Here is a more
+complete list of the basic editing commands:</p>
+
+<p>目前為止，我們已經知道了兩個 sed 的編輯命令，s 和 p。這裡是一個更加全面的基本編輯命令列表：</p>
+
+<table class="multi">
+<caption class="cap">Table 21-8: sed Basic Editing Commands</caption>
+<tr>
+<th class="title">Command</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="25%">=</td>
+<td valign="top">Output current line number.</td>
+</tr>
+<tr>
+<td valign="top">a</td>
+<td valign="top">Append text after the current line.</td>
+</tr>
+<tr>
+<td valign="top">d</td>
+<td valign="top">Delete the current line.</td>
+</tr>
+<tr>
+<td valign="top">i</td>
+<td valign="top">Insert text in front of the current line.</td>
+</tr>
+<tr>
+<td valign="top">p</td>
+<td valign="top">Print the current line. By default, sed prints
+every line and only edits lines that match a
+specified address within the file. The default
+behavior can be overridden by specifying the -n option.</td>
+</tr>
+<tr>
+<td valign="top">q</td>
+<td valign="top">Exit sed without processing any more lines. If
+the -n option is not specified, output the current line.</td>
+</tr>
+<tr>
+<td valign="top">Q</td>
+<td valign="top">Exit sed without processing any more lines.</td>
+</tr>
+<tr>
+<td valign="top">s/regexp/replacement/ </td>
+<td valign="top">Substitute the contents of replacement wherever
+regexp is found. replacement may include the
+special character &amp;, which is equivalent to the text
+matched by regexp. In addition, replacement may
+include the sequences \1 through \9, which are
+the contents of the corresponding subexpressions
+in regexp. For more about this, see the discussion
+of back references below. After the trailing slash
+following replacement, an optional flag may be
+specified to modify the s command’s behavior.</td>
+</tr>
+<tr>
+<td valign="top">y/set1/set2 </td>
+<td valign="top">Perform transliteration by converting characters
+from set1 to the corresponding characters in set2.
+Note that unlike tr, sed requires that both sets be of the same length.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表21-8: sed 基本編輯命令 </caption>
+<tr>
+<th class="title">命令</th>
+<th class="title">說明</th>
+</tr>
+<tr>
+<td valign="top" width="25%">=</td>
+<td valign="top">輸出當前的行號。</td>
+</tr>
+<tr>
+<td valign="top">a</td>
+<td valign="top">在當前行之後追加文字。</td>
+</tr>
+<tr>
+<td valign="top">d</td>
+<td valign="top">刪除當前行。</td>
+</tr>
+<tr>
+<td valign="top">i</td>
+<td valign="top">在當前行之前插入文字。</td>
+</tr>
+<tr>
+<td valign="top">p</td>
+<td valign="top">列印當前行。預設情況下，sed 程式列印每一行，並且只是編輯檔案中匹配
+指定地址的文字行。透過指定-n 選項，這個預設的行為能夠被忽略。</td>
+</tr>
+<tr>
+<td valign="top">q</td>
+<td valign="top">退出 sed，不再處理更多的文字行。如果不指定-n 選項，輸出當前行。</td>
+</tr>
+<tr>
+<td valign="top">Q</td>
+<td valign="top">退出 sed，不再處理更多的文字行。</td>
+</tr>
+<tr>
+<td valign="top">s/regexp/replacement/ </td>
+<td valign="top">只要找到一個 regexp 匹配項，就替換為 replacement 的內容。
+replacement 可能包括特殊字元 &amp;，其等價於由 regexp 匹配的文字。另外，
+replacement 可能包含序列 \1到 \9，其是 regexp 中相對應的子表示式的內容。更多資訊，檢視
+下面 back references 部分的討論。在 replacement 末尾的斜槓之後，可以指定一個
+可選的標誌，來修改 s 命令的行為。</td>
+</tr>
+<tr>
+<td valign="top">y/set1/set2 </td>
+<td valign="top">執行字元轉寫操作，透過把 set1 中的字元轉變為相對應的 set2 中的字元。
+注意不同於 tr 程式，sed 要求兩個字元集合具有相同的長度。</td>
+</tr>
+</table>
+
+<p>The s command is by far the most commonly used editing command. We will
+demonstrate just some of its power by performing an edit on our distros.txt file.
+We discussed before how the date field in distros.txt was not in a “computer-
+friendly” format. While the date is formatted MM/DD/YYYY, it would be better (for
+ease of sorting) if the format were YYYY-MM-DD. To perform this change on the file
+by hand would be both time-consuming and error prone, but with sed, this change can
+be performed in one step:</p>
+
+<p>到目前為止，這個 s 命令是最常使用的編輯命令。我們將僅僅示範一些它的功能，透過編輯我們的
+distros.txt 檔案。我們以前討論過 distros.txt 檔案中的日期欄位不是“友好地計算機”模式。
+檔案中的日期格式是 MM/DD/YYYY，但如果格式是 YYYY-MM-DD 會更好一些（利於排序）。手動修改
+日期格式不僅浪費時間而且易出錯，但是有了 sed，只需一步就能完成修改：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sed 's/\([0-9]\{2\}\)\/\([0-9]\{2\}\)\/\([0-9]\{4\}\)$/\3-\1-\2/' distros.txt
+SUSE           10.2     2006-12-07
+Fedora         10       2008-11-25
+SUSE           11.0     2008-06-19
+Ubuntu         8.04     2008-04-24
+Fedora         8        2007-11-08
+SUSE           10.3     2007-10-04
+Ubuntu         6.10     2006-10-26
+Fedora         7        2007-05-31
+Ubuntu         7.10     2007-10-18
+Ubuntu         7.04     2007-04-19
+SUSE           10.1     2006-05-11
+Fedora         6        2006-10-24
+Fedora         9        2008-05-13
+Ubuntu         6.06     2006-06-01
+Ubuntu         8.10     2008-10-30
+Fedora         5        2006-03-20
+</code></pre></div></div>
+
+<p>Wow! Now that is an ugly looking command. But it works. In just one step, we have
+changed the date format in our file. It is also a perfect example of why regular
+expressions are sometimes jokingly referred to as a “write-only” medium. We can write
+them, but we sometimes cannot read them. Before we are tempted to run away in terror
+from this command, Let's look at how it was constructed. First, we know that the
+command will have this basic structure:</p>
+
+<p>哇！這個命令看起來很醜陋。但是它起作用了。僅用一步，我們就更改了檔案中的日期格式。
+它也是一個關於為什麼有時候會開玩笑地把正則表示式稱為是“只寫”媒介的完美的例子。我們
+能寫正則表示式，但是有時候我們不能讀它們。在我們恐懼地忍不住要逃離此命令之前，讓我們看一下
+怎樣來建構它。首先，我們知道此命令有這樣一個基本的結構：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sed 's/regexp/replacement/' distros.txt
+</code></pre></div></div>
+
+<p>Our next step is to figure out a regular expression that will isolate the date. Since it is in
+MM/DD/YYYY format and appears at the end of the line, we can use an expression like
+this:</p>
+
+<p>我們下一步是要弄明白一個正則表示式將要孤立出日期。因為日期是 MM/DD/YYYY 格式，並且
+出現在文字行的末尾，我們可以使用這樣的表示式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[0-9]{2}/[0-9]{2}/[0-9]{4}$
+</code></pre></div></div>
+
+<p>which matches two digits, a slash, two digits, a slash, four digits, and the end of line. So
+that takes care of <em>regexp</em>, but what about <em>replacement</em>? To handle that, we must introduce
+a new regular expression feature that appears in some applications which use BRE. This
+feature is called <em>back references</em> and works like this: if the sequence \n appears in
+<em>replacement</em> where n is a number from one to nine, the sequence will refer to the
+corresponding subexpression in the preceding regular expression. To create the subexpressions,
+we simply enclose them in parentheses like so:</p>
+
+<p>此表示式匹配兩位數字，一個斜槓，兩位數字，一個斜槓，四位數字，以及行尾。如此關心 <strong>regexp</strong>，
+那麼 <strong>replacement</strong> 又怎樣呢？為了解決此問題，我們必須介紹一個正則表示式的新功能，它出現
+在一些使用 BRE 的應用程式中。這個功能叫做 <strong>逆參照</strong> ，像這樣工作：如果序列 <code class="highlighter-rouge">\n</code> 出現在 <strong>replacement</strong> 中
+，這裡 n 是指從 1 到 9 的數字，則這個序列指的是在前面正則表示式中相對應的子表示式。為了
+建立這個子表示式，我們簡單地把它們用圓括號括起來，像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>([0-9]{2})/([0-9]{2})/([0-9]{4})$
+</code></pre></div></div>
+
+<p>We now have three subexpressions. The first contains the month, the second contains the
+day of the month, and the third contains the year. Now we can construct replacement as
+follows:</p>
+
+<p>現在我們有了三個子表示式。第一個表示式包含月份，第二個包含某月中的某天，以及第三個包含年份。
+現在我們就可以建構 <strong>replacement</strong> ，如下所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\3-\1-\2
+</code></pre></div></div>
+
+<p>which gives us the year, a dash, the month, a dash, and the day.</p>
+
+<p>此表示式給出了年份，一個短劃線，月份，一個短劃線，和某天。</p>
+
+<p>Now, our command looks like this:
+現在我們的命令看起來像下面這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sed 's/([0-9]{2})/([0-9]{2})/([0-9]{4})$/\3-\1-\2/' distros.txt
+</code></pre></div></div>
+
+<p>We have two remaining problems. The first is that the extra slashes in our regular
+expression will confuse sed when it tries to interpret the s command. The second is that
+since sed, by default, accepts only basic regular expressions, several of the characters in
+our regular expression will be taken as literals, rather than as metacharacters. We can
+solve both these problems with a liberal application of backslashes to escape the
+offending characters:</p>
+
+<p>我們還有兩個問題。第一個是當 sed 試圖解釋這個 s 命令的時候在我們表示式中額外的斜槓將會使 sed 迷惑。
+第二個是由於sed預設情況下只接受基本的正則表示式，在表示式中的幾個字元會
+被當作文字字面值，而不是元字元。我們能夠透過反斜槓的自由應用來轉義令人不快的字元解決這兩個問題，：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sed 's/\([0-9]\{2\}\)\/\([0-9]\{2\}\)\/\([0-9]\{4\}\)$/\3-\1-\2/' distros.txt
+</code></pre></div></div>
+
+<p>And there you have it!</p>
+
+<p>你掌握了吧!</p>
+
+<p>Another feature of the s command is the use of optional flags that may follow the
+replacement string. The most important of these is the g flag, which instructs sed to
+apply the search and replace globally to a line, not just to the first instance, which is the
+default. Here is an example:</p>
+
+<p>s 命令的另一個功能是使用可選標誌，其跟隨替代字串。一個最重要的可選標誌是 g 標誌，其
+指示 sed 對某個文字行全範圍地執行查詢和替代操作，不僅僅是對第一個範例，這是預設行為。
+這裡有個例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "aaabbbccc" | sed 's/b/B/'
+aaaBbbccc
+</code></pre></div></div>
+
+<p>We see that the replacement was performed, but only to the first instance of the letter “b,”
+while the remaining instances were left unchanged. By adding the g flag, we are able to
+change all the instances:</p>
+
+<p>我們看到雖然執行了替換操作，但是隻針對第一個字母 “b” 範例，然而剩餘的範例沒有更改。透過新增 g 標誌，
+我們能夠更改所有的範例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "aaabbbccc" | sed 's/b/B/g'
+aaaBBBccc
+</code></pre></div></div>
+
+<p>So far, we have only given sed single commands via the command line. It is also
+possible to construct more complex commands in a script file using the -f option. To
+demonstrate, we will use sed with our distros.txt file to build a report. Our report
+will feature a title at the top, our modified dates, and all the distribution names converted
+to upper case. To do this, we will need to write a script, so we’ll fire up our text editor
+and enter the following:</p>
+
+<p>目前為止，透過命令列我們只讓 sed 執行單個命令。使用-f 選項，也有可能在一個指令碼檔案中建構更加複雜的命令。
+為了示範，我們將使用 sed 和 distros.txt 檔案來產生一個報告。我們的報告以開頭標題，修改過的日期，以及
+大寫的發行版名稱為特徵。為此，我們需要編寫一個指令碼，所以我們將開啟文字編輯器，然後輸入以下文字：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># sed script to produce Linux distributions report
+
+1 i\
+\
+Linux Distributions Report\
+
+s/\([0-9]\{2\}\)\/\([0-9]\{2\}\)\/\([0-9]\{4\}\)$/\3-\1-\2/
+y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/
+</code></pre></div></div>
+
+<p>We will save our sed script as distros.sed and run it like this:</p>
+
+<p>我們將把 sed 指令碼儲存為 distros.sed 檔案，然後像這樣執行它：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sed -f distros.sed distros.txt
+Linux Distributions Report
+SUSE	10.2	2006-12-07
+FEDORA	10	    2008-11-25
+SUSE	11.0	2008-06-19
+UBUNTU	8.04	2008-04-24
+FEDORA	8	    2007-11-08
+SUSE	10.3	2007-10-04
+UBUNTU	6.10	2006-10-26
+FEDORA	7	    2007-05-31
+UBUNTU	7.10	2007-10-18
+UBUNTU	7.04	2007-04-19
+SUSE	10.1	2006-05-11
+FEDORA	6	    2006-10-24
+FEDORA	9	    2008-05-13
+</code></pre></div></div>
+
+<p>As we can see, our script produces the desired results, but how does is do it? Let's take
+another look at our script. We’ll use cat to number the lines:</p>
+
+<p>正如我們所見，我們的指令碼檔案產生了期望的結果，但是它是如何做到的呢？讓我們再看一下我們的指令碼檔案。
+我們將使用 cat 來給每行文字編號：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat -n distros.sed
+1 # sed script to produce Linux distributions report
+2
+3 1 i\
+4 \
+5 Linux Distributions Report\
+6
+7 s/\([0-9]\{2\}\)\/\([0-9]\{2\}\)\/\([0-9]\{4\}\)$/\3-\1-\2/
+8 y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/
+</code></pre></div></div>
+
+<p>Line one of our script is a comment. Like many configuration files and programming
+languages on Linux systems, comments begin with the # character and are followed by
+human-readable text. Comments can be placed anywhere in the script (though not within
+commands themselves) and are helpful to any humans who might need to identify and/or
+maintain the script.</p>
+
+<p>我們指令碼檔案的第一行是一條註釋。如同 Linux 系統中的許多配置檔案和程式語言一樣，註釋以#字元開始，
+然後是人類可讀的文字。註釋可以被放到指令碼中的任意地方（雖然不在命令本身之中），且對任何
+可能需要理解和／或維護指令碼的人們都很有幫助。</p>
+
+<p>Line two is a blank line. Like comments, blank lines may be added to improve readability.</p>
+
+<p>第二行是一個空行。正如註釋一樣，新增空白行是為了提高程式的可讀性。</p>
+
+<p>Many sed commands support line addresses. These are used to specify which lines of
+the input are to be acted upon. Line addresses may be expressed as single line numbers,
+line number ranges, and the special line number “$” which indicates the last line of input.</p>
+
+<p>許多 sed 命令支援行地址。這些行地址被用來指定對輸入文字的哪一行執行操作。行地址可能被
+表示為單獨的行號，行號範圍，以及特殊的行號“$”，它表示輸入文字的最後一行。</p>
+
+<p>Lines three through six contain text to be inserted at the address 1, the first line of the
+input. The i command is followed by the sequence backslash-carriage return to produce
+an escaped carriage return, or what is called a line continuation character. This
+sequence, which can be used in many circumstances including shell scripts, allows a
+carriage return to be embedded in a stream of text without signaling the interpreter (in
+this case sed) that the end of the line has been reached. The i, and likewise, the a
+(which appends text, rather than inserting it) and c (which replaces text) commands,
+allow multiple lines of text as long as each line, except the last, ends with a line
+continuation character. The sixth line of our script is actually the end of our inserted text
+and ends with a plain carriage return rather than a line continuation character, signaling
+the end of the i command.</p>
+
+<p>從第三行到第六行所包含地文字要被插入到地址 1 處，也就是輸入文字的第一行中。這個 i 命令
+之後是反斜槓回車符，來產生一個轉義的回車符，或者就是所謂的連行符。這個序列能夠
+被用在許多環境下，包括 shell 指令碼，從而允許把回車符嵌入到文字流中，而沒有通知
+直譯器（在這是指 sed 直譯器）已經到達了文字行的末尾。這個 i 命令，同樣地，命令 a（追加文字，
+而不是插入文字）和 c（取代文字）命令都允許多個文字行，只要每個文字行，除了最後一行，以一個
+連行符結束。實際上，指令碼的第六行是插入文字的末尾，它以一個普通的回車符結尾，而不是一個
+連行符，通知直譯器 i 命令結束了。</p>
+
+<hr />
+
+<p>Note: A line continuation character is formed by a backslash followed immediately
+by a carriage return. No intermediary spaces are permitted.</p>
+
+<p>注意：一個連行符由一個反斜槓字元其後緊跟一個回車符組成。它們之間不允許有空白字元。</p>
+
+<hr />
+
+<p>Line seven is our search and replace command. Since it is not preceded by an address,
+each line in the input stream is subject to its action.</p>
+
+<p>第七行是我們的查詢和替代命令。因為命令之前沒有新增地址，所以輸入流中的每一行文字
+都得服從它的操作。</p>
+
+<p>Line eight performs transliteration of the lowercase letters into uppercase letters. Note
+that unlike tr, the y command in sed does not support character ranges (for example,
+[a-z]), nor does it support POSIX character classes. Again, since the y command is
+not preceded by an address, it applies to every line in the input stream.</p>
+
+<p>第八行執行小寫字母到大寫字母的字元替換操作。注意不同於 tr 命令，這個 sed 中的 y 命令不
+支援字元區域（例如，[a-z]），也不支援 POSIX 字符集。再說一次，因為 y 命令之前不帶地址，
+所以它會操作輸入流的每一行。</p>
+
+<blockquote>
+  <p>People Who Like sed Also Like…</p>
+
+  <p>喜歡 sed 的人們也會喜歡。。。</p>
+
+  <p>sed is a very capable program, able to perform fairly complex editing tasks to
+streams of text. It is most often used for simple one line tasks rather than long
+scripts. Many users prefer other tools for larger tasks. The most popular of these
+are awk and perl. These go beyond mere tools, like the programs covered here,
+and extend into the realm of complete programming languages. perl, in
+particular, is often used in place of shell scripts for many system management and
+administration tasks, as well as being a very popular medium for web
+development. awk is a little more specialized. Its specific strength is its ability to
+manipulate tabular data. It resembles sed in that awk programs normally
+process text files line-by-line, using a scheme similar to the sed concept of an
+address followed by an action. While both awk and perl are outside the scope
+of this book, they are very good skills for the Linux command line user.</p>
+
+  <p>sed 是一款非常強大的程式，它能夠針對文字流完成相當複雜的編輯任務。它最常
+用於簡單的行任務，而不是長長的指令碼。許多使用者喜歡使用其它工具，來執行較大的工作。
+在這些工具中最著名的是 awk 和 perl。它們不僅僅是工具，像這裡介紹的程式，且延伸到
+完整的程式語言領域。特別是 perl，經常被用來代替 shell 指令碼，來完成許多系統管理任務，
+同時它也是一款非常流行網路開發語言。awk 更專用一些。其具體優點是其操作表格資料的能力。
+awk 程式通常逐行處理文字檔案，這點類似於 sed，awk 使用了一種方案，其與 sed 中地址
+之後跟隨編輯命令的概念相似。雖然關於 awk 和 perl 的內容都超出了本書所討論的範圍，
+但是對於 Linux 命令列使用者來說，它們都是非常好的技能。</p>
+</blockquote>
+
+<h4 id="aspell">aspell</h4>
+
+<p>The last tool we will look at is aspell, an interactive spelling checker. The aspell
+program is the successor to an earlier program named ispell, and can be used, for the
+most part, as a drop-in replacement. While the aspell program is mostly used by other
+programs that require spell checking capability, it can also be used very effectively as a
+stand-alone tool from the command line. It has the ability to intelligently check various
+type of text files, including HTML documents, C/C++ programs, email messages and
+other kinds of specialized texts.</p>
+
+<p>我們要檢視的最後一個工具是 aspell，一款互動式的拼寫檢查器。這個 aspell 程式是早先 ispell 程式
+的繼承者，大多數情況下，它可以被用做一個替代品。雖然 aspell 程式大多被其它需要拼寫檢查能力的
+程式使用，但它也可以作為一個獨立的命令列工具使用。它能夠智慧地檢查各種型別的文字檔案，
+包括 HTML 檔案，C/C++ 程式，電子郵件和其它種類的專業文字。</p>
+
+<p>To spell check a text file containing simple prose, it could be used like this:</p>
+
+<p>拼寫檢查一個包含簡單的文字檔案，可以這樣使用 aspell:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>aspell check textfile
+</code></pre></div></div>
+
+<p>where <em>textfile</em> is the name of the file to check. As a practical example, Let's create a
+simple text file named foo.txt containing some deliberate spelling errors:</p>
+
+<p>這裡的 textfile 是要檢查的檔名。作為一個實際例子，讓我們建立一個簡單的文字檔案，叫做 foo.txt，
+包含一些故意的拼寫錯誤：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat &gt; foo.txt
+The quick brown fox jimped over the laxy dog.
+</code></pre></div></div>
+
+<p>Next we’ll check the file using aspell:</p>
+
+<p>下一步我們將使用 aspell 來檢查檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ aspell check foo.txt
+</code></pre></div></div>
+
+<p>As aspell is interactive in the check mode, we will see a screen like this:</p>
+
+<p>因為 aspell 在檢查模式下是互動的，我們將看到像這樣的一個螢幕：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The quick brown fox jimped over the laxy dog.
+1)jumped                        6)wimped
+2)gimped                        7)camped
+3)comped                        8)humped
+4)limped                        9)impede
+5)pimped                        0)umped
+i)Ignore                        I)Ignore all
+r)Replace                       R)Replace all
+a)Add                           l)Add Lower
+b)Abort                         x)Exit
+?
+</code></pre></div></div>
+
+<p>At the top of the display, we see our text with a suspiciously spelled word highlighted. In
+the middle, we see ten spelling suggestions numbered zero through nine, followed by a
+list of other possible actions. Finally, at the very bottom, we see a prompt ready to accept
+our choice.</p>
+
+<p>在顯示屏的頂部，我們看到我們的文字中有一個拼寫可疑且高亮顯示的單詞。在中間部分，我們看到
+十個拼寫建議，序號從 0 到 9，然後是一系列其它可能的操作。最後，在最底部，我們看到一個提示符，
+準備接受我們的選擇。</p>
+
+<p>If we press the 1 key, aspell replaces the offending word with the word “jumped” and
+moves on to the next misspelled word which is “laxy.” If we select the replacement
+“lazy,” aspell replaces it and terminates. Once aspell has finished, we can examine
+our file and see that the misspellings have been corrected:</p>
+
+<p>如果我們按下 1 按鍵，aspell 會用單詞 “jumped” 代替錯誤單詞，然後移動到下一個拼寫錯的單詞，就是
+ “laxy”。如果我們選擇替代物 “lazy”，aspell 會替換 “laxy” 並且終止。一旦 aspell 結束操作，我們
+可以檢查我們的檔案，會看到拼寫錯誤的單詞已經更正了。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat foo.txt
+The quick brown fox jumped over the lazy dog.
+</code></pre></div></div>
+
+<p>Unless told otherwise via the command line option –dont-backup, aspell creates
+a backup file containing the original text by appending the extension .bak to the
+filename.</p>
+
+<p>除非由命令列選項 --dont-backup 告訴 aspell，否則透過追加副檔名.bak 到檔名中,
+aspell 會建立一個包含原始文字的備份檔案。</p>
+
+<p>Showing off our sed editing prowess, we’ll put our spelling mistakes back in so we can
+reuse our file:</p>
+
+<p>為了炫耀 sed 的編輯本領，我們將還原拼寫錯誤，從而能夠重用我們的檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sed -i 's/lazy/laxy/; s/jumped/jimped/' foo.txt
+</code></pre></div></div>
+
+<p>The sed option -i tells sed to edit the file “in-place,” meaning that rather than sending
+the edited output to standard output, it will re-write the file with the changes applied. We
+also see the ability to place more than one editing command on the line by separating
+them with a semicolon.</p>
+
+<p>這個 sed 選項-i，告訴 sed 在適當位置編輯檔案，意思是不要把編輯結果傳送到標準輸出中。sed 會把更改應用到檔案中，
+以此重新編寫檔案。我們也看到可以把多個 sed 編輯命令放在同一行，編輯命令之間由分號分隔開來。</p>
+
+<p>Next, we’ll look at how aspell can handle different kinds of text files. Using a text
+editor such as vim (the adventurous may want to try sed), we will add some HTML
+markup to our file:</p>
+
+<p>下一步，我們將看一下 aspell 怎樣來解決不同種類的文字檔案。使用一個文字編輯器，例如 vim（膽大的人可能想用 sed），
+我們將新增一些 HTML 標誌到檔案中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;head&gt;</span>
+          <span class="nt">&lt;title&gt;</span>Mispelled HTML file<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;/head&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+          <span class="nt">&lt;p&gt;</span>The quick brown fox jimped over the laxy dog.<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>Now, if we try to spell check our modified file, we run into a problem. If we do it this
+way:</p>
+
+<p>現在，如果我們試圖拼寫檢查我們修改的檔案，我們會遇到一個問題。如果我們這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ aspell check foo.txt
+</code></pre></div></div>
+
+<p>we’ll get this:</p>
+
+<p>我們會得到這些：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;head&gt;</span>
+          <span class="nt">&lt;title&gt;</span>Mispelled HTML file<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;/head&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+          <span class="nt">&lt;p&gt;</span>The quick brown fox jimped over the laxy dog.<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+1) HTML                     4) Hamel
+2) ht ml                    5) Hamil
+3) ht-ml                    6) hotel
+i) Ignore                   I) Ignore all
+r) Replace                  R) Replace all
+a) Add                      l) Add Lower
+b) Abort                    x) Exit
+?
+</code></pre></div></div>
+
+<p>aspell will see the contents of the HTML tags as misspelled. This problem can be
+overcome by including the -H (HTML) checking mode option, like this:</p>
+
+<p>aspell 會認為 HTML 標誌的內容是拼寫錯誤。透過包含-H（HTML）檢查模式選項，這個問題能夠
+解決，像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ aspell -H check foo.txt
+</code></pre></div></div>
+
+<p>which will result in this:</p>
+
+<p>這會導致這樣的結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;head&gt;</span>
+          <span class="nt">&lt;title&gt;&lt;b&gt;</span>Mispelled<span class="nt">&lt;/b&gt;</span> HTML file<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;/head&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+          <span class="nt">&lt;p&gt;</span>The quick brown fox jimped over the laxy dog.<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+1) Mi spelled              6) Misapplied
+2) Mi-spelled              7) Miscalled
+3) Misspelled              8) Respelled
+4) Dispelled               9) Misspell
+5) Spelled                 0) Misled
+i) Ignore                  I) Ignore all
+r) Replace                 R) Replace all
+a) Add                     l) Add Lower
+b) Abort                   x) Exit
+?
+</code></pre></div></div>
+
+<p>The HTML is ignored and only the non-markup portions of the file are checked. In this
+mode, the contents of HTML tags are ignored and not checked for spelling. However, the
+contents of ALT tags, which benefit from checking, are checked in this mode.</p>
+
+<p>這個 HTML 標誌被忽略了，並且只會檢查檔案中非標誌部分的內容。在這種模式下，HTML 標誌的
+內容被忽略了，不會進行拼寫檢查。然而，ALT 標誌的內容，會被檢查。</p>
+
+<hr />
+
+<p>Note: By default, aspell will ignore URLs and email addresses in text. This
+behavior can be overridden with command line options. It is also possible to
+specify which markup tags are checked and skipped. See the aspell man page
+for details.</p>
+
+<p>注意：預設情況下，aspell 會忽略文字中的 URL 和電子郵件地址。透過命令列選項，可以重寫此行為。
+也有可能指定哪些標誌進行檢查及跳過。詳細內容檢視 aspell 命令手冊。</p>
+
+<hr />
+
+<h3 id="總結歸納">總結歸納</h3>
+
+<p>In this chapter, we have looked at a few of the many command line tools that operate on
+text. In the next chapter, we will look at several more. Admittedly, it may not seem
+immediately obvious how or why you might use some of these tools on a day-to-day
+basis, though we have tried to show some semi-practical examples of their use. We will
+find in later chapters that these tools form the basis of a tool set that is used to solve a
+host of practical problems. This will be particularly true when we get into shell scripting,
+where these tools will really show their worth.</p>
+
+<p>在這一章中，我們已經查看了一些操作文字的命令列工具。在下一章中，我們會再看幾個命令列工具。
+誠然，看起來不能立即顯現出怎樣或為什麼你可能使用這些工具為日常的基本工具，
+雖然我們已經展示了一些半實際的命令用法的例子。我們將在隨後的章節中發現這些工具組成
+瞭解決實際問題的基本工具箱。這將是確定無疑的，當我們學習 shell 指令碼的時候，
+到時候這些工具將真正體現出它們的價值。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<p>The GNU Project website contains many online guides to the tools discussed in this chapter.</p>
+
+<p>GNU 專案網站包含了本章中所討論工具的許多線上指南。</p>
+
+<ul>
+  <li>
+    <p>From the Coreutils package:</p>
+  </li>
+  <li>
+    <p>來自 Coreutils 軟體包：</p>
+
+    <p><a href="http://www.gnu.org/software/coreutils/manual/coreutils.html#Output-of-entire-files">http://www.gnu.org/software/coreutils/manual/coreutils.html#Output-of-entire-files</a></p>
+
+    <p><a href="http://www.gnu.org/software/coreutils/manual/coreutils.html#Operating-on-sorted-files">http://www.gnu.org/software/coreutils/manual/coreutils.html#Operating-on-sorted-files</a></p>
+
+    <p><a href="http://www.gnu.org/software/coreutils/manual/coreutils.html#Operating-on-fields-within-a-line">http://www.gnu.org/software/coreutils/manual/coreutils.html#Operating-on-fields-within-a-line</a></p>
+
+    <p><a href="http://www.gnu.org/software/coreutils/manual/coreutils.html#Operating-on-characters">http://www.gnu.org/software/coreutils/manual/coreutils.html#Operating-on-characters</a></p>
+  </li>
+  <li>
+    <p>From the Diffutils package:</p>
+  </li>
+  <li>
+    <p>來自 Diffutils 軟體包：</p>
+
+    <p><a href="http://www.gnu.org/software/diffutils/manual/html_mono/diff.html">http://www.gnu.org/software/diffutils/manual/html_mono/diff.html</a></p>
+  </li>
+  <li>
+    <p>sed 工具</p>
+
+    <p><a href="http://www.gnu.org/software/sed/manual/sed.html">http://www.gnu.org/software/sed/manual/sed.html</a></p>
+  </li>
+  <li>
+    <p>aspell 工具</p>
+
+    <p><a href="http://aspell.net/man-html/index.html">http://aspell.net/man-html/index.html</a></p>
+  </li>
+  <li>
+    <p>There are many other online resources for sed, in particular:</p>
+  </li>
+  <li>
+    <p>尤其對於 sed 工具，還有很多其它的線上資源：</p>
+
+    <p><a href="http://www.grymoire.com/Unix/Sed.html">http://www.grymoire.com/Unix/Sed.html</a></p>
+
+    <p><a href="http://sed.sourceforge.net/sed1line.txt">http://sed.sourceforge.net/sed1line.txt</a></p>
+  </li>
+  <li>
+    <p>Also try googling “sed one liners”, “sed cheat sheets”</p>
+  </li>
+  <li>
+    <p>試試用 google 搜尋 “sed one liners”, “sed cheat sheets” 關鍵字</p>
+  </li>
+</ul>
+
+<h3 id="友情提示">友情提示</h3>
+
+<p>There are a few more interesting text manipulation commands worth investigating.
+Among these are: split (split files into pieces), csplit (split files into pieces based
+on context), and sdiff (side-by-side merge of file differences.)</p>
+
+<p>有一些更有趣的文字操作命令值得。在它們之間有：split（把檔案分割成碎片），
+csplit（基於上下文把檔案分割成碎片），和 sdiff（並排合併檔案差異）。</p>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">流程控制：case 分支</h1><br>
+<p>In this chapter, we will continue to look at flow control. In Chapter 28, we constructed
+some simple menus and built the logic used to act on a user’s selection. To do this, we
+used a series of if commands to identify which of the possible choices has been selected.
+This type of construct appears frequently in programs, so much so that many programming
+languages (including the shell) provide a flow control mechanism for multiple-choice decisions.</p>
+
+<p>在這一章中，我們將繼續看一下程式的流程控制。在第28章中，我們建構了一些簡單的選單並建立了用來
+應對各種使用者選擇的程式邏輯。為此，我們使用了一系列的 if 命令來識別哪一個可能的選項已經被選中。
+這種型別的構造經常出現在程式中，出現頻率如此之多，以至於許多程式語言（包括 shell）
+專門為多選決策提供了一種流程控制機制。</p>
+
+<h3 id="case">case</h3>
+
+<p>The bash multiple-choice compound command is called case. It has the following syntax:</p>
+
+<p>Bash 的多選複合命令稱為 case。它的語法規則如下所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>case word in
+    [pattern [| pattern]...) commands ;;]...
+esac
+</code></pre></div></div>
+
+<p>If we look at the read-menu program from Chapter 28, we see the logic used to act on
+a user’s selection:</p>
+
+<p>如果我們看一下第28章中的讀選單程式，我們就知道了用來應對一個使用者選項的邏輯流程：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># read-menu: a menu driven system information program</span>
+clear
+<span class="nb">echo</span> <span class="s2">"
+Please Select:
+1. Display System Information
+2. Display Disk Space
+3. Display Home Space Utilization
+0. Quit
+"</span>
+<span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Enter selection [0-3] &gt; "</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">=</span>~ ^[0-3]<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+    if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"Program terminated."</span>
+        <span class="nb">exit
+    </span><span class="k">fi
+    if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 1 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"Hostname: </span><span class="nv">$HOSTNAME</span><span class="s2">"</span>
+        uptime
+        <span class="nb">exit
+    </span><span class="k">fi
+    if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 2 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span>df <span class="nt">-h</span>
+        <span class="nb">exit
+    </span><span class="k">fi
+    if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 3 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        if</span> <span class="o">[[</span> <span class="k">$(</span>id <span class="nt">-u</span><span class="k">)</span> <span class="nt">-eq</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"Home Space Utilization (All Users)"</span>
+            du <span class="nt">-sh</span> /home/<span class="k">*</span>
+        <span class="k">else
+            </span><span class="nb">echo</span> <span class="s2">"Home Space Utilization (</span><span class="nv">$USER</span><span class="s2">)"</span>
+            du <span class="nt">-sh</span> <span class="nv">$HOME</span>
+        <span class="k">fi
+        </span><span class="nb">exit
+    </span><span class="k">fi
+else
+    </span><span class="nb">echo</span> <span class="s2">"Invalid entry."</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>Using case, we can replace this logic with something simpler:</p>
+
+<p>使用 case 語句，我們可以用更簡單的程式碼替換這種邏輯：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># case-menu: a menu driven system information program</span>
+clear
+<span class="nb">echo</span> <span class="s2">"
+Please Select:
+1. Display System Information
+2. Display Disk Space
+3. Display Home Space Utilization
+0. Quit
+"</span>
+<span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Enter selection [0-3] &gt; "</span>
+<span class="k">case</span> <span class="nv">$REPLY</span> <span class="k">in
+    </span>0<span class="p">)</span>  <span class="nb">echo</span> <span class="s2">"Program terminated."</span>
+        <span class="nb">exit</span>
+        <span class="p">;;</span>
+    1<span class="p">)</span>  <span class="nb">echo</span> <span class="s2">"Hostname: </span><span class="nv">$HOSTNAME</span><span class="s2">"</span>
+        uptime
+        <span class="p">;;</span>
+    2<span class="p">)</span>  df <span class="nt">-h</span>
+        <span class="p">;;</span>
+    3<span class="p">)</span>  <span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>id <span class="nt">-u</span><span class="k">)</span> <span class="nt">-eq</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"Home Space Utilization (All Users)"</span>
+            du <span class="nt">-sh</span> /home/<span class="k">*</span>
+        <span class="k">else
+            </span><span class="nb">echo</span> <span class="s2">"Home Space Utilization (</span><span class="nv">$USER</span><span class="s2">)"</span>
+            du <span class="nt">-sh</span> <span class="nv">$HOME</span>
+        <span class="k">fi</span>
+        <span class="p">;;</span>
+    <span class="k">*</span><span class="p">)</span>  <span class="nb">echo</span> <span class="s2">"Invalid entry"</span> <span class="o">&gt;</span>&amp;2
+        <span class="nb">exit </span>1
+        <span class="p">;;</span>
+<span class="k">esac</span>
+</code></pre></div></div>
+
+<p>The case command looks at the value of word, in our example, the value of the REPLY
+variable, and then attempts to match it against one of the specified patterns. When a
+match is found, the commands associated with the specified pattern are executed. After a
+match is found, no further matches are attempted.</p>
+
+<p>case 命令檢查一個變數值，在我們這個例子中，就是 REPLY 變數的變數值，然後試圖去匹配其中一個具體的模式。
+當與之相匹配的模式找到之後，就會執行與該模式相關聯的命令。若找到一個模式之後，就不會再繼續尋找。</p>
+
+<h3 id="模式">模式</h3>
+
+<p>The patterns used by case are the same as those used by pathname expansion. Patterns
+are terminated with a “)” character. Here are some valid patterns:</p>
+
+<p>這裡 case 語句使用的模式和路徑展開中使用的那些是一樣的。模式以一個「)」為終止符。這裡是一些有效的模式。</p>
+
+<table class="multi">
+<caption class="cap">Table 32-1: case Pattern Examples</caption>
+<tr>
+<th class="title">Pattern</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top">a)</td>
+<td valign="top">Matches if word equals "a".</td>
+</tr>
+<tr>
+<td valign="top">[[:alpha:]])</td>
+<td valign="top">Matches if word is a single alphabetic character.</td>
+</tr>
+<tr>
+<td valign="top">???)</td>
+<td valign="top">Matches if word is exactly three characters long.</td>
+</tr>
+<tr>
+<td valign="top">*.txt)</td>
+<td valign="top">Matches if word ends with the characters “.txt”.</td>
+</tr>
+<tr>
+<td valign="top">*)</td>
+<td valign="top">Matches any value of word. It is good practice to include
+this as the last pattern in a case command, to catch any values of word
+that did not match a previous pattern; that is, to catch any possible invalid values.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表32-1: case 模式範例</caption>
+<tr>
+<th class="title">模式</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top">a)</td>
+<td valign="top">若單詞為 “a”，則匹配</td>
+</tr>
+<tr>
+<td valign="top">[[:alpha:]])</td>
+<td valign="top">若單詞是一個字母字元，則匹配</td>
+</tr>
+ <tr>
+<td valign="top">???)</td>
+<td valign="top">若單詞只有3個字元，則匹配</td>
+</tr>
+<tr>
+<td valign="top">*.txt)</td>
+<td valign="top">若單詞以 “.txt” 字元結尾，則匹配</td>
+</tr>
+<tr>
+<td valign="top">*)</td>
+<td valign="top">匹配任意單詞。把這個模式做為 case 命令的最後一個模式，是一個很好的做法，
+可以捕捉到任意一個與先前模式不匹配的數值；也就是說，捕捉到任何可能的無效值。
+</td>
+</tr>
+</table>
+
+<p>Here is an example of patterns at work:</p>
+
+<p>這裡是一個模式使用範例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"enter word &gt; "</span>
+<span class="k">case</span> <span class="nv">$REPLY</span> <span class="k">in</span>
+    <span class="o">[[</span>:alpha:]]<span class="p">)</span>        <span class="nb">echo</span> <span class="s2">"is a single alphabetic character."</span> <span class="p">;;</span>
+    <span class="o">[</span>ABC][0-9]<span class="p">)</span>         <span class="nb">echo</span> <span class="s2">"is A, B, or C followed by a digit."</span> <span class="p">;;</span>
+    ???<span class="p">)</span>                <span class="nb">echo</span> <span class="s2">"is three characters long."</span> <span class="p">;;</span>
+    <span class="k">*</span>.txt<span class="p">)</span>              <span class="nb">echo</span> <span class="s2">"is a word ending in '.txt'"</span> <span class="p">;;</span>
+    <span class="k">*</span><span class="p">)</span>                  <span class="nb">echo</span> <span class="s2">"is something else."</span> <span class="p">;;</span>
+<span class="k">esac</span>
+</code></pre></div></div>
+
+<p>It is also possible to combine multiple patterns using the vertical bar character
+as a separator. This creates an “or” conditional pattern. This is useful for such things as handling
+both upper- and lowercase characters. For example:</p>
+
+<p>還可以使用豎線字元作為分隔符，把多個模式結合起來。這就建立了一個「或」條件模式。這對於處理諸如大小寫字元很有用處。例如：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># case-menu: a menu driven system information program</span>
+clear
+<span class="nb">echo</span> <span class="s2">"
+Please Select:
+A. Display System Information
+B. Display Disk Space
+C. Display Home Space Utilization
+Q. Quit
+"</span>
+<span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Enter selection [A, B, C or Q] &gt; "</span>
+<span class="k">case</span> <span class="nv">$REPLY</span> <span class="k">in
+</span>q|Q<span class="p">)</span> <span class="nb">echo</span> <span class="s2">"Program terminated."</span>
+     <span class="nb">exit</span>
+     <span class="p">;;</span>
+a|A<span class="p">)</span> <span class="nb">echo</span> <span class="s2">"Hostname: </span><span class="nv">$HOSTNAME</span><span class="s2">"</span>
+     uptime
+     <span class="p">;;</span>
+b|B<span class="p">)</span> df <span class="nt">-h</span>
+     <span class="p">;;</span>
+c|C<span class="p">)</span> <span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>id <span class="nt">-u</span><span class="k">)</span> <span class="nt">-eq</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+         </span><span class="nb">echo</span> <span class="s2">"Home Space Utilization (All Users)"</span>
+         du <span class="nt">-sh</span> /home/<span class="k">*</span>
+     <span class="k">else
+         </span><span class="nb">echo</span> <span class="s2">"Home Space Utilization (</span><span class="nv">$USER</span><span class="s2">)"</span>
+         du <span class="nt">-sh</span> <span class="nv">$HOME</span>
+     <span class="k">fi</span>
+     <span class="p">;;</span>
+<span class="k">*</span><span class="p">)</span>   <span class="nb">echo</span> <span class="s2">"Invalid entry"</span> <span class="o">&gt;</span>&amp;2
+     <span class="nb">exit </span>1
+     <span class="p">;;</span>
+<span class="k">esac</span>
+</code></pre></div></div>
+
+<p>Here, we modify the case-menu program to use letters instead of digits for menu
+selection. Notice how the new patterns allow for entry of both upper- and lowercase letters.</p>
+
+<p>這裡，我們更改了 case-menu 程式的程式碼，用字母來代替數字做為選單選項。注意新模式如何使得大小寫字母都是有效的輸入選項。</p>
+
+<h3 id="執行多個動作">執行多個動作</h3>
+
+<p>In versions of bash prior to 4.0, case allowed only one action to be performed on a
+successful match. After a successful match, the command would terminate. Here we see
+a script that tests a character:</p>
+
+<p>早於版本號4.0的 bash，case 語法只允許執行與一個成功匹配的模式相關聯的動作。
+匹配成功之後，命令將會終止。這裡我們看一個測試一個字元的指令碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># case4-1: test a character</span>
+<span class="nb">read</span> <span class="nt">-n</span> 1 <span class="nt">-p</span> <span class="s2">"Type a character &gt; "</span>
+<span class="nb">echo
+</span><span class="k">case</span> <span class="nv">$REPLY</span> <span class="k">in</span>
+    <span class="o">[[</span>:upper:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is upper case."</span> <span class="p">;;</span>
+    <span class="o">[[</span>:lower:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is lower case."</span> <span class="p">;;</span>
+    <span class="o">[[</span>:alpha:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is alphabetic."</span> <span class="p">;;</span>
+    <span class="o">[[</span>:digit:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is a digit."</span> <span class="p">;;</span>
+    <span class="o">[[</span>:graph:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is a visible character."</span> <span class="p">;;</span>
+    <span class="o">[[</span>:punct:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is a punctuation symbol."</span> <span class="p">;;</span>
+    <span class="o">[[</span>:space:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is a whitespace character."</span> <span class="p">;;</span>
+    <span class="o">[[</span>:xdigit:]]<span class="p">)</span>   <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is a hexadecimal digit."</span> <span class="p">;;</span>
+<span class="k">esac</span>
+</code></pre></div></div>
+
+<p>Running this script produces this:</p>
+
+<p>執行這個指令碼，輸出這些內容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ case4-1
+Type a character &gt; a
+'a' is lower case.
+</code></pre></div></div>
+
+<p>The script works for the most part, but fails if a character matches more than one of the
+POSIX characters classes. For example, the character “a” is both lower case and alphabetic,
+as well as a hexadecimal digit. In bash prior to version 4.0 there was no way for
+case to match more than one test. Modern versions of bash, add the “;;&amp;” notation to
+terminate each action, so now we can do this:</p>
+
+<p>大多數情況下這個指令碼工作是正常的，但若輸入的字元不止與一個 POSIX 字符集匹配的話，這時指令碼就會出錯。
+例如，字元 “a” 既是小寫字母，也是一個十六進位制的數字。早於4.0的 bash，對於 case 語法絕不能匹配
+多個測試條件。現在的 bash 版本，新增 “;;&amp;” 表示式來終止每個行動，所以現在我們可以做到這一點：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># case4-2: test a character</span>
+<span class="nb">read</span> <span class="nt">-n</span> 1 <span class="nt">-p</span> <span class="s2">"Type a character &gt; "</span>
+<span class="nb">echo
+</span><span class="k">case</span> <span class="nv">$REPLY</span> <span class="k">in</span>
+    <span class="o">[[</span>:upper:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is upper case."</span> <span class="p">;;</span>&amp;
+    <span class="o">[[</span>:lower:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is lower case."</span> <span class="p">;;</span>&amp;
+    <span class="o">[[</span>:alpha:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is alphabetic."</span> <span class="p">;;</span>&amp;
+    <span class="o">[[</span>:digit:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is a digit."</span> <span class="p">;;</span>&amp;
+    <span class="o">[[</span>:graph:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is a visible character."</span> <span class="p">;;</span>&amp;
+    <span class="o">[[</span>:punct:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is a punctuation symbol."</span> <span class="p">;;</span>&amp;
+    <span class="o">[[</span>:space:]]<span class="p">)</span>    <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is a whitespace character."</span> <span class="p">;;</span>&amp;
+    <span class="o">[[</span>:xdigit:]]<span class="p">)</span>   <span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is a hexadecimal digit."</span> <span class="p">;;</span>&amp;
+<span class="k">esac</span>
+</code></pre></div></div>
+
+<p>When we run this script, we get this:</p>
+
+<p>當我們執行這個指令碼的時候，我們得到這些：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ case4-2
+Type a character &gt; a
+'a' is lower case.
+'a' is alphabetic.
+'a' is a visible character.
+'a' is a hexadecimal digit.
+</code></pre></div></div>
+
+<p>The addition of the “;;&amp;” syntax allows case to continue on to the next test rather than
+simply terminating.</p>
+
+<p>新增的 “;;&amp;” 的語法允許 case 語句繼續執行下一條測試，而不是簡單地終止執行。</p>
+
+<h3 id="總結">總結</h3>
+
+<p>The case command is a handy addition to our bag of programming tricks. As we will
+see in the next chapter, it’s the perfect tool for handling certain types of problems.</p>
+
+<p>case 命令是我們程式設計技巧口袋中的一個便捷工具。在下一章中我們將看到，
+對於處理某些型別的問題來說，case 命令是一個完美的工具。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The Bash Reference Manual section on Conditional Constructs describes the
+case command in detail:</p>
+  </li>
+  <li>
+    <p>Bash 參考手冊的條件構造一節詳盡的介紹了 case 命令：</p>
+
+    <p><a href="http://tiswww.case.edu/php/chet/bash/bashref.html#SEC21">http://tiswww.case.edu/php/chet/bash/bashref.html#SEC21</a></p>
+  </li>
+  <li>
+    <p>The Advanced Bash-Scripting Guide provides further examples of case applications:</p>
+  </li>
+  <li>
+    <p>高階 Bash 指令碼指南提供了更深一層的 case 應用範例：</p>
+
+    <p><a href="http://tldp.org/LDP/abs/html/testbranch.html">http://tldp.org/LDP/abs/html/testbranch.html</a></p>
+  </li>
+</ul>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">奇珍異寶</h1><br>
+<p>In this, the final chapter of our journey, we will look at some odds and ends.
+While we have certainly covered a lot of ground in the previous chapters,
+there are many bash features that we have not covered. Most are fairly obscure,
+and useful mainly to those integrating bash into a Linux distribution. However,
+there are a few that, while not in common use, are helpful for certain
+programming problems. We will cover them here.</p>
+
+<p>在我們 bash 學習旅程中的最後一站，我們將看一些零星的知識點。當然我們在之前的章節中已經
+涵蓋了很多方面，但是還有許多 bash 特性我們沒有涉及到。其中大部分特性相當晦澀，主要對
+那些把 bash 整合到 Linux 發行版的程式有用處。然而還有一些特性，雖然不常用，
+但是對某些程式問題是很有幫助的。我們將在這裡介紹它們。</p>
+
+<h3 id="組命令和子-shell">組命令和子 shell</h3>
+
+<p>bash allows commands to be grouped together. This can be done in one of two ways;
+either with a group command or with a subshell. Here are examples of the syntax of each:</p>
+
+<p>bash 允許把命令組合在一起。可以透過兩種方式完成；要麼用一個 group 命令，要麼用一個子 shell。
+這裡是每種方式的語法示例：</p>
+
+<p>Group command:</p>
+
+<p>組命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{ command1; command2; [command3; ...] }
+</code></pre></div></div>
+
+<p>Subshell:</p>
+
+<p>子 shell：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(command1; command2; [command3;...])
+</code></pre></div></div>
+
+<p>The two forms differ in that a group command surrounds its commands with braces and a
+subshell uses parentheses. It is important to note that, due to the way bash implements
+group commands, the braces must be separated from the commands by a space and the
+last command must be terminated with either a semicolon or a newline prior to the closing brace.</p>
+
+<p>這兩種形式的不同之處在於，組命令用花括號把它的命令包裹起來，而子 shell 用括號。值得注意的是，鑑於 bash 實現組命令的方式，
+花括號與命令之間必須有一個空格，並且最後一個命令必須用一個分號或者一個換行符終止。</p>
+
+<p>So what are group commands and subshells good for? While they have an important
+difference (which we will get to in a moment), they are both used to manage redirection.
+Let's consider a script segment that performs redirections on multiple commands:</p>
+
+<p>那麼組命令和子 shell 命令對什麼有好處呢？ 儘管它們有一個很重要的差異（我們馬上會接觸到），但它們都是用來管理重新導向的。
+讓我們考慮一個對多個命令執行重新導向的指令碼片段。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ls -l &gt; output.txt
+echo "Listing of foo.txt" &gt;&gt; output.txt
+cat foo.txt &gt;&gt; output.txt
+</code></pre></div></div>
+
+<p>This is pretty straightforward. Three commands with their output redirected to a file
+named output.txt. Using a group command, we could code this as follows:</p>
+
+<p>這些程式碼相當簡潔明瞭。三個命令的輸出都重新導向到一個名為 output.txt 的檔案中。
+使用一個組命令，我們可以重新編 寫這些程式碼，如下所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{ ls -l; echo "Listing of foo.txt"; cat foo.txt; } &gt; output.txt
+</code></pre></div></div>
+
+<p>Using a subshell is similar:</p>
+
+<p>使用一個子 shell 是相似的：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(ls -l; echo "Listing of foo.txt"; cat foo.txt) &gt; output.txt
+</code></pre></div></div>
+
+<p>Using this technique we have saved ourselves some typing, but where a group command
+or subshell really shines is with pipelines. When constructing a pipeline of commands, it
+is often useful to combine the results of several commands into a single stream. Group
+commands and subshells make this easy:</p>
+
+<p>使用這樣的技術，我們為我們自己節省了一些打字時間，但是組命令和子 shell 真正閃光的地方是與管道線相結合。
+當建構一個管道線命令的時候，通常把幾個命令的輸出結果合併成一個流是很有用的。
+組命令和子 shell 使這種操作變得很簡單：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{ ls -l; echo "Listing of foo.txt"; cat foo.txt; } | lpr
+</code></pre></div></div>
+
+<p>Here we have combined the output of our three commands and piped them into the input
+of lpr to produce a printed report.</p>
+
+<p>這裡我們已經把我們的三個命令的輸出結果合併在一起，並把它們用管道輸送給命令 lpr 的輸入，以便產生一個列印報告。</p>
+
+<p>In the script that follows, we will use groups commands and look at several programming
+techniques that can be employed in conjunction with associative arrays. This script,
+called array-2, when given the name of a directory, prints a listing of the files in the
+directory along with the names of the the file’s owner and group owner. At the end of
+listing, the script prints a tally of the number of files belonging to each owner and group.
+Here we see the results (condensed for brevity) when the script is given the directory /usr/bin:</p>
+
+<p>在下面的指令碼中，我們將使用組命令，看幾個與關聯陣列結合使用的程式設計技巧。這個指令碼，稱為 array-2，當給定一個目錄名，打印出目錄中的檔案列表，
+伴隨著每個檔案的檔案所有者和組所有者。在檔案列表的末尾，指令碼打印出屬於每個所有者和組的檔案數目。
+這裡我們看到的（為簡單起見而縮短的）結果，是給定指令碼的目錄為 /usr/bin 的時候：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ array-2 /usr/bin
+/usr/bin/2to3-2.6                 root        root
+/usr/bin/2to3                     root        root
+/usr/bin/a2p                      root        root
+/usr/bin/abrowser                 root        root
+/usr/bin/aconnect                 root        root
+/usr/bin/acpi_fakekey             root        root
+/usr/bin/acpi_listen              root        root
+/usr/bin/add-apt-repository       root        root
+.
+.
+.
+/usr/bin/zipgrep                  root        root
+/usr/bin/zipinfo                  root        root
+/usr/bin/zipnote                  root        root
+/usr/bin/zip                      root        root
+/usr/bin/zipsplit                 root        root
+/usr/bin/zjsdecode                root        root
+/usr/bin/zsoelim                  root        root
+
+File owners:
+daemon  : 1 file(s)
+root    : 1394 file(s) File group owners:
+crontab : 1 file(s)
+daemon  : 1 file(s)
+lpadmin : 1 file(s)
+mail    : 4 file(s)
+mlocate : 1 file(s)
+root    : 1380 file(s)
+shadow  : 2 file(s)
+ssh     : 1 file(s)
+tty     : 2 file(s)
+utmp    : 2 file(s)
+</code></pre></div></div>
+
+<p>Here is a listing (with line numbers) of the script:</p>
+
+<p>這裡是指令碼程式碼列表（帶有行號）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1     #!/bin/bash
+2
+3     # array-2: Use arrays to tally file owners
+4
+5     declare -A files file_group file_owner groups owners
+6
+7     if [[ ! -d "$1" ]]; then
+8        echo "Usage: array-2 dir" &gt;&amp;2
+9        exit 1
+10    fi
+11
+12    for i in "$1"/*; do
+13       owner=$(stat -c %U "$i")
+14       group=$(stat -c %G "$i")
+15        files["$i"]="$i"
+16        file_owner["$i"]=$owner
+17        file_group["$i"]=$group
+18        ((++owners[$owner]))
+19        ((++groups[$group]))
+20    done
+21
+22    # List the collected files
+23    { for i in "${files[@]}"; do
+24    printf "%-40s %-10s %-10s\n" \
+25    "$i" ${file_owner["$i"]} ${file_group["$i"]}
+26    done } | sort
+27    echo
+28
+29   # List owners
+30    echo "File owners:"
+31    { for i in "${!owners[@]}"; do
+32    printf "%-10s: %5d file(s)\n" "$i" ${owners["$i"]}
+33    done } | sort
+34    echo
+35
+36    # List groups
+37    echo "File group owners:"
+38    { for i in "${!groups[@]}"; do
+39    printf "%-10s: %5d file(s)\n" "$i" ${groups["$i"]}
+40    done } | sort
+</code></pre></div></div>
+
+<p>Let's take a look at the mechanics of this script:</p>
+
+<p>讓我們看一下這個指令碼的執行機制：</p>
+
+<p>Line 5: Associative arrays must be created with the declare command using the -A
+option. In this script we create five arrays as follows:</p>
+
+<p>行5： 關聯陣列必須用帶有 -A 選項的 declare 命令建立。在這個指令碼中我們建立瞭如下五個陣列：</p>
+
+<p>files contains the names of the files in the directory, indexed by filename</p>
+
+<p>file_group contains the group owner of each file, indexed by filename</p>
+
+<p>file_owner contains the owner of each file, indexed by file name</p>
+
+<p>groups contains the number of files belonging to the indexed group</p>
+
+<p>owners contains the number of files belonging to the indexed owner</p>
+
+<p>files 包含了目錄中檔案的名字，按檔名索引</p>
+
+<p>file_group 包含了每個檔案的組所有者，按檔名索引</p>
+
+<p>file_owner 包含了每個檔案的所有者，按檔名索引</p>
+
+<p>groups 包含了屬於索引的組的檔案數目</p>
+
+<p>owners 包含了屬於索引的所有者的檔案數目</p>
+
+<p>Lines 7-10: Checks to see that a valid directory name was passed as a positional
+parameter. If not, a usage message is displayed and the script exits with an exit status of 1.</p>
+
+<p>行7-10：檢視是否一個有效的目錄名作為位置引數傳遞給程式。如果不是，就會顯示一條使用資訊，並且指令碼退出，退出狀態為1。</p>
+
+<p>Lines 12-20: Loop through the files in the directory. Using the stat command, lines
+13 and 14 extract the names of the file owner and group owner and assign the values to
+their respective arrays (lines 16, 17) using the name of the file as the array index. Likewise
+the file name itself is assigned to the files array (line 15).</p>
+
+<p>行12-20：迴圈遍歷目錄中的所有檔案。使用 stat 命令，行13和行14抽取檔案所有者和組所有者，
+並把值賦給它們各自的陣列（行16，17），使用檔名作為陣列索引。同樣地，檔名自身也賦值給 files 陣列。</p>
+
+<p>Lines 18-19: The total number of files belonging to the file owner and group owner are
+incremented by one.</p>
+
+<p>行18-19：屬於檔案所有者和組所有者的檔案總數各自加1。</p>
+
+<p>Lines 22-27: The list of files is output. This is done using the “${array[@]}” parameter
+expansion which expands into the entire list of array element with each element treated as
+a separate word. This allows for the possibility that a file name may contain embedded
+spaces. Also note that the entire loop is enclosed in braces thus forming a group command.
+This permits the entire output of the loop to be piped into the sort command.
+This is necessary because the expansion of the array elements is not sorted.</p>
+
+<p>行22-27：輸出檔案列表。為做到這一點，使用了 “${array[@]}” 引數展開，展開成整個的陣列元素列表，
+並且每個元素被當做是一個單獨的詞。從而允許檔名包含空格的情況。也要注意到整個迴圈是包裹在花括號中，
+從而形成了一個組命令。這樣就允許整個迴圈輸出會被管道輸送給 sort 命令的輸入。這是必要的，因為
+展開的陣列元素是無序的。</p>
+
+<p>Lines 29-40: These two loops are similar to the file list loop except that they use the “${!
+array[@]}” expansion which expands into the list of array indexes rather than the list of
+array elements.</p>
+
+<p>行29-40：這兩個迴圈與檔案列表迴圈相似，除了它們使用 “${!array[@]}” 展開，展開成陣列索引的列表
+而不是陣列元素的。</p>
+
+<h4 id="程序替換">程序替換</h4>
+
+<p>While they look similar and can both be used to combine streams for redirection, there is
+an important difference between group commands and subshells. Whereas a group command
+executes all of its commands in the current shell, a subshell (as the name suggests)
+executes its commands in a child copy of the current shell. This means that the environment
+is copied and given to a new instance of the shell. When the subshell exits, the copy
+of the environment is lost, so any changes made to the subshell’s environment (including
+variable assignment) is lost as well. Therefore, in most cases, unless a script requires a
+subshell, group commands are preferable to subshells. Group commands are both faster
+and require less memory.</p>
+
+<p>雖然組命令和子 shell 看起來相似，並且它們都能用來在重新導向中合併流，但是兩者之間有一個很重要的不同之處。
+然而，一個組命令在當前 shell 中執行它的所有命令，而一個子 shell（顧名思義）在當前 shell 的一個
+子副本中執行它的命令。這意味著執行環境被複制給了一個新的 shell 範例。當這個子 shell 退出時，環境副本會消失，
+所以在子 shell 環境（包括變數賦值）中的任何更改也會消失。因此，在大多數情況下，除非指令碼要求一個子 shell，
+組命令比子 shell 更受歡迎。組命令執行很快並且佔用的記憶體也少。</p>
+
+<p>We saw an example of the subshell environment problem in Chapter 28,
+when we discovered that a read command in a pipeline does not work as we might intuitively expect.
+To recap, if we construct a pipeline like this:</p>
+
+<p>我們在第20章中看到過一個子 shell 執行環境問題的例子，當我們發現管道線中的一個 read 命令
+不按我們所期望的那樣工作的時候。為了重現問題，我們建構一個像這樣的管道線：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo "foo" | read
+echo $REPLY
+</code></pre></div></div>
+
+<p>The content of the REPLY variable is always empty because the read command is executed
+in a subshell, and its copy of REPLY is destroyed when the subshell terminates.
+Because commands in pipelines are always executed in subshells, any command that assigns
+variables will encounter this issue. Fortunately, the shell provides an exotic form of
+expansion called process substitution that can be used to work around this problem.
+Process substitution is expressed in two ways:</p>
+
+<p>該 REPLY 變數的內容總是為空，是因為這個 read 命令在一個子 shell 中執行，所以當該子 shell 終止的時候，
+它的 REPLY 副本會被毀掉。因為管道線中的命令總是在子 shell 中執行，任何給變數賦值的命令都會遭遇這樣的問題。
+幸運地是，shell 提供了一種奇異的展開方式，叫做程序替換，它可以用來解決這種麻煩。程序替換有兩種表達方式：</p>
+
+<p>For processes that produce standard output:</p>
+
+<p>一種適用於產生標準輸出的程序：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;(list)
+</code></pre></div></div>
+
+<p>or, for processes that intake standard input:</p>
+
+<p>另一種適用於接受標準輸入的程序：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;(list)
+</code></pre></div></div>
+
+<p>where list is a list of commands.</p>
+
+<p>這裡的 list 是一串命令列表：</p>
+
+<p>To solve our problem with read, we can employ process substitution like this:</p>
+
+<p>為了解決我們的 read 命令問題，我們可以僱傭程序替換，像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>read &lt; &lt;(echo "foo")
+echo $REPLY
+</code></pre></div></div>
+
+<p>Process substitution allows us to treat the output of a subshell as an ordinary file for
+purposes of redirection. In fact, since it is a form of expansion, we can examine its real value:</p>
+
+<p>程序替換允許我們把一個子 shell 的輸出結果當作一個用於重新導向的普通檔案。事實上，因為它是一種展開形式，我們可以檢驗它的真實值：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo &lt;(echo "foo")
+/dev/fd/63
+</code></pre></div></div>
+
+<p>By using echo to view the result of the expansion, we see that the output of the subshell
+is being provided by a file named /dev/fd/63.</p>
+
+<p>透過使用 echo 命令，檢視展開結果，我們看到子 shell 的輸出結果，由一個名為 /dev/fd/63 的檔案提供。</p>
+
+<p>Process substitution is often used with loops containing read. Here is an example of a
+read loop that processes the contents of a directory listing created by a subshell:</p>
+
+<p>程序替換經常被包含 read 命令的迴圈用到。這裡是一個 read 迴圈的例子，處理一個目錄列表的內容，內容創建於一個子 shell：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># pro-sub : demo of process substitution</span>
+<span class="k">while </span><span class="nb">read </span>attr links owner group size date <span class="nb">time </span>filename<span class="p">;</span> <span class="k">do
+    </span><span class="nb">cat</span> <span class="o">&lt;&lt;-</span> <span class="no">EOF</span><span class="sh">
+        Filename:     </span><span class="nv">$filename</span><span class="sh">
+        Size:         </span><span class="nv">$size</span><span class="sh">
+        Owner:        </span><span class="nv">$owner</span><span class="sh">
+        Group:        </span><span class="nv">$group</span><span class="sh">
+        Modified:     </span><span class="nv">$date</span><span class="sh"> </span><span class="nv">$time</span><span class="sh">
+        Links:        </span><span class="nv">$links</span><span class="sh">
+        Attributes:   </span><span class="nv">$attr</span><span class="sh">
+</span><span class="no">    EOF
+</span><span class="k">done</span> &lt; &lt;<span class="o">(</span><span class="nb">ls</span> <span class="nt">-l</span> | tail <span class="nt">-n</span> +2<span class="o">)</span>
+</code></pre></div></div>
+
+<p>The loop executes read for each line of a directory listing. The listing itself is produced
+on the final line of the script. This line redirects the output of the process substitution into
+the standard input of the loop. The tail command is included in the process substitution
+pipeline to eliminate the first line of the listing, which is not needed.</p>
+
+<p>這個迴圈對目錄列表的每一個條目執行 read 命令。列表本身產生於該指令碼的最後一行程式碼。這一行程式碼把從程序替換得到的輸出
+重新導向到這個迴圈的標準輸入。這個包含在管道線中的 tail 命令，是為了消除列表的第一行文字，這行文字是多餘的。</p>
+
+<p>When executed, the script produces output like this:</p>
+
+<p>當指令碼執行後，指令碼產生像這樣的輸出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ pro_sub | head -n 20
+Filename: addresses.ldif
+Size: 14540
+Owner: me
+Group: me
+Modified: 2009-04-02 11:12
+Links:
+1
+Attributes: -rw-r--r--
+Filename: bin
+Size: 4096
+Owner: me
+Group: me
+Modified: 2009-07-10 07:31
+Links: 2
+Attributes: drwxr-xr-x
+Filename: bookmarks.html
+Size: 394213
+Owner: me
+Group: me
+</code></pre></div></div>
+
+<h3 id="陷阱">陷阱</h3>
+
+<p>In Chapter 10, we saw how programs can respond to signals. We can add this capability
+to our scripts, too. While the scripts we have written so far have not needed this capabil-
+ity (because they have very short execution times, and do not create temporary files),
+larger and more complicated scripts may benefit from having a signal handling routine.</p>
+
+<p>在第10章中，我們看到過程式是怎樣響應訊號的。我們也可以把這個功能新增到我們的指令碼中。然而到目前為止，
+我們所編寫過的指令碼還不需要這種功能（因為它們執行時間非常短暫，並且不建立臨時檔案），大且更復雜的指令碼
+可能會受益於一個資訊處理程式。</p>
+
+<p>When we design a large, complicated script, it is important to consider what happens if
+the user logs off or shuts down the computer while the script is running. When such an
+event occurs, a signal will be sent to all affected processes. In turn, the programs repre-
+senting those processes can perform actions to ensure a proper and orderly termination of
+the program. Let's say, for example, that we wrote a script that created a temporary file
+during its execution. In the course of good design, we would have the script delete the file
+when the script finishes its work. It would also be smart to have the script delete the file
+if a signal is received indicating that the program was going to be terminated prematurely.</p>
+
+<p>當我們設計一個大的，複雜的指令碼的時候，若指令碼仍在執行時，使用者登出或關閉了電腦，這時候會發生什麼，考慮到這一點非常重要。
+當像這樣的事情發生了，一個訊號將會發送給所有受到影響的程序。依次地，代表這些程序的程式會執行相應的動作，來確保程式
+合理有序的終止。比方說，例如，我們編寫了一個會在執行時建立臨時檔案的指令碼。在一個好的設計流程，我們應該讓指令碼刪除建立的
+臨時檔案，當指令碼完成它的任務之後。若指令碼接收到一個訊號，表明該程式即將提前終止的訊號，
+此時讓指令碼刪除建立的臨時檔案，也會是很精巧的設計。</p>
+
+<p>bash provides a mechanism for this purpose known as a trap. Traps are implemented
+with the appropriately named builtin command, trap. trap uses the following syntax:</p>
+
+<p>為滿足這樣需求，bash 提供了一種機制，眾所周知的 trap。陷阱正好由內部命令 trap 實現。
+trap 使用如下語法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>trap argument signal [signal...]
+</code></pre></div></div>
+
+<p>where argument is a string which will be read and treated as a command and signal is the
+specification of a signal that will trigger the execution of the interpreted command.</p>
+
+<p>這裡的 argument 是一個字串，它被讀取並被當作一個命令，signal 是一個訊號的說明，它會觸發執行所要解釋的命令。</p>
+
+<p>Here is a simple example:</p>
+
+<p>這裡是一個簡單的例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># trap-demo : simple signal handling demo</span>
+<span class="nb">trap</span> <span class="s2">"echo 'I am ignoring you.'"</span> SIGINT SIGTERM
+<span class="k">for </span>i <span class="k">in</span> <span class="o">{</span>1..5<span class="o">}</span><span class="p">;</span> <span class="k">do
+    </span><span class="nb">echo</span> <span class="s2">"Iteration </span><span class="nv">$i</span><span class="s2"> of 5"</span>
+    sleep 5
+<span class="k">done</span>
+</code></pre></div></div>
+
+<p>This script defines a trap that will execute an echo command each time either the
+SIGINT or SIGTERM signal is received while the script is running. Execution of
+the program looks like this when the user attempts to stop the script by pressing Ctrl-c:</p>
+
+<p>這個指令碼定義一個陷阱，當指令碼執行的時候，這個陷阱每當接受到一個 SIGINT 或 SIGTERM 訊號時，就會執行一個 echo 命令。
+當用戶試圖透過按下 Ctrl-c 組合鍵終止指令碼執行的時候，該程式的執行結果看起來像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ trap-demo
+Iteration 1 of 5
+Iteration 2 of 5
+I am ignoring you.
+Iteration 3 of 5
+I am ignoring you.
+Iteration 4 of 5
+Iteration 5 of 5
+</code></pre></div></div>
+
+<p>As we can see, each time the user attempts to interrupt the program, the message is
+printed instead.</p>
+
+<p>正如我們所看到的，每次使用者試圖中斷程式時，會打印出這條資訊。</p>
+
+<p>Constructing a string to form a useful sequence of commands can be awkward, so it is
+common practice to specify a shell function as the command. In this example, a separate
+shell function is specified for each signal to be handled:</p>
+
+<p>建構一個字串來形成一個有用的命令序列是很笨拙的，所以通常的做法是指定一個 shell 函式作為命令。在這個例子中，
+為每一個訊號指定了一個單獨的 shell 函式來處理：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># trap-demo2 : simple signal handling demo</span>
+exit_on_signal_SIGINT <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> <span class="s2">"Script interrupted."</span> 2&gt;&amp;1
+    <span class="nb">exit </span>0
+<span class="o">}</span>
+exit_on_signal_SIGTERM <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> <span class="s2">"Script terminated."</span> 2&gt;&amp;1
+    <span class="nb">exit </span>0
+<span class="o">}</span>
+<span class="nb">trap </span>exit_on_signal_SIGINT SIGINT
+<span class="nb">trap </span>exit_on_signal_SIGTERM SIGTERM
+<span class="k">for </span>i <span class="k">in</span> <span class="o">{</span>1..5<span class="o">}</span><span class="p">;</span> <span class="k">do
+    </span><span class="nb">echo</span> <span class="s2">"Iteration </span><span class="nv">$i</span><span class="s2"> of 5"</span>
+    sleep 5
+<span class="k">done</span>
+</code></pre></div></div>
+
+<p>This script features two trap commands, one for each signal. Each trap, in turn, speci-
+fies a shell function to be executed when the particular signal is received. Note the inclu-
+sion of an exit command in each of the signal-handling functions. Without an exit,
+the script would continue after completing the function.</p>
+
+<p>這個指令碼的特色是有兩個 trap 命令，每個命令對應一個訊號。每個 trap，依次，當接受到相應的特殊訊號時，
+會執行指定的 shell 函式。注意每個訊號處理函式中都包含了一個 exit 命令。沒有 exit 命令，
+訊號處理函式執行完後，該指令碼將會繼續執行。</p>
+
+<p>When the user presses Ctrl-c during the execution of this script, the results look like
+this:</p>
+
+<p>當用戶在這個指令碼執行期間，按下 Ctrl-c 組合鍵的時候，輸出結果看起來像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ trap-demo2
+Iteration 1 of 5
+Iteration 2 of 5
+Script interrupted.
+</code></pre></div></div>
+
+<blockquote>
+  <p><em>Temporary Files</em></p>
+
+  <p><em>臨時檔案</em></p>
+
+  <p>One reason signal handlers are included in scripts is to remove temporary files
+that the script may create to hold intermediate results during execution. There is
+something of an art to naming temporary files. Traditionally, programs on Unix-like
+systems create their temporary files in the /tmp directory, a shared directory
+intended for such files. However, since the directory is shared, this poses certain
+security concerns, particularly for programs running with superuser privileges.
+Aside from the obvious step of setting proper permissions for files exposed to all
+users of the system, it is important to give temporary files non-predictable filenames.
+This avoids an exploit known as a temp race attack. One way to create a
+non-predictable (but still descriptive) name is to do something like this:</p>
+
+  <p>把訊號處理程式包含在指令碼中的一個原因是刪除臨時檔案，在指令碼執行期間，指令碼可能會建立臨時檔案來存放中間結果。
+命名臨時檔案是一種藝術。傳統上，在類似於 unix 系統中的程式會在 /tmp 目錄下建立它們的臨時檔案，/tmp 是
+一個服務於臨時檔案的共享目錄。然而，因為這個目錄是共享的，這會引起一定的安全顧慮，尤其對那些用
+超級使用者特權執行的程式。除了為暴露給系統中所有使用者的檔案設定合適的許可權這一明顯步驟之外，
+給臨時檔案一個不可預測的檔名是很重要的。這就避免了一種為大眾所知的 temp race 攻擊。
+一種建立一個不可預測的（但是仍有意義的）臨時檔名的方法是，做一些像這樣的事情：</p>
+
+  <p><em>tempfile=/tmp/$(basename $0).$$.$RANDOM</em></p>
+
+  <p>This will create a filename consisting of the program’s name, followed by its
+process ID (PID), followed by a random integer. Note, however, that the $RANDOM
+shell variable only returns a value in the range of 1-32767, which is not a
+very large range in computer terms, so a single instance of the variable is not
+sufficient to overcome a determined attacker.</p>
+
+  <p>這將建立一個由程式名字，程式程序的 ID（PID）檔名，和一個隨機整陣列成。注意，然而，該 $RANDOM shell 變數
+只能返回一個範圍在1-32767內的整數值，這在計算機術語中不是一個很大的範圍，所以一個單一的該變數範例是不足以克服一個堅定的攻擊者的。</p>
+
+  <p>A better way is to use the mktemp program (not to be confused with the mktemp
+standard library function) to both name and create the temporary file.
+The mktemp program accepts a template as an argument that is used to build the filename.
+The template should include a series of “X” characters, which are replaced
+by a corresponding number of random letters and numbers. The longer the series
+of “X” characters, the longer the series of random characters. Here is an example:</p>
+
+  <p>一個比較好的方法是使用 mktemp 程式（不要和 mktemp 標準函式庫函式相混淆）來命名和建立臨時檔案。
+這個 mktemp 程式接受一個用於建立檔名的範本作為引數。這個範本應該包含一系列的 “X” 字元，
+隨後這些字元會被相應數量的隨機字母和數字替換掉。一連串的 “X” 字元越長，則一連串的隨機字元也就越長。
+這裡是一個例子：</p>
+
+  <p><em>tempfile=$(mktemp /tmp/foobar.$$.XXXXXXXXXX)</em></p>
+
+  <p>This creates a temporary file and assigns its name to the variable tempfile.
+The “X” characters in the template are replaced with random letters and numbers
+so that the final filename (which, in this example, also includes the expanded
+value of the special parameter $$ to obtain the PID) might be something like:</p>
+
+  <p>這裡建立了一個臨時檔案，並把臨時檔案的名字賦值給變數 tempfile。因為範本中的 “X” 字元會被隨機字母和
+數字代替，所以最終的檔名（在這個例子中，檔名也包含了特殊引數 $$ 的展開值，程序的 PID）可能像這樣：</p>
+
+  <p><em>/tmp/foobar.6593.UOZuvM6654</em></p>
+
+  <p>For scripts that are executed by regular users, it may be wise to avoid the use of
+the /tmp directory and create a directory for temporary files within the user’s
+home directory, with a line of code such as this:</p>
+
+  <p>對於那些由普通使用者操作執行的指令碼，避免使用 /tmp 目錄，而是在使用者家目錄下為臨時檔案建立一個目錄，
+透過像這樣的一行程式碼：</p>
+
+  <p><em>[[ -d $HOME/tmp ]] || mkdir $HOME/tmp</em></p>
+</blockquote>
+
+<h3 id="非同步執行">非同步執行</h3>
+
+<p>It is sometimes desirable to perform more than one task at the same time. We have seen
+how all modern operating systems are at least multitasking if not multiuser as well.
+Scripts can be constructed to behave in a multitasking fashion.</p>
+
+<p>有時候需要同時執行多個任務。我們已經知道現在所有的作業系統若不是多使用者的但至少是多工的。
+指令碼也可以建構成多工處理的模式。</p>
+
+<p>Usually this involves launching a script that, in turn, launches one or more child scripts
+that perform an additional task while the parent script continues to run. However, when a
+series of scripts runs this way, there can be problems keeping the parent and child coordinated.
+That is, what if the parent or child is dependent on the other, and one script must
+wait for the other to finish its task before finishing its own?</p>
+
+<p>通常這涉及到啟動一個指令碼，依次，啟動一個或多個子指令碼來執行額外的任務，而父指令碼繼續執行。然而，當一系列指令碼
+以這種方式執行時，要保持父子指令碼之間協調工作，會有一些問題。也就是說，若父指令碼或子指令碼依賴於另一方，並且
+一個指令碼必須等待另一個指令碼結束任務之後，才能完成它自己的任務，這應該怎麼辦？</p>
+
+<p>bash has a builtin command to help manage asynchronous execution such as this. The
+wait command causes a parent script to pause until a specified process (i.e., the child
+script) finishes.</p>
+
+<p>bash 有一個內建命令，能幫助管理諸如此類別的非同步執行的任務。wait 命令導致一個父指令碼暫停執行，直到一個
+特定的程序（例如，子指令碼）執行結束。</p>
+
+<h4 id="等待">等待</h4>
+
+<p>We will demonstrate the wait command first. To do this, we will need two scripts, a par-
+ent script:</p>
+
+<p>首先我們將示範一下 wait 命令的用法。為此，我們需要兩個指令碼，一個父指令碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># async-parent : Asynchronous execution demo (parent)</span>
+<span class="nb">echo</span> <span class="s2">"Parent: starting..."</span>
+<span class="nb">echo</span> <span class="s2">"Parent: launching child script..."</span>
+async-child &amp;
+<span class="nv">pid</span><span class="o">=</span><span class="nv">$!</span>
+<span class="nb">echo</span> <span class="s2">"Parent: child (PID= </span><span class="nv">$pid</span><span class="s2">) launched."</span>
+<span class="nb">echo</span> <span class="s2">"Parent: continuing..."</span>
+sleep 2
+<span class="nb">echo</span> <span class="s2">"Parent: pausing to wait for child to finish..."</span>
+<span class="nb">wait</span> <span class="nv">$pid</span>
+<span class="nb">echo</span> <span class="s2">"Parent: child is finished. Continuing..."</span>
+<span class="nb">echo</span> <span class="s2">"Parent: parent is done. Exiting."</span>
+</code></pre></div></div>
+
+<p>and a child script:</p>
+
+<p>和一個子指令碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># async-child : Asynchronous execution demo (child)</span>
+<span class="nb">echo</span> <span class="s2">"Child: child is running..."</span>
+sleep 5
+<span class="nb">echo</span> <span class="s2">"Child: child is done. Exiting."</span>
+</code></pre></div></div>
+
+<p>In this example, we see that the child script is very simple. The real action is being per-
+formed by the parent. In the parent script, the child script is launched and put into the
+background. The process ID of the child script is recorded by assigning the pid variable
+with the value of the $! shell parameter, which will always contain the process ID of the
+last job put into the background.</p>
+
+<p>在這個例子中，我們看到該子指令碼是非常簡單的。真正的操作透過父指令碼完成。在父指令碼中，子指令碼被啟動，
+並被放置到後臺執行。子指令碼的程序 ID 記錄在 pid 變數中，這個變數的值是 $! shell 引數的值，它總是
+包含放到後臺執行的最後一個任務的程序 ID 號。</p>
+
+<p>The parent script continues and then executes a wait command with the PID of the child
+process. This causes the parent script to pause until the child script exits, at which point
+the parent script concludes.</p>
+
+<p>父指令碼繼續，然後執行一個以子程序 PID 為引數的 wait 命令。這就導致父指令碼暫停執行，直到子指令碼退出，父指令碼隨之結束。</p>
+
+<p>When executed, the parent and child scripts produce the following output:</p>
+
+<p>當執行後，父子指令碼產生如下輸出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ async-parent
+Parent: starting...
+Parent: launching child script...
+Parent: child (PID= 6741) launched.
+Parent: continuing...
+Child: child is running...
+Parent: pausing to wait for child to finish...
+Child: child is done. Exiting.
+Parent: child is finished. Continuing...
+Parent: parent is done. Exiting.
+</code></pre></div></div>
+
+<h3 id="命名管道">命名管道</h3>
+
+<p>In most Unix-like systems, it is possible to create a special type of file called a named
+pipe. Named pipes are used to create a connection between two processes and can be
+used just like other types of files. They are not that popular, but they’re good to know
+about.</p>
+
+<p>在大多數類似 Unix 的作業系統中，有可能建立一種特殊型別的檔案，叫做命名管道。命名管道用來在
+兩個程序之間建立連線，也可以像其它型別的檔案一樣使用。雖然它們不是那麼流行，但是它們值得我們去了解。</p>
+
+<p>There is a common programming architecture called client-server, which can make use of
+a communication method such as named pipes, as well as other kinds of interprocess
+communication such as network connections.</p>
+
+<p>有一種常見的程式設計架構，叫做客戶端-伺服器，它可以利用像命名管道這樣的通訊方式，
+也可以使用其它型別的程序間通訊方式，比如網路連線。</p>
+
+<p>The most widely used type of client-server system is, of course, a web browser
+communicating with a web server. The web browser acts as the client, making requests to the
+server and the server responds to the browser with web pages.</p>
+
+<p>最為廣泛使用的客戶端-伺服器系統型別當然是一個web瀏覽器與一個web伺服器之間進行通訊。
+web 瀏覽器作為客戶端，向伺服器發出請求，伺服器響應請求，並把對應的網頁傳送給瀏覽器。</p>
+
+<p>Named pipes behave like files, but actually form first-in first-out (FIFO) buffers. As with
+ordinary (unnamed) pipes, data goes in one end and emerges out the other. With named
+pipes, it is possible to set up something like this:</p>
+
+<p>命令管道的行為類似於檔案，但實際上形成了先入先出（FIFO）的緩衝。和普通（未命令的）管道一樣，
+資料從一端進入，然後從另一端出現。透過命令管道，有可能像這樣設定一些東西：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>process1 &gt; named_pipe
+</code></pre></div></div>
+
+<p>and</p>
+
+<p>和</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>process2 &lt; named_pipe
+</code></pre></div></div>
+
+<p>and it will behave as if:</p>
+
+<p>表現出來就像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>process1 | process2
+</code></pre></div></div>
+
+<h4 id="設定一個命名管道">設定一個命名管道</h4>
+
+<p>First, we must create a named pipe. This is done using the mkfifo command:</p>
+
+<p>首先，我們必須建立一個命名管道。使用 mkfifo 命令能夠建立命令管道：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mkfifo pipe1
+[me@linuxbox ~]$ ls -l pipe1
+prw-r--r-- 1 me
+me
+0 2009-07-17 06:41 pipe1
+</code></pre></div></div>
+
+<p>Here we use mkfifo to create a named pipe called pipe1. Using ls, we examine the
+file and see that the first letter in the attributes field is “p”,
+indicating that it is a named pipe.</p>
+
+<p>這裡我們使用 mkfifo 建立了一個名為 pipe1 的命名管道。使用 ls 命令，我們檢視這個檔案，
+看到位於屬性欄位的第一個字母是 “p”，表明它是一個命名管道。</p>
+
+<h4 id="使用命名管道">使用命名管道</h4>
+
+<p>To demonstrate how the named pipe works, we will need two terminal
+windows (or alternately, two virtual consoles). In the first terminal,
+we enter a simple command and redirect its output to the named pipe:</p>
+
+<p>為了示範命名管道是如何工作的，我們將需要兩個終端視窗（或用兩個虛擬控制檯代替）。
+在第一個終端中，我們輸入一個簡單命令，並把命令的輸出重新導向到命名管道：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l &gt; pipe1
+</code></pre></div></div>
+
+<p>After we press the Enter key, the command will appear to hang. This is because there is
+nothing receiving data from the other end of the pipe yet. When this occurs, it is said that
+the pipe is blocked. This condition will clear once we attach a process to the other end
+and it begins to read input from the pipe. Using the second terminal window, we enter
+this command:</p>
+
+<p>我們按下 Enter 按鍵之後，命令將會掛起。這是因為在管道的另一端沒有任何物件來接收資料。這種現象被稱為管道阻塞。一旦我們繫結一個程序到管道的另一端，該程序開始從管道中讀取輸入的時候，管道阻塞現象就不存在了。
+使用第二個終端視窗，我們輸入這個命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat &lt; pipe1
+</code></pre></div></div>
+
+<p>and the directory listing produced from the first terminal window appears in the second
+terminal as the output from the cat command. The ls command in the first terminal
+successfully completes once it is no longer blocked.</p>
+
+<p>然後產自第一個終端視窗的目錄列表出現在第二個終端中，並作為來自 cat 命令的輸出。在第一個終端
+視窗中的 ls 命令一旦它不再阻塞，會成功地結束。</p>
+
+<h3 id="總結">總結</h3>
+
+<p>Well, we have completed our journey. The only thing left to do now is practice, practice,
+practice. Even though we covered a lot of ground in our trek, we barely scratched
+the surface as far as the command line goes. There are still thousands of command line
+programs left to be discovered and enjoyed. Start digging around in /usr/bin and you’ll see!</p>
+
+<p>嗯，我們已經完成了我們的旅程。現在剩下的唯一要做的事就是練習，練習，再練習。
+縱然在我們的長途跋涉中，我們涉及了很多命令，但是就命令列而言，我們只是觸及了它的表面。
+仍留有成千上萬的命令列程式，需要去發現和享受。開始挖掘 /usr/bin 目錄吧，你將會看到！</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The “Compound Commands” section of the bash man page contains a full
+description of group command and subshell notations.</p>
+  </li>
+  <li>
+    <p>bash 手冊頁的「複合命令」部分包含了對組命令和子 shell 表示法的詳盡描述。</p>
+  </li>
+  <li>
+    <p>The EXPANSION section of the bash man page contains a subsection of process
+substitution.</p>
+  </li>
+  <li>
+    <p>bash 手冊也的 EXPANSION 部分包含了一小部分程序替換的內容：</p>
+  </li>
+  <li>
+    <p>The Advanced Bash-Scripting Guide also has a discussion of process substitution:</p>
+  </li>
+  <li>
+    <p>《高階 Bash 指令碼指南》也有對程序替換的討論：</p>
+
+    <p><a href="http://tldp.org/LDP/abs/html/process-sub.html">http://tldp.org/LDP/abs/html/process-sub.html</a></p>
+  </li>
+  <li>
+    <p>Linux Journal has two good articles on named pipes. The first, from September 1997:</p>
+  </li>
+  <li>
+    <p>《Linux 雜誌》有兩篇關於命令管道的好文章。第一篇，源於1997年9月：</p>
+
+    <p><a href="http://www.linuxjournal.com/article/2156">http://www.linuxjournal.com/article/2156</a></p>
+  </li>
+  <li>
+    <p>and the second, from March 2009:</p>
+  </li>
+  <li>
+    <p>和第二篇，源於2009年3月：</p>
+
+    <p><a href="http://www.linuxjournal.com/content/using-named-pipes-fifos-bash">http://www.linuxjournal.com/content/using-named-pipes-fifos-bash</a></p>
+  </li>
+</ul>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

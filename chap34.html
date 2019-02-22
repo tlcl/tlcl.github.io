@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">流程控制：for 迴圈</h1><br>
+<p>In this final chapter on flow control, we will look at another of the shell’s looping constructs.
+The for loop differs from the while and until loops in that it provides
+a means of processing sequences during a loop. This turns out to be very useful when programming.
+Accordingly, the for loop is a very popular construct in bash scripting.</p>
+
+<p>在這關於流程控制的最後一章中，我們將看看另一種 shell 迴圈構造。for 迴圈不同於 while 和 until 迴圈，因為
+在迴圈中，它提供了一種處理序列的方式。這在程式設計時非常有用。因此在 bash 指令碼中，for 迴圈是非常流行的構造。</p>
+
+<p>A for loop is implemented, naturally enough, with the for command.
+In modern versions of bash, for is available in two forms.</p>
+
+<p>實現一個 for 迴圈，很自然的，要用 for 命令。在現代版的 bash 中，有兩種可用的 for 迴圈格式。</p>
+
+<h3 id="for-傳統-shell-格式">for: 傳統 shell 格式</h3>
+
+<p>The original for command’s syntax is:</p>
+
+<p>for 命令語法是：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>for variable [in words]; do
+    commands
+done
+</code></pre></div></div>
+
+<p>Where variable is the name of a variable that will increment during the
+execution of the loop, words is an optional list of items that will
+be sequentially assigned to variable, and commands are the commands that are to
+be executed on each iteration of the loop.</p>
+
+<p>這裡的 variable 是一個變數的名字，這個變數在迴圈執行期間會增加，words 是一個可選的條目列表，
+其值會按順序賦值給 variable，commands 是在每次迴圈迭代中要執行的命令。</p>
+
+<p>The for command is useful on the command line. We can easily demonstrate how it works:</p>
+
+<p>在命令列中 for 命令是很有用的。我們可以很容易的說明它是如何工作的：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ for i in A B C D; do echo $i; done
+A
+B
+C
+D
+</code></pre></div></div>
+
+<p>In this example, for is given a list of four words: “A”, “B”, “C”, and “D”. With a list of
+four words, the loop is executed four times. Each time the loop is executed, a word is as-
+signed to the variable i. Inside the loop, we have an echo command that displays the
+value of i to show the assignment. As with the while and until loops, the done keyword closes the loop.</p>
+
+<p>在這個例子中，for 迴圈有一個四個單詞的列表：“A”、“B”、“C”和 “D”。由於這四個單詞的列表，for 迴圈會執行四次。
+每次迴圈執行的時候，就會有一個單詞賦值給變數 i。在迴圈體內，我們有一個 echo 命令會顯示 i 變數的值，來示範賦值結果。
+正如 while 和 until 迴圈，done 關鍵字會關閉迴圈。</p>
+
+<p>The really powerful feature of for is the number of interesting ways we can create the
+list of words. For example, through brace expansion:</p>
+
+<p>for 命令真正強大的功能是我們可以透過許多有趣的方式建立 words 列表。例如，透過花括號展開：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ for i in {A..D}; do echo $i; done
+A
+B
+C
+D
+</code></pre></div></div>
+
+<p>or pathname expansion:</p>
+
+<p>或者路徑名展開：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ for i in distros*.txt; do echo $i; done
+distros-by-date.txt
+distros-dates.txt
+distros-key-names.txt
+distros-key-vernums.txt
+distros-names.txt
+distros.txt
+distros-vernums.txt
+distros-versions.txt
+</code></pre></div></div>
+
+<p>or command substitution:</p>
+
+<p>或者命令替換：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># longest-word : find longest string in a file</span>
+<span class="k">while</span> <span class="o">[[</span> <span class="nt">-n</span> <span class="nv">$1</span> <span class="o">]]</span><span class="p">;</span> <span class="k">do
+    if</span> <span class="o">[[</span> <span class="nt">-r</span> <span class="nv">$1</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nv">max_word</span><span class="o">=</span>
+        <span class="nv">max_len</span><span class="o">=</span>0
+        <span class="k">for </span>i <span class="k">in</span> <span class="k">$(</span>strings <span class="nv">$1</span><span class="k">)</span><span class="p">;</span> <span class="k">do
+            </span><span class="nv">len</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$i</span> | wc <span class="nt">-c</span><span class="k">)</span>
+            <span class="k">if</span> <span class="o">((</span> len <span class="o">&gt;</span> max_len <span class="o">))</span><span class="p">;</span> <span class="k">then
+                </span><span class="nv">max_len</span><span class="o">=</span><span class="nv">$len</span>
+                <span class="nv">max_word</span><span class="o">=</span><span class="nv">$i</span>
+            <span class="k">fi
+        done
+        </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$1</span><span class="s2">: '</span><span class="nv">$max_word</span><span class="s2">' (</span><span class="nv">$max_len</span><span class="s2"> characters)"</span>
+    <span class="k">fi
+    </span><span class="nb">shift
+</span><span class="k">done</span>
+</code></pre></div></div>
+
+<p>In this example, we look for the longest string found within a file. When given one or
+more filenames on the command line, this program uses the strings program (which is
+included in the GNU binutils package) to generate a list of readable text “words” in each
+file. The for loop processes each word in turn and determines if the current word is the
+longest found so far. When the loop concludes, the longest word is displayed.</p>
+
+<p>在這個示例中，我們要在一個檔案中查詢最長的字串。當在命令列中給出一個或多個檔名的時候，
+該程式會使用 strings 程式（其包含在 GNU binutils 包中），為每一個檔案產生一個可讀的文字格式的 “words” 列表。
+然後這個 for 迴圈依次處理每個單詞，判斷當前這個單詞是否為目前為止找到的最長的一個。當迴圈結束的時候，顯示出最長的單詞。</p>
+
+<p>If the optional in words portion of the for command is omitted, for defaults to pro-
+cessing the positional parameters. We will modify our longest-word script to use this
+method:</p>
+
+<p>如果省略掉 for 命令的可選項 words 部分，for 命令會預設處理位置引數。
+我們將修改 longest-word 指令碼，來使用這種方式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># longest-word2 : find longest string in a file</span>
+<span class="k">for </span>i<span class="p">;</span> <span class="k">do
+    if</span> <span class="o">[[</span> <span class="nt">-r</span> <span class="nv">$i</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nv">max_word</span><span class="o">=</span>
+        <span class="nv">max_len</span><span class="o">=</span>0
+        <span class="k">for </span>j <span class="k">in</span> <span class="k">$(</span>strings <span class="nv">$i</span><span class="k">)</span><span class="p">;</span> <span class="k">do
+            </span><span class="nv">len</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$j</span> | wc <span class="nt">-c</span><span class="k">)</span>
+            <span class="k">if</span> <span class="o">((</span> len <span class="o">&gt;</span> max_len <span class="o">))</span><span class="p">;</span> <span class="k">then
+                </span><span class="nv">max_len</span><span class="o">=</span><span class="nv">$len</span>
+                <span class="nv">max_word</span><span class="o">=</span><span class="nv">$j</span>
+            <span class="k">fi
+        done
+        </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$i</span><span class="s2">: '</span><span class="nv">$max_word</span><span class="s2">' (</span><span class="nv">$max_len</span><span class="s2"> characters)"</span>
+    <span class="k">fi
+done</span>
+</code></pre></div></div>
+
+<p>As we can see, we have changed the outermost loop to use for in place of while. By
+omitting the list of words in the for command, the positional parameters are used instead.
+Inside the loop, previous instances of the variable i have been changed to the variable j.
+The use of shift has also been eliminated.</p>
+
+<p>正如我們所看到的，我們已經更改了最外圍的迴圈，用 for 迴圈來代替 while 迴圈。透過省略 for 命令的 words 列表，
+用位置引數替而代之。在迴圈體內，之前的變數 i 已經改為變數 j。同時 shift 命令也被淘汰掉了。</p>
+
+<blockquote>
+  <p><em>Why i?</em></p>
+
+  <p><em>為什麼是 i？</em></p>
+
+  <p>You may have noticed that the variable i was chosen for each of the for loop
+examples above. Why? No specific reason actually, besides tradition. The variable
+used with for can be any valid variable, but i is the most common, followed by
+j and k.</p>
+
+  <p>你可能已經注意到上面所列舉的 for 迴圈的範例都選擇 i 作為變數。為什麼呢？ 實際上沒有具體原因，除了傳統習慣。
+for 迴圈使用的變數可以是任意有效的變數，但是 i 是最常用的一個，其次是 j 和 k。</p>
+
+  <p>The basis of this tradition comes from the Fortran programming language. In For-
+tran, undeclared variables starting with the letters I, J, K, L, and M are automati-
+cally typed as integers, while variables beginning with any other letter are typed
+as real (numbers with decimal fractions). This behavior led programmers to use
+the variables I, J, and K for loop variables, since it was less work to use them
+when a temporary variable (as loop variables often are) was needed.
+It also led to the following Fortran-based witticism:</p>
+
+  <p>“GOD is real, unless declared integer.”</p>
+
+  <p>這一傳統的基礎源於 Fortran 程式語言。在 Fortran 語言中，以字母 I、J、K、L 和 M 開頭的未宣告變數的型別
+自動設為整形，而以其它字母開頭的變數則為實數型別（帶有小數的數字）。這種行為導致程式設計師使用變數 I、J和 K 作為迴圈變數，
+因為當需要一個臨時變數（正如迴圈變數）的時候，使用它們工作量比較少。這也引出瞭如下基於 Fortran 的俏皮話：</p>
+
+  <p>“神是實數，除非是宣告的整數。”</p>
+</blockquote>
+
+<h3 id="for-c-語言格式">for: C 語言格式</h3>
+
+<p>Recent versions of bash have added a second form of for command syntax, one that
+resembles the form found in the C programming language. Many other languages support
+this form, as well:</p>
+
+<p>最新版本的 bash 已經添加了第二種格式的 for 命令語法，該語法相似於 C 語言中的 for 語法格式。
+其它許多程式語言也支援這種格式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>for (( expression1; expression2; expression3 )); do
+    commands
+done
+</code></pre></div></div>
+
+<p>where expression1, expression2, and expression3 are arithmetic expressions and com-
+mands are the commands to be performed during each iteration of the loop.
+In terms of behavior, this form is equivalent to the following construct:</p>
+
+<p>這裡的 expression1、expression2和 expression3 都是算術表示式，commands 是每次迴圈迭代時要執行的命令。
+在行為方面，這相當於以下構造形式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(( expression1 ))
+while (( expression2 )); do
+    commands
+    (( expression3 ))
+done
+</code></pre></div></div>
+
+<p>expression1 is used to initialize conditions for the loop, expression2 is used to determine
+when the loop is finished, and expression3 is carried out at the end of each iteration of the
+loop.</p>
+
+<p>expression1 用來初始化迴圈條件，expression2 用來決定迴圈結束的時間，還有在每次迴圈迭代的末尾會執行 expression3。</p>
+
+<p>Here is a typical application:</p>
+
+<p>這裡是一個典型應用：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># simple_counter : demo of C style for command</span>
+<span class="k">for</span> <span class="o">((</span> <span class="nv">i</span><span class="o">=</span>0<span class="p">;</span> i&lt;5<span class="p">;</span> <span class="nv">i</span><span class="o">=</span>i+1 <span class="o">))</span><span class="p">;</span> <span class="k">do
+    </span><span class="nb">echo</span> <span class="nv">$i</span>
+<span class="k">done</span>
+</code></pre></div></div>
+
+<p>When executed, it produces the following output:</p>
+
+<p>指令碼執行之後，產生如下輸出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ simple_counter
+0
+1
+2
+3
+4
+</code></pre></div></div>
+
+<p>In this example, expression1 initializes the variable i with the value of zero, expression2
+allows the loop to continue as long as the value of i remains less than 5, and expression3
+increments the value of i by one each time the loop repeats.</p>
+
+<p>在這個示例中，expression1 初始化變數 i 的值為0，expression2 允許迴圈繼續執行只要變數 i 的值小於5，
+還有每次迴圈迭代時，expression3 會把變數 i 的值加1。</p>
+
+<p>The C language form of for is useful anytime a numeric sequence is needed. We will see
+several applications for this in the next two chapters.</p>
+
+<p>C 語言格式的 for 迴圈對於需要一個數字序列的情況是很有用處的。我們將在接下來的兩章中看到幾個這樣的應用範例。</p>
+
+<h3 id="總結">總結</h3>
+
+<p>With our knowledge of the for command, we will now apply the final improvements to
+our sys_info_page script. Currently, the report_home_space function looks
+like this:</p>
+
+<p>學習了 for 命令的知識，現在我們將對我們的 sys_info_page 指令碼做最後的改進。
+目前，這個 report_home_space 函式看起來像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>report_home_space () {
+    if [[ $(id -u) -eq 0 ]]; then
+        cat &lt;&lt;- _EOF_
+        &lt;H2&gt;Home Space Utilization (All Users)&lt;/H2&gt;
+        &lt;PRE&gt;$(du -sh /home/*)&lt;/PRE&gt;
+        _EOF_
+    else
+        cat &lt;&lt;- _EOF_
+        &lt;H2&gt;Home Space Utilization ($USER)&lt;/H2&gt;
+        &lt;PRE&gt;$(du -sh $HOME)&lt;/PRE&gt;
+        _EOF_
+    fi
+    return
+}
+</code></pre></div></div>
+
+<p>Next, we will rewrite it to provide more detail for each user’s home directory, and include
+the total number of files and subdirectories in each:</p>
+
+<p>下一步，我們將重寫它，以便提供每個使用者家目錄的更詳盡資訊，並且包含使用者家目錄中檔案和目錄的總個數：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>report_home_space () {
+    local format="%8s%10s%10s\n"
+    local i dir_list total_files total_dirs total_size user_name
+    if [[ $(id -u) -eq 0 ]]; then
+        dir_list=/home/*
+        user_name="All Users"
+    else
+        dir_list=$HOME
+        user_name=$USER
+    fi
+    echo "&lt;H2&gt;Home Space Utilization ($user_name)&lt;/H2&gt;"
+    for i in $dir_list; do
+        total_files=$(find $i -type f | wc -l)
+        total_dirs=$(find $i -type d | wc -l)
+        total_size=$(du -sh $i | cut -f 1)
+        echo "&lt;H3&gt;$i&lt;/H3&gt;"
+        echo "&lt;PRE&gt;"
+        printf "$format" "Dirs" "Files" "Size"
+        printf "$format" "----" "-----" "----"
+        printf "$format" $total_dirs $total_files $total_size
+        echo "&lt;/PRE&gt;"
+    done
+    return
+}
+</code></pre></div></div>
+
+<p>This rewrite applies much of what we have learned so far. We still test for the superuser,
+but instead of performing the complete set of actions as part of the if, we set some vari-
+ables used later in a for loop. We have added several local variables to the function and
+made use of printf to format some of the output.</p>
+
+<p>這次重寫應用了目前為止我們學過的許多知識。我們仍然測試超級使用者（superuser），但是我們在 if 語句塊內
+設定了一些隨後會在 for 迴圈中用到的變數，來取代在 if 語句塊內執行完備的動作集合。我們給
+函式添加了幾個本地變數，並且使用 printf 來格式化輸出。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The Advanced Bash-Scripting Guide has a chapter on loops, with a variety of examples using for:</p>
+  </li>
+  <li>
+    <p>《高階 Bash 指令碼指南》有一章關於迴圈的內容，其中列舉了各種各樣的 for 迴圈範例：</p>
+
+    <p><a href="http://tldp.org/LDP/abs/html/loops1.html">http://tldp.org/LDP/abs/html/loops1.html</a></p>
+  </li>
+  <li>
+    <p>The Bash Reference Manual describes the looping compound commands, including for:</p>
+  </li>
+  <li>
+    <p>《Bash 參考手冊》描述了迴圈複合命令，包括了 for 迴圈：</p>
+
+    <p><a href="http://www.gnu.org/software/bash/manual/bashref.html#Looping-Constructs">http://www.gnu.org/software/bash/manual/bashref.html#Looping-Constructs</a></p>
+  </li>
+</ul>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

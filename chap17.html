@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">網路系統</h1><br>
+<p>When it comes to networking, there is probably nothing that cannot be done
+with Linux.  Linux is used to build all sorts of networking systems and appliances,
+including firewalls, routers, name servers, NAS (Network Attached Storage) boxes and on and on.</p>
+
+<p>當談及到網路系統層面，幾乎任何東西都能由 Linux 來實現。Linux 被用來建立各式各樣的網路系統和裝置，
+包括防火牆，路由器，名稱伺服器，網路連線式儲存裝置等等。</p>
+
+<p>Just as the subject of networking is vast, so are the number of commands that
+can be used to configure and control it. We will focus our attention on just a few of the
+most frequently used ones. The commands chosen for examination include those used
+to monitor networks and those used to transfer files. In addition, we are going
+to explore the ssh program that is used to perform remote logins. This chapter will
+cover:</p>
+
+<p>被用來配置和操作網路系統的命令數目，就如網路系統一樣巨大。我們僅僅會關注一些最經常
+使用到的命令。我們要研究的命令包括那些被用來監測網路和傳輸檔案的命令。另外，我們
+還會探討用來遠端登入的 ssh 程式。這章會介紹：</p>
+
+<ul>
+  <li>
+    <p>ping - Send an ICMP ECHO_REQUEST to network hosts</p>
+  </li>
+  <li>
+    <p>ping - 傳送 ICMP ECHO_REQUEST 資料包到網路主機</p>
+  </li>
+  <li>
+    <p>traceroute - Print the route packets trace to a network host</p>
+  </li>
+  <li>
+    <p>traceroute - 列印到一臺網路主機的路由資料包</p>
+  </li>
+  <li>
+    <p>netstat - Print network connections, routing tables, interface statistics,
+masquerade connections, and multicast memberships</p>
+  </li>
+  <li>
+    <p>netstat - 列印網路連線，路由表，介面統計資料，偽裝連線，和多路廣播成員</p>
+  </li>
+  <li>
+    <p>ftp - Internet file transfer program</p>
+  </li>
+  <li>
+    <p>ftp - 因特網檔案傳輸程式</p>
+  </li>
+  <li>
+    <p>wget - Non-interactive network downloader</p>
+  </li>
+  <li>
+    <p>wget - 非互動式網路下載器</p>
+  </li>
+  <li>
+    <p>ssh - OpenSSH SSH client (remote login program)</p>
+  </li>
+  <li>
+    <p>ssh - OpenSSH SSH 客戶端（遠端登入程式）</p>
+  </li>
+</ul>
+
+<p>We’re going to assume a little background in networking. In this, the Internet age,
+everyone using a computer needs a basic understanding of networking concepts. To
+make full use of this chapter we should be familiar with the following terms:</p>
+
+<p>我們假定你已經知道了一點網路系統背景知識。在這個因特網時代，每個計算機使用者需要理解基本的網路
+系統概念。為了能夠充分利用這一章節的內容，我們應該熟悉以下術語：</p>
+
+<ul>
+  <li>
+    <p>IP (Internet Protocol) address</p>
+  </li>
+  <li>
+    <p>IP (網路協議)地址</p>
+  </li>
+  <li>
+    <p>Host and domain name</p>
+  </li>
+  <li>
+    <p>主機和域名</p>
+  </li>
+  <li>
+    <p>URI (Uniform Resource Identifier)</p>
+  </li>
+  <li>
+    <p>URI（統一資源識別符號）</p>
+  </li>
+</ul>
+
+<p>Please see the “Further Reading” section below for some useful articles regarding these
+terms.</p>
+
+<p>請檢視下面的“拓展閱讀”部分，有幾篇關於這些術語的有用文章。</p>
+
+<hr />
+
+<p>Note: Some of the commands we will cover may (depending on your distribution)
+require the installation of additional packages from your distribution’s repositories,
+and some may require superuser privileges to execute.</p>
+
+<p>注意：一些將要講到的命令可能（取決於系統發行版）需要從系統發行版的儲存庫中安裝額外的軟體包，
+並且一些命令可能需要超級使用者許可權才能執行。</p>
+
+<hr />
+
+<h3 id="檢查和監測網路">檢查和監測網路</h3>
+
+<p>Even if you’re not the system administrator, it’s often helpful to examine the performance
+and operation of a network.</p>
+
+<p>即使你不是一名系統管理員，檢查一個網路的效能和運作情況也是經常有幫助的。</p>
+
+<h4 id="ping">ping</h4>
+
+<p>The most basic network command is ping. The ping command sends a special
+network packet called an ICMP ECHO_REQUEST to a specified host. Most network
+devices receiving this packet will reply to it, allowing the network connection to be
+verified.</p>
+
+<p>最基本的網路命令是 ping。這個 ping 命令傳送一個特殊的網路資料包，叫做 ICMP ECHO_REQUEST，到
+一臺指定的主機。大多數接收這個包的網路裝置將會回覆它，來允許網路連線驗證。</p>
+
+<hr />
+
+<p>Note: It is possible to configure most network devices (including Linux hosts) to
+ignore these packets. This is usually done for security reasons, to partially obscure
+a host from a potential attacker. It is also common for firewalls to be configured to
+block IMCP traffic.</p>
+
+<p>注意：大多數網路裝置（包括 Linux 主機）都可以被配置為忽略這些資料包。通常，這樣做是出於網路安全
+原因，部分地遮蔽一臺主機免受一個潛在攻擊者地侵襲。配置防火牆來阻塞 IMCP 流量也很普遍。</p>
+
+<hr />
+
+<p>For example, to see if we can reach linuxcommand.org (one of our favorite sites ;-),
+we can use use ping like this:</p>
+
+<p>例如，看看我們能否連線到網站 linuxcommand.org（我們最喜歡的網站之一），
+我們可以這樣使用 ping 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ping linuxcommand.org
+</code></pre></div></div>
+
+<p>Once started, ping continues to send packets at a specified interval (default is one
+second) until it is interrupted:</p>
+
+<p>一旦啟動，ping 命令會持續在特定的時間間隔內（預設是一秒）傳送資料包，直到它被中斷：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ping linuxcommand.org
+PING linuxcommand.org (66.35.250.210) 56(84) bytes of data.
+64 bytes from vhost.sourceforge.net (66.35.250.210): icmp\_seq=1
+ttl=43 time=107 ms
+64 bytes from vhost.sourceforge.net (66.35.250.210): icmp\_seq=2
+ttl=43 time=108 ms
+64 bytes from vhost.sourceforge.net (66.35.250.210): icmp\_seq=3
+ttl=43 time=106 ms
+64 bytes from vhost.sourceforge.net (66.35.250.210): icmp\_seq=4
+ttl=43 time=106 ms
+64 bytes from vhost.sourceforge.net (66.35.250.210): icmp\_seq=5
+ttl=43 time=105 ms
+...
+</code></pre></div></div>
+
+<p>After it is interrupted (in this case after the sixth packet) by pressing Ctrl-c, ping
+prints performance statistics. A properly performing network will exhibit zero percent
+packet loss. A successful “ping” will indicate that the elements of the network (its
+interface cards, cabling, routing and gateways) are in generally good working order.</p>
+
+<p>按下組合鍵 Ctrl-c，中斷這個命令之後，ping 打印出執行統計資訊。一個正常工作的網路會報告
+零個資料包丟失。一個成功執行的“ping”命令會意味著網路的各個部件（網絡卡，電纜，路由，閘道器）
+都處於正常的工作狀態。</p>
+
+<h4 id="traceroute">traceroute</h4>
+
+<p>The traceroute program (some systems use the similar tracepath program
+instead) displays a listing of all the “hops” network traffic takes to get
+from the local system to a specified host. For example, to see the route
+taken to reach slashdot.org, we would do this:</p>
+
+<p>這個 traceroute 程式（一些系統使用相似的 tracepath 程式來代替）會顯示從本地到指定主機
+要經過的所有“跳數”的網路流量列表。例如，看一下到達 slashdot.org 需要經過的路由，
+我們將這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ traceroute slashdot.org
+</code></pre></div></div>
+
+<p>The output looks like this:</p>
+
+<p>命令輸出看起來像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>traceroute to slashdot.org (216.34.181.45), 30 hops max, 40 byte
+packets
+1 ipcop.localdomain (192.168.1.1) 1.066 ms 1.366 ms 1.720 ms
+2 * * *
+3 ge-4-13-ur01.rockville.md.bad.comcast.net (68.87.130.9) 14.622
+ms 14.885 ms 15.169 ms
+4 po-30-ur02.rockville.md.bad.comcast.net (68.87.129.154) 17.634
+ms 17.626 ms 17.899 ms
+5 po-60-ur03.rockville.md.bad.comcast.net (68.87.129.158) 15.992
+ms 15.983 ms 16.256 ms
+6 po-30-ar01.howardcounty.md.bad.comcast.net (68.87.136.5) 22.835
+...
+</code></pre></div></div>
+
+<p>In the output, we can see that connecting from our test system to slashdot.org
+requires traversing sixteen routers. For routers that provided identifying information, we
+see their host names, IP addresses and performance data, which includes three samples of
+round-trip time from the local system to the router. For routers that do not provide
+identifying information (because of router configuration, network congestion, firewalls,
+etc.), we see asterisks as in the line for hop number two.</p>
+
+<p>從輸出結果中，我們可以看到連線測試系統到 slashdot.org 網站需要經由16個路由器。對於那些
+提供標識資訊的路由器，我們能看到它們的主機名，IP 地址和效能資料，這些資料包括三次從本地到
+此路由器的往返時間樣本。對於那些沒有提供標識資訊的路由器（由於路由器配置，網路擁塞，防火牆等
+方面的原因），我們會看到幾個星號，正如行中所示。</p>
+
+<h4 id="netstat">netstat</h4>
+
+<p>The netstat program is used to examine various network settings and statistics.
+Through the use of its many options, we can look at a variety of features in our network
+setup. Using the “-ie” option, we can examine the network interfaces in our system:</p>
+
+<p>netstat 程式被用來檢查各種各樣的網路設定和統計資料。透過此命令的許多選項，我們
+可以看看網路設定中的各種特性。使用“-ie”選項，我們能夠檢視系統中的網路介面：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ netstat -ie
+eth0    Link encap:Ethernet HWaddr 00:1d:09:9b:99:67
+        inet addr:192.168.1.2 Bcast:192.168.1.255 Mask:255.255.255.0
+        inet6 addr: fe80::21d:9ff:fe9b:9967/64 Scope:Link
+        UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+        RX packets:238488 errors:0 dropped:0 overruns:0 frame:0
+        TX packets:403217 errors:0 dropped:0 overruns:0 carrier:0
+        collisions:0 txqueuelen:100 RX bytes:153098921 (146.0 MB) TX
+        bytes:261035246 (248.9 MB) Memory:fdfc0000-fdfe0000
+
+lo      Link encap:Local Loopback
+        inet addr:127.0.0.1 Mask:255.0.0.0
+...
+</code></pre></div></div>
+
+<p>In the example above, we see that our test system has two network interfaces.
+The first, called eth0, is the Ethernet interface and the second, called lo,
+is the loopback interface, a virtual interface that the system uses to “talk
+to itself.”</p>
+
+<p>在上述範例中，我們看到我們的測試系統有兩個網路介面。第一個，叫做 eth0，是
+乙太網介面，和第二個，叫做 lo，是內部迴環網路介面，它是一個虛擬介面，系統用它來
+“自言自語”。</p>
+
+<p>When performing causal network diagnostics, the important things to look for
+are the presence of the word “UP” at the beginning of the fourth line for each
+interface, indicating that the network interface is enabled, and the presence
+of a valid IP address in the inet addr field on the second line. For systems
+using DHCP (Dynamic Host Configuration Protocol), a valid IP address in this
+field will verify that the DHCP is working.</p>
+
+<p>當執行日常網路診斷時，要檢視的重要資訊是每個網路介面第四行開頭出現的單詞
+“UP”，說明這個網路介面已經生效，還要檢視第二行中 inet
+addr 欄位出現的有效 IP 地址。對於使用 DHCP（動態主機配置協議）的系統，在
+這個欄位中的一個有效 IP 地址則證明了 DHCP 工作正常。</p>
+
+<p>Using the “-r” option will display the kernel’s network routing table. This
+shows how the network is configured to send packets from network to network:</p>
+
+<p>使用這個“-r”選項會顯示核心的網路路由表。這展示了系統是如何配置網路之間傳送資料包的。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ netstat -r
+Kernel IP routing table
+Destination     Gateway     Genmask         Flags    MSS  Window  irtt Iface
+
+192.168.1.0     *           255.255.255.0   U        0    0          0 eth0
+default         192.168.1.1 0.0.0.0         UG       0    0          0 eth0
+</code></pre></div></div>
+
+<p>In this simple example, we see a typical routing table for a client machine on
+a LAN (Local Area Network) behind a firewall/router. The first line of the
+listing shows the destination 192.168.1.0. IP addresses that end in zero refer
+to networks rather than individual hosts, so this destination means any host
+on the LAN. The next field, Gateway, is the name or IP address of the gateway
+(router) used to go from the current host to the destination network. An
+asterisk in this field indicates that no gateway is needed.</p>
+
+<p>在這個簡單的例子裡面，我們看到了，位於防火牆之內的區域網中，一臺客戶端計算機的典型路由表。
+第一行顯示了目的地 192.168.1.0。IP 地址以零結尾是指網路，而不是獨立主機，
+所以這個目的地意味著區域網中的任何一臺主機。下一個欄位，Gateway，
+是閘道器（路由器）的名字或 IP 地址，用它來連線當前的主機和目的地的網路。
+若這個欄位顯示一個星號，則表明不需要閘道器。</p>
+
+<p>The last line contains the destination default. This means any traffic
+destined for a network that is not otherwise listed in the table. In our
+example, we see that the gateway is defined as a router with the address of
+192.168.1.1, which presumably knows what to do with the destination traffic.</p>
+
+<p>最後一行包含目的地 default。指的是發往任何表上沒有列出的目的地網路的流量。
+在我們的範例中，我們看到閘道器被定義為地址 192.168.1.1 的路由器，它應該能
+知道怎樣來處理目的地流量。</p>
+
+<p>The netstat program has many options and we have only looked at a couple.
+Check out the netstat man page for a complete list.</p>
+
+<p>netstat 程式有許多選項，我們僅僅討論了幾個。檢視 netstat 命令的手冊，可以
+得到所有選項的完整列表。</p>
+
+<h3 id="網路中傳輸檔案">網路中傳輸檔案</h3>
+
+<p>What good is a network unless we know how to move files across it? There are many
+programs that move data over networks. We will cover two of them now and several
+more in later sections.</p>
+
+<p>網路有什麼用處呢？除非我們知道了怎樣透過網路來傳輸檔案。有許多程式可以用來在網路中
+傳送資料。我們先討論兩個，隨後的章節裡再介紹幾個。</p>
+
+<h4 id="ftp">ftp</h4>
+
+<p>One of the true “classic” programs, ftp gets it name from the protocol it uses, the File
+Transfer Protocol. FTP is used widely on the Internet for file downloads. Most, if not
+all, web browsers support it and you often see URIs starting with the protocol ftp://.
+Before there were web browsers, there was the ftp program. ftp is used to
+communicate with FTP servers, machines that contain files that can be uploaded and
+downloaded over a network.</p>
+
+<p>ftp 命令屬於真正的“經典”程式之一，它的名字來源於其所使用的協議，就是檔案傳輸協議。
+FTP 被廣泛地用來從因特網上下載檔案。大多數，並不是所有的，網路瀏覽器都支援 FTP，
+你經常可以看到它們的 URI 以協議 ftp://開頭。在出現網路瀏覽器之前，ftp 程式已經存在了。
+ftp 程式可用來與 FTP 伺服器進行通訊，FTP 伺服器就是儲存檔案的計算機，這些檔案能夠透過
+網路下載和上傳。</p>
+
+<p>FTP (in its original form) is not secure, because it sends account names and passwords in
+cleartext. This means that they are not encrypted and anyone sniffing the network can see
+them. Because of this, almost all FTP done over the Internet is done by anonymous FTP
+servers. An anonymous server allows anyone to login using the login name
+“anonymous” and a meaningless password.</p>
+
+<p>FTP（它的原始形式）並不是安全的，因為它會以明碼形式傳送帳號的姓名和密碼。這就意味著
+這些資料沒有加密，任何嗅探網路的人都能看到。由於此種原因，幾乎因特網中所有 FTP 伺服器
+都是匿名的。一個匿名伺服器能允許任何人使用註冊名“anonymous”和無意義的密碼登入系統。</p>
+
+<p>In the example below, we show a typical session with the ftp program downloading an
+Ubuntu iso image located in the /pub/cd_images/Ubuntu-8.04 directory of the
+anonymous FTP server fileserver:</p>
+
+<p>在下面的例子中，我們將展示一個典型的會話，從匿名 FTP 伺服器，其名字是 fileserver，
+的/pub/_images/Ubuntu-8.04的目錄下，使用 ftp 程式下載一個 Ubuntu 系統映像檔案。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ftp fileserver
+Connected to fileserver.localdomain.
+220 (vsFTPd 2.0.1)
+Name (fileserver:me): anonymous
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt; cd pub/cd\_images/Ubuntu-8.04
+250 Directory successfully changed.
+ftp&gt; ls
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+-rw-rw-r-- 1 500 500 733079552 Apr 25 03:53 ubuntu-8.04- desktop-i386.iso
+226 Directory send OK.
+ftp&gt; lcd Desktop
+Local directory now /home/me/Desktop
+ftp&gt; get ubuntu-8.04-desktop-i386.iso
+local: ubuntu-8.04-desktop-i386.iso remote: ubuntu-8.04-desktop-
+i386.iso
+200 PORT command successful. Consider using PASV.
+150 Opening BINARY mode data connection for ubuntu-8.04-desktop-
+i386.iso (733079552 bytes).
+226 File send OK.
+733079552 bytes received in 68.56 secs (10441.5 kB/s)
+ftp&gt; bye
+</code></pre></div></div>
+
+<p>Here is an explanation of the commands entered during this session:</p>
+
+<p>這裡是對會話期間所輸入命令的解釋說明：</p>
+
+<table class="multi">
+<caption class="cap">Table 17-1:</caption>
+<tr>
+<th class="title">Command</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top" width="35%">ftp fileserver</td>
+<td valign="top">Invoke the ftp program and have it connect to FTP server
+fileserver.</td>
+</tr>
+<tr>
+<td valign="top">anonymous</td>
+<td valign="top">Login name. After the login prompt, a password prompt will
+appear. Some servers will accept a blank password, others will require a
+password in the form of a email address. In that case, try something like
+“user@example.com”.  </td>
+</tr>
+<tr>
+<td valign="top">cd pub/cd_images/Ubuntu-8.04 </td>
+<td valign="top">Change to the directory on the remote system containing the
+desired file. Note that on most anonymous FTP servers, the files for public
+downloading are found somewhere under the pub directory.  </td>
+</tr>
+<tr>
+<td valign="top">ls</td>
+<td valign="top">List the directory on the remote system.</td>
+</tr>
+<tr>
+<td valign="top">lcd Desktop</td>
+<td valign="top">Change the directory on the local system to ~/Desktop. In the
+example, the ftp program was invoked when the working directory was ~. This
+command changes the working directory to ~/Desktop.  </td>
+</tr>
+<tr>
+<td valign="top">get ubuntu-8.04-desktop- i386.iso </td>
+<td valign="top">Tell the remote system to transfer the file
+ubuntu-8.04-desktop- i386.iso to the local system. Since the working directory
+on the local system was changed to ~/Desktop, the file will be downloaded
+there. </td>
+</tr>
+<tr>
+<td valign="top">bye</td>
+<td valign="top">Log off the remote server and end the ftp program session.
+The commands quit and exit may also be used. </td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表17-1:</caption>
+<tr>
+<th class="title">命令</th>
+<th class="title">意思</th>
+</tr>
+<tr>
+<td valign="top" width="35%">ftp fileserver</td>
+<td valign="top">喚醒 ftp 程式，讓它連線到 FTP 伺服器，fileserver。</td>
+</tr>
+<tr>
+<td valign="top">anonymous</td>
+<td valign="top">登入名。輸入登入名後，將出現一個密碼提示。一些伺服器將會接受空密碼，
+其它一些則會要求一個郵件地址形式的密碼。如果是這種情況，試著輸入 “user@example.com”。 </td>
+</tr>
+<tr>
+<td valign="top">cd pub/cd_images/Ubuntu-8.04 </td>
+<td valign="top">跳轉到遠端系統中，要下載檔案所在的目錄下，
+注意在大多數匿名的 FTP 伺服器中，支援公共下載的檔案都能在目錄 pub 下找到 </td>
+</tr>
+<tr>
+<td valign="top">ls</td>
+<td valign="top">列出遠端系統中的目錄。</td>
+</tr>
+<tr>
+<td valign="top">lcd Desktop</td>
+<td valign="top">跳轉到本地系統中的 ~/Desktop 目錄下。在範例中，ftp 程式在工作目錄 ~ 下被喚醒。
+這個命令把工作目錄改為 ~/Desktop </td>
+</tr>
+<tr>
+<td valign="top">get ubuntu-8.04-desktop-i386.iso </td>
+<td valign="top">告訴遠端系統傳送檔案到本地。因為本地系統的工作目錄
+已經更改到了 ~/Desktop，所以檔案會被下載到此目錄。 </td>
+</tr>
+<tr>
+<td valign="top">bye</td>
+<td valign="top">退出遠端伺服器，結束 ftp 程式會話。也可以使用命令 quit 和 exit。</td>
+</tr>
+</table>
+
+<p>Typing “help” at the “ftp&gt;” prompt will display a list of the supported commands. Using
+ftp on a server where sufficient permissions have been granted, it is possible to perform
+many ordinary file management tasks. It’s clumsy, but it does work.</p>
+
+<p>在 “ftp&gt;” 提示符下，輸入 “help”，會顯示所支援命令的列表。使用 ftp 登入到一臺
+授予了使用者足夠許可權的伺服器中，則可以執行很多普通的檔案管理任務。雖然很笨拙，
+但它真能工作。</p>
+
+<h4 id="lftp---更好的-ftp">lftp - 更好的 ftp</h4>
+
+<p>ftp is not the only command line FTP client. In fact, there are many. One of better (and
+more popular) ones is lftp by Alexander Lukyanov. It works much like the traditional
+ftp program, but has many additional convenience features including multiple protocol
+support (including HTTP), automatic re-try on failed downloads, background processes,
+tab completion of path names, and many more.</p>
+
+<p>ftp 並不是唯一的命令列形式的 FTP 客戶端。實際上，還有很多。其中比較好（也更流行的）是 lftp 程式，
+由 Alexander Lukyanov 編寫完成。雖然 lftp 工作起來與傳統的 ftp 程式很相似，但是它帶有額外的便捷特性，包括
+多協議支援（包括 HTTP），若下載失敗會自動地重新下載，後臺處理，用 tab 按鍵來補全路徑名，還有很多。</p>
+
+<h4 id="wget">wget</h4>
+
+<p>Another popular command line program for file downloading is wget. It is useful for
+downloading content from both web and FTP sites. Single files, multiple files, and even
+entire sites can be downloaded. To download the first page of linuxcommand.org
+we could do this:</p>
+
+<p>另一個流行的用來下載檔案的命令列程式是 wget。若想從網路和 FTP 網站兩者上都能下載資料，wget 是很有用處的。
+不只能下載單個檔案，多個檔案，甚至整個網站都能下載。下載 linuxcommand.org 網站的首頁，
+我們可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ wget http://linuxcommand.org/index.php
+--11:02:51-- http://linuxcommand.org/index.php
+        =&gt; `index.php'
+Resolving linuxcommand.org... 66.35.250.210
+Connecting to linuxcommand.org|66.35.250.210|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+
+  [ &lt;                        =&gt; ]        3,120       --.--K/s
+
+11:02:51 (161.75 MB/s) - 'index.php' saved [3120]
+</code></pre></div></div>
+
+<p>The program’s many options allow wget to recursively download, download files in the
+background (allowing you to log off but continue downloading), and complete the
+download of a partially downloaded file. These features are well documented in its
+better-than-average man page.</p>
+
+<p>這個程式的許多選項允許 wget 遞迴地下載，在後臺下載檔案（你退出後仍在下載），能完成未下載
+全的檔案。這些特性在其優秀的命令手冊中有著詳盡地說明。</p>
+
+<h3 id="與遠端主機安全通訊">與遠端主機安全通訊</h3>
+
+<p>For many years, Unix-like operating systems have had the ability to be administered
+remotely via a network. In the early days, before the general adoption of the Internet,
+there were a couple of popular programs used to log in to remote hosts. These were the
+rlogin and telnet programs. These programs, however, suffer from the same fatal
+flaw that the ftp program does; they transmit all their communications (including login
+names and passwords) in cleartext. This makes them wholly inappropriate for use in the
+Internet age.</p>
+
+<p>透過網路來遠端操控類別 Unix 的作業系統已經有很多年了。早些年，在因特網普遍推廣之前，有
+一些受歡迎的程式被用來登入遠端主機。它們是 rlogin 和 telnet 程式。然而這些程式，擁有和 ftp 程式
+一樣的致命缺點；它們以明碼形式來傳輸所有的交流資訊（包括登入命令和密碼）。這使它們完全不
+適合使用在因特網時代。</p>
+
+<h4 id="ssh">ssh</h4>
+
+<p>To address this problem, a new protocol called SSH (Secure Shell) was developed. SSH
+solves the two basic problems of secure communication with a remote host. First, it
+authenticates that the remote host is who it says it is (thus preventing so-called “man in
+the middle” attacks), and second, it encrypts all of the communications between the local
+and remote hosts.</p>
+
+<p>為了解決這個問題，開發了一款新的協議，叫做 SSH（Secure Shell）。
+SSH 解決了這兩個基本的和遠端主機安全交流的問題。首先，它要認證遠端主機是否為它
+所知道的那臺主機（這樣就阻止了所謂的“中間人”的攻擊），其次，它加密了本地與遠端主機之間
+所有的通訊資訊。</p>
+
+<p>SSH consists of two parts. An SSH server runs on the remote host, listening for incoming
+connections on port twenty-two, while an SSH client is used on the local system to
+communicate with the remote server.</p>
+
+<p>SSH 由兩部分組成。SSH 伺服器端執行在遠端主機上，在埠 22 上監聽收到的外部連線，而
+SSH 客戶端用在本地系統中，用來和遠端伺服器通訊。</p>
+
+<p>Most Linux distributions ship an implementation of SSH called OpenSSH from the BSD
+project. Some distributions include both the client and the server packages by default
+(for example, Red Hat), while others (such as Ubuntu) only supply the client. To enable a
+system to receive remote connections, it must have the OpenSSH-server package
+installed, configured and running, and (if the system is either running or is behind a
+firewall) it must allow incoming network connections on TCP port 22.</p>
+
+<p>大多數 Linux 發行版自帶一個提供 SSH 功能的軟體包，叫做 OpenSSH，來自於 BSD 專案。一些發行版
+預設包含客戶端和伺服器端兩個軟體包（例如 Red Hat），而另一些（比方說 Ubuntu）則只提供客戶端。
+為了能讓系統接受遠端的連線，它必須安裝 OpenSSH-server 軟體包，配置，執行它，
+並且（如果系統正在執行，或者系統在防火牆之後）它必須允許在 TCP 埠 22 上接收網路連線。</p>
+
+<hr />
+
+<p>Tip: If you don’t have a remote system to connect to but want to try these
+examples, make sure the OpenSSH-server package is installed on your system
+and use localhost as the name of the remote host. That way, your machine will
+create network connections with itself.</p>
+
+<p>小貼示：如果你沒有遠端系統去連線，但還想試試這些範例，則確認安裝了 OpenSSH-server 軟體包
+，則可使用 localhost 作為遠端主機的名字。這種情況下，計算機會和它自己建立網路連線。</p>
+
+<hr />
+
+<p>The SSH client program used to connect to remote SSH servers is called, appropriately
+enough, ssh. To connect to a remote host named remote-sys, we would use the ssh
+client program like so:</p>
+
+<p>用來與遠端 SSH 伺服器相連線的 SSH 客戶端程式，順理成章，叫做 ssh。想要連線到名叫 remote-sys
+的遠端主機，我們可以這樣使用 ssh 客戶端程式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ssh remote-sys
+The authenticity of host 'remote-sys (192.168.1.4)' can't be
+established.
+RSA key fingerprint is
+41:ed:7a:df:23:19:bf:3c:a5:17:bc:61:b3:7f:d9:bb.
+Are you sure you want to continue connecting (yes/no)?
+</code></pre></div></div>
+
+<p>The first time the connection is attempted, a message is displayed indicating that the
+authenticity of the remote host cannot be established. This is because the client program
+has never seen this remote host before. To accept the credentials of the remote host, enter
+“yes” when prompted. Once the connection is established, the user is prompted for
+his/her password:</p>
+
+<p>第一次嘗試連線，提示資訊表明遠端主機的真實性不能確立。這是因為客戶端程式以前從沒有
+看到過這個遠端主機。為了接受遠端主機的身份驗證憑據，輸入“yes”。一旦建立了連線，會提示
+使用者輸入他或她的密碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Warning: Permanently added 'remote-sys,192.168.1.4' (RSA) to the list
+of known hosts.
+me@remote-sys's password:
+</code></pre></div></div>
+
+<p>After the password is successfully entered, we receive the shell prompt from the remote
+system:</p>
+
+<p>成功地輸入密碼之後，我們會接收到遠端系統的 shell 提示符：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Last login: Sat Aug 30 13:00:48 2008
+[me@remote-sys ~]$
+</code></pre></div></div>
+
+<p>The remote shell session continues until the user enters the exit command at the remote
+shell prompt, thereby closing the remote connection. At this point, the local shell session
+resumes and the local shell prompt reappears.</p>
+
+<p>遠端 shell 會話一直存在，直到使用者輸入 exit 命令後，則關閉了遠端連線。這時候，本地的 shell 會話
+恢復，本地 shell 提示符重新出現。</p>
+
+<p>It is also possible to connect to remote systems using a different user name. For example,
+if the local user “me” had an account named “bob” on a remote system, user me could log
+in to the account bob on the remote system as follows:</p>
+
+<p>也有可能使用不同的使用者名稱連線到遠端系統。例如，如果本地使用者“me”，在遠端系統中有一個帳號名
+“bob”，則使用者 me 能夠用 bob 帳號登入到遠端系統，如下所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ssh bob@remote-sys
+bob@remote-sys's password:
+Last login: Sat Aug 30 13:03:21 2008
+[bob@remote-sys ~]$
+</code></pre></div></div>
+
+<p>As stated before, ssh verifies the authenticity of the remote host. If the remote host does
+not successfully authenticate, the following message appears:</p>
+
+<p>正如之前所講到的，ssh 驗證遠端主機的真實性。如果遠端主機不能成功地透過驗證，則會提示以下資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ssh remote-sys
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle
+attack)!
+...
+</code></pre></div></div>
+
+<p>This message is caused by one of two possible situations. First, an attacker may be
+attempting a “man-in-the-middle” attack. This is rare, since everybody knows that ssh
+alerts the user to this. The more likely culprit is that the remote system has been changed
+somehow; for example, its operating system or SSH server has been reinstalled. In the
+interests of security and safety however, the first possibility should not be dismissed out
+of hand. Always check with the administrator of the remote system when this message
+occurs.</p>
+
+<p>有兩種可能的情形會提示這些資訊。第一，某個攻擊者企圖製造“中間人”襲擊。這很少見，
+因為每個人都知道 ssh 會針對這種狀況發出警告。最有可能的罪魁禍首是遠端系統已經改變了；
+例如，它的作業系統或者是 SSH 伺服器重新安裝了。然而，為了安全起見，第一個可能性不應該
+被輕易否定。當這條訊息出現時，總要與遠端系統的管理員查對一下。</p>
+
+<p>After it has been determined that the message is due to a benign cause, it is safe to correct
+the problem on the client side. This is done by using a text editor (vim perhaps) to
+remove the obsolete key from the ~/.ssh/known_hosts file. In the example
+message above, we see this:</p>
+
+<p>當確定了這條訊息歸結為一個良性的原因之後，那麼在客戶端更正問題就很安全了。
+使用文字編輯器（可能是 vim）從檔案~/.ssh/known_hosts 中刪除廢棄的鑰匙，
+就解決了問題。在上面的例子裡，我們看到這樣一句話：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Offending key in /home/me/.ssh/known_hosts:1
+</code></pre></div></div>
+
+<p>This means that line one of the known_hosts file contains the offending key. Delete
+this line from the file, and the ssh program will be able to accept new authentication
+credentials from the remote system.</p>
+
+<p>這意味著 known_hosts 檔案的第一行包含那個衝突的鑰匙。從檔案中刪除這一行，則 ssh 程式
+就能夠從遠端系統接受新的身份驗證憑據。</p>
+
+<p>Besides opening a shell session on a remote system, ssh also allows us to execute a
+single command on a remote system. For example, to execute the free command on a
+remote host named remote-sys and have the results displayed on the local system:</p>
+
+<p>除了能夠在遠端系統中開啟一個 shell 會話，ssh 程式也允許我們在遠端系統中執行單個命令。
+例如，在名為 remote-sys 的遠端主機上，執行 free 命令，並把輸出結果顯示到本地系統
+shell 會話中。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ssh remote-sys free
+me@twin4's password:
+            total   used       free     shared buffers cached
+
+Mem:        775536  507184   268352          0  110068 154596
+
+-/+ buffers/cache: 242520  533016
+Swap: 0 1572856 0 110068 154596
+
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>It’s possible to use this technique in more interesting ways, such as this example in which
+we perform an ls on the remote system and redirect the output to a file on the local
+system:</p>
+
+<p>有可能以更有趣的方式來利用這項技術，比方說下面的例子，我們在遠端系統中執行 ls 命令，
+並把命令輸出重新導向到本地系統中的一個檔案裡面。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ssh remote-sys 'ls \*' &gt; dirlist.txt
+me@twin4's password:
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>Notice the use of the single quotes in the command above. This is done because we do
+not want the pathname expansion performed on the local machine; rather, we want it to
+be performed on the remote system. Likewise, if we had wanted the output redirected to
+a file on the remote machine, we could have placed the redirection operator and the
+filename within the single quotes:</p>
+
+<p>注意，上面的例子中使用了單引號。這樣做是因為我們不想路徑名展開操作在本地執行，而希望
+它在遠端系統中被執行。同樣地，如果我們想要把輸出結果重新導向到遠端主機的檔案中，我們可以
+把重新導向運算子和檔名都放到單引號裡面。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ssh remote-sys 'ls * &gt; dirlist.txt'
+</code></pre></div></div>
+
+<blockquote>
+  <p>Tunneling With SSH</p>
+
+  <p><em>SSH 通道</em></p>
+
+  <p>Part of what happens when you establish a connection with a remote host via SSH
+is that an encrypted tunnel is created between the local and remote systems.
+Normally, this tunnel is used to allow commands typed at the local system to be
+transmitted safely to the remote system, and for the results to be transmitted
+safely back. In addition to this basic function, the SSH protocol allows most
+types of network traffic to be sent through the encrypted tunnel, creating a sort of
+VPN (Virtual Private Network) between the local and remote systems.</p>
+
+  <p>當你透過 SSH 協議與遠端主機建立連線的時候，其中發生的事就是在本地與遠端系統之間
+建立了一條加密通道。通常，這條通道被用來把在本地系統中輸入的命令安全地傳輸到遠端系統，
+同樣地，再把執行結果安全地傳送回來。除了這個基本功能之外，SSH 協議允許大多數
+網路流量型別透過這條加密通道來被傳送，在本地與遠端系統之間建立一種 VPN（虛擬專用網路）。</p>
+
+  <p>Perhaps the most common use of this feature is to allow X Window system traffic
+to be transmitted. On a system running an X server (that is, a machine displaying
+a GUI), it is possible to launch and run an X client program (a graphical
+application) on a remote system and have its display appear on the local system.
+It’s easy to do, here’s an example: Let's say we are sitting at a Linux system
+called linuxbox which is running an X server, and we want to run the xload
+program on a remote system named remote-sys and see the program’s
+graphical output on our local system. We could do this:</p>
+
+  <p>可能這個特性的最普遍的用法是允許傳遞 X 視窗系統流量。在執行著 X 伺服器端的系統（也就是，
+能顯示 GUI 的機器）上，能登入遠端系統並執行一個 X 客戶端程式（一個圖形化應用），
+而應用程式的顯示結果出現在本地。這很容易完成，這裡有個例子：假設我們正坐在一臺名為 linuxbox
+的 Linux 系統前，且系統中執行著 X 伺服器端，現在我們想要在名為 remote-sys 的遠端系統中
+執行 xload 程式，但是要在我們的本地系統中看到這個程式的圖形化輸出。我們可以這樣做：</p>
+
+  <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ssh -X remote-sys
+me@remote-sys's password:
+Last login: Mon Sep 08 13:23:11 2008
+[me@remote-sys ~]$ xload
+</code></pre></div>  </div>
+
+  <p>After the xload command is executed on the remote system, its window
+appears on the local system. On some systems, you may need to use the “-Y”
+option rather than the “-X” option to do this.</p>
+
+  <p>這個 xload 命令在遠端執行之後，它的視窗就會出現在本地。在某些系統中，你可能需要
+使用 “－Y” 選項，而不是 “－X” 選項來完成這個操作。</p>
+</blockquote>
+
+<h4 id="scp-和-sftp">scp 和 sftp</h4>
+
+<p>The OpenSSH package also includes two programs that can make use of an SSH
+encrypted tunnel to copy files across the network. The first, scp (secure copy) is used
+much like the familiar cp program to copy files. The most notable difference is that the
+source or destination pathnames may be preceded with the name of a remote host,
+followed by a colon character. For example, if we wanted to copy a document named
+document.txt from our home directory on the remote system, remote-sys, to the
+current working directory on our local system, we could do this:</p>
+
+<p>OpenSSH 軟體包也包含兩個程式，它們可以利用 SSH 加密通道在網路間複製檔案。
+第一個，scp（安全複製）被用來複制檔案，與熟悉的 cp 程式非常相似。最顯著的區別就是
+源或者目標路徑名要以遠端主機的名字，後跟一個冒號字元開頭。例如，如果我們想要
+從 remote-sys 遠端系統的家目錄下複製文件 document.txt，到我們本地系統的當前工作目錄下，
+可以這樣操作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ scp remote-sys:document.txt .
+me@remote-sys's password:
+document.txt
+100%        5581        5.5KB/s         00:00
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>As with ssh, you may apply a user name to the beginning of the remote host’s name if
+the desired remote host account name does not match that of the local system:</p>
+
+<p>和 ssh 命令一樣，如果所需的遠端主機帳戶名與本地系統中的不一致，
+那麼你可以把使用者名稱新增到遠端主機名的開頭：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ scp bob@remote-sys:document.txt .
+</code></pre></div></div>
+
+<p>The second SSH file copying program is sftp which, as its name implies, is a secure
+replacement for the ftp program. sftp works much like the original ftp program that
+we used earlier; however, instead of transmitting everything in cleartext, it uses an SSH
+encrypted tunnel. sftp has an important advantage over conventional ftp in that it
+does not require an FTP server to be running on the remote host. It only requires the SSH
+server. This means that any remote machine that can connect with the SSH client can
+also be used as a FTP-like server. Here is a sample session:</p>
+
+<p>第二個 SSH 檔案複製程式是 sftp，顧名思義，它是 ftp 程式的安全替代品。sftp 工作起來與我們
+之前使用的 ftp 程式很相似；然而，它不用明碼形式來傳遞資料，它使用加密的 SSH 通道。sftp 有一個
+重要特性強於傳統的 ftp 命令，就是 sftp 不需要遠端系統中執行 FTP 伺服器端。它僅僅需要 SSH 伺服器端。
+這意味著任何一臺能用 SSH 客戶端連線的遠端機器，也可當作類似於 FTP 的伺服器來使用。
+這裡是一個樣本會話：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sftp remote-sys
+Connecting to remote-sys...
+me@remote-sys's password:
+sftp&gt; ls
+ubuntu-8.04-desktop-i386.iso
+sftp&gt; lcd Desktop
+sftp&gt; get ubuntu-8.04-desktop-i386.iso
+Fetching /home/me/ubuntu-8.04-desktop-i386.iso to ubuntu-8.04-
+desktop-i386.iso
+/home/me/ubuntu-8.04-desktop-i386.iso 100% 699MB 7.4MB/s 01:35
+sftp&gt; bye
+</code></pre></div></div>
+
+<hr />
+
+<p>Tip: The SFTP protocol is supported by many of the graphical file managers found
+in Linux distributions. Using either Nautilus (GNOME) or Konqueror (KDE), we
+can enter a URI beginning with sftp:// into the location bar and operate on files
+stored on a remote system running an SSH server.</p>
+
+<p>小貼示：SFTP 協議被許多 Linux 發行版中的圖形化檔案管理器支援。使用
+Nautilus (GNOME), 或者是 Konqueror (KDE)，我們都能在位置欄中輸入以
+sftp:// 開頭的 URI，來操作儲存在執行著 SSH 伺服器端的遠端系統中的檔案。</p>
+
+<hr />
+
+<blockquote>
+  <p>An SSH Client For Windows?</p>
+
+  <p><em>Windows 中的 SSH 客戶端</em></p>
+
+  <p>Let's say you are sitting at a Windows machine but you need to log in to your
+Linux server and get some real work done, what do you do? Get an SSH client
+program for your Windows box, of course! There are a number of these. The
+most popular one is probably PuTTY by Simon Tatham and his team. The
+PuTTY program displays a terminal window and allow a Windows user to open
+an SSH (or telnet) session on a remote host. The program also provides analogs
+for the scp and sftp programs.</p>
+
+  <p>比方說你正坐在一臺 Windows 機器前面，但是你需要登入到你的 Linux 伺服器中，去完成
+一些實際的工作，那該怎麼辦呢？當然是找一個 Windows 平臺下的 SSH 客戶端！有很多這樣
+的工具。最流行的可能就是由 Simon Tatham 和他的團隊開發的 PuTTY 了。PuTTY 程式
+能夠顯示一個終端視窗，而且允許 Windows 使用者在遠端主機中開啟一個 SSH（或者 telnet）會話。
+這個程式也提供了 scp 和 sftp 程式的類似物。</p>
+
+  <p>PuTTY is available at <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/">http://www.chiark.greenend.org.uk/~sgtatham/putty/</a></p>
+
+  <p>PuTTY 可在連結 <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/">http://www.chiark.greenend.org.uk/~sgtatham/putty/</a> 處得到。</p>
+</blockquote>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>For a broad (albeit dated) look at network administration, the Linux
+Documentation Project provides the Linux Network Administrator’s Guide:</p>
+  </li>
+  <li>
+    <p>Linux 文件專案提供了 Linux 網路管理指南，可以廣泛地（雖然過時了）瞭解網路管理方面的知識。</p>
+
+    <p><a href="http://tldp.org/LDP/nag2/index.html">http://tldp.org/LDP/nag2/index.html</a></p>
+  </li>
+  <li>
+    <p>Wikipedia contains many good networking articles. Here are some of the basics:</p>
+  </li>
+  <li>
+    <p>Wikipedia 上包含了許多網路方面的優秀文章。這裡有一些基礎的：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Internet_protocol_address">http://en.wikipedia.org/wiki/Internet_protocol_address</a></p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Host_name">http://en.wikipedia.org/wiki/Host_name</a></p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Uniform_Resource_Identifier">http://en.wikipedia.org/wiki/Uniform_Resource_Identifier</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

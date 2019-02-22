@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">字串和數字</h1><br>
+<p>Computer programs are all about working with data. In past chapters, we have focused on
+processing data at the file level. However, many programming problems need to be
+solved using smaller units of data such as strings and numbers.</p>
+
+<p>所有的計算機程式都是用來和資料打交道的。在過去的章節中，我們專注於處理檔案級別的資料。
+然而，許多程式設計問題需要使用更小的資料單位來解決，比方說字串和數字。</p>
+
+<p>In this chapter, we will look at several shell features that are used to manipulate strings
+and numbers. The shell provides a variety of parameter expansions that perform string
+operations. In addition to arithmetic expansion (which we touched upon in Chapter 7),
+there is a common command line program called bc, which performs higher level math.</p>
+
+<p>在這一章中，我們將檢視幾個用來操作字串和數字的 shell 功能。shell 提供了各種執行字串操作的引數展開功能。
+除了算術展開（在第七章中接觸過），還有一個常見的命令列程式叫做 bc，能執行更高級別的數學運算。</p>
+
+<h3 id="引數展開">引數展開</h3>
+
+<p>Though parameter expansion came up in Chapter 7, we did not cover it in detail because
+most parameter expansions are used in scripts rather than on the command line. We have
+already worked with some forms of parameter expansion; for example, shell variables.
+The shell provides many more.</p>
+
+<p>儘管引數展開在第七章中出現過，但我們並沒有詳盡地介紹它，因為大多數的引數展開會用在指令碼中，而不是命令列中。
+我們已經使用了一些形式的引數展開；例如，shell 變數。shell 提供了更多方式。</p>
+
+<h4 id="基本引數">基本引數</h4>
+
+<p>The simplest form of parameter expansion is reflected in the ordinary use of variables.</p>
+
+<p>最簡單的引數展開形式反映在平常使用的變數上。</p>
+
+<p>For example:</p>
+
+<p>例如：</p>
+
+<p><em>$a</em></p>
+
+<p>when expanded, becomes whatever the variable a contains. Simple parameters may also
+be surrounded by braces:</p>
+
+<p>當 $a 展開後，會變成變數 a 所包含的值。簡單引數也可能用花括號引起來：</p>
+
+<p><em>${a}</em></p>
+
+<p>This has no effect on the expansion, but is required if the variable is adjacent to other
+text, which may confuse the shell. In this example, we attempt to create a filename by ap-
+pending the string “_file” to the contents of the variable a.</p>
+
+<p>雖然這對展開沒有影響，但若該變數 a 與其它的文字相鄰，可能會把 shell 搞糊塗了。在這個例子中，我們試圖
+建立一個檔名，透過把字串 “_file” 附加到變數 a 的值的後面。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ a="foo"
+[me@linuxbox ~]$ echo "$a_file"
+</code></pre></div></div>
+
+<p>If we perform this sequence, the result will be nothing, because the shell will try to ex-
+pand a variable named a_file rather than a. This problem can be solved by adding
+braces:</p>
+
+<p>如果我們執行這個序列，沒有任何輸出結果，因為 shell 會試著展開一個稱為 a_file 的變數，而不是 a。透過
+新增花括號可以解決這個問題：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "${a}_file"
+foo_file
+</code></pre></div></div>
+
+<p>We have also seen that positional parameters greater than 9 can be accessed by surround-
+ing the number in braces. For example, to access the eleventh positional parameter, we
+can do this:</p>
+
+<p>我們已經知道透過把數字包裹在花括號中，可以訪問大於9的位置引數。例如，訪問第十一個位置引數，我們可以這樣做：</p>
+
+<p><em>${11}</em></p>
+
+<h4 id="管理空變數的展開">管理空變數的展開</h4>
+
+<p>Several parameter expansions deal with nonexistent and empty variables. These expan-
+sions are handy for handling missing positional parameters and assigning default values
+to parameters.</p>
+
+<p>幾種用來處理不存在和空變數的引數展開形式。這些展開形式對於解決丟失的位置引數和給引數指定預設值的情況很方便。</p>
+
+<p><em>${parameter:-word}</em></p>
+
+<p>If parameter is unset (i.e., does not exist) or is empty, this expansion results in the value
+of word. If parameter is not empty, the expansion results in the value of parameter.</p>
+
+<p>若 parameter 沒有設定（例如，不存在）或者為空，展開結果是 word 的值。若 parameter 不為空，則展開結果是 parameter 的值。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=
+[me@linuxbox ~]$ echo ${foo:-"substitute value if unset"}
+if unset
+substitute value
+[me@linuxbox ~]$ echo $foo
+[me@linuxbox ~]$ foo=bar
+[me@linuxbox ~]$ echo ${foo:-"substitute value if unset"}
+bar
+[me@linuxbox ~]$ echo $foo
+bar
+</code></pre></div></div>
+
+<p><em>${parameter:=word}</em></p>
+
+<p>If parameter is unset or empty, this expansion results in the value of word. In addition,
+the value of word is assigned to parameter. If parameter is not empty, the expansion re-
+sults in the value of parameter.</p>
+
+<p>若 parameter 沒有設定或為空，展開結果是 word 的值。另外，word 的值會賦值給 parameter。
+若 parameter 不為空，展開結果是 parameter 的值。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=
+[me@linuxbox ~]$ echo ${foo:="default value if unset"}
+default value if unset
+[me@linuxbox ~]$ echo $foo
+default value if unset
+[me@linuxbox ~]$ foo=bar
+[me@linuxbox ~]$ echo ${foo:="default value if unset"}
+bar
+[me@linuxbox ~]$ echo $foo
+bar
+</code></pre></div></div>
+
+<hr />
+
+<p>Note: Positional and other special parameters cannot be assigned this way.</p>
+
+<p>注意： 位置引數或其它的特殊引數不能以這種方式賦值。</p>
+
+<hr />
+
+<p><em>${parameter:?word}</em></p>
+
+<p>If parameter is unset or empty, this expansion causes the script to exit with an error, and
+the contents of word are sent to standard error. If parameter is not empty, the expansion
+results in the value of parameter.</p>
+
+<p>若 parameter 沒有設定或為空，這種展開導致指令碼帶有錯誤退出，並且 word 的內容會發送到標準錯誤。若 parameter 不為空，
+展開結果是 parameter 的值。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=
+[me@linuxbox ~]$ echo ${foo:?"parameter is empty"}
+bash: foo: parameter is empty
+[me@linuxbox ~]$ echo $?
+1
+[me@linuxbox ~]$ foo=bar
+[me@linuxbox ~]$ echo ${foo:?"parameter is empty"}
+bar
+[me@linuxbox ~]$ echo $?
+0
+</code></pre></div></div>
+
+<p><em>${parameter:+word}</em></p>
+
+<p>If parameter is unset or empty, the expansion results in nothing. If parameter is not
+empty, the value of word is substituted for parameter; however, the value of parameter is
+not changed.</p>
+
+<p>若 parameter 沒有設定或為空，展開結果為空。若 parameter 不為空，
+展開結果是 word 的值會替換掉 parameter 的值；然而，parameter 的值不會改變。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=
+[me@linuxbox ~]$ echo ${foo:+"substitute value if set"}
+
+[me@linuxbox ~]$ foo=bar
+[me@linuxbox ~]$ echo ${foo:+"substitute value if set"}
+substitute value if set
+</code></pre></div></div>
+
+<h3 id="返回變數名的引數展開">返回變數名的引數展開</h3>
+
+<p>The shell has the ability to return the names of variables. This is
+used in some rather exotic situations.</p>
+
+<p>shell 具有返回變數名的能力。這會用在一些相當獨特的情況下。</p>
+
+<p><em>${!prefix*}</em></p>
+
+<p><em>${!prefix@}</em></p>
+
+<p>This expansion returns the names of existing variables with names beginning with prefix.
+According to the bash documentation, both forms of the expansion perform identically.
+Here, we list all the variables in the environment with names that begin with BASH:</p>
+
+<p>這種展開會返回以 prefix 開頭的已有變數名。根據 bash 文件，這兩種展開形式的執行結果相同。
+這裡，我們列出了所有以 BASH 開頭的環境變數名：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo ${!BASH*}
+BASH BASH_ARGC BASH_ARGV BASH_COMMAND BASH_COMPLETION
+BASH_COMPLETION_DIR BASH_LINENO BASH_SOURCE BASH_SUBSHELL
+BASH_VERSINFO BASH_VERSION
+</code></pre></div></div>
+
+<h4 id="字串展開">字串展開</h4>
+
+<p>There is a large set of expansions that can be used to operate on strings. Many of these
+expansions are particularly well suited for operations on pathnames.</p>
+
+<p>有大量的展開形式可用於操作字串。其中許多展開形式尤其適用於路徑名的展開。</p>
+
+<p><em>${#parameter}</em></p>
+
+<p>expands into the length of the string contained by parameter. Normally, parameter is a
+string; however, if parameter is either @ or *, then the expansion results in the number of
+positional parameters.</p>
+
+<p>展開成由 parameter 所包含的字串的長度。通常，parameter 是一個字串；然而，如果 parameter 是 @ 或者是 * 的話，
+則展開結果是位置引數的個數。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo="This string is long."
+[me@linuxbox ~]$ echo "'$foo' is ${#foo} characters long."
+'This string is long.' is 20 characters long.
+</code></pre></div></div>
+
+<p><em>${parameter:offset}</em></p>
+
+<p><em>${parameter:offset:length}</em></p>
+
+<p>These expansions are used to extract a portion of the string contained in parameter. The
+extraction begins at offset characters from the beginning of the string and continues until
+the end of the string, unless the length is specified.</p>
+
+<p>這些展開用來從 parameter 所包含的字串中提取一部分字元。提取的字元始於
+第 offset 個字元（從字串開頭算起）直到字串的末尾，除非指定提取的長度。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo="This string is long."
+[me@linuxbox ~]$ echo ${foo:5}
+string is long.
+[me@linuxbox ~]$ echo ${foo:5:6}
+string
+</code></pre></div></div>
+
+<p>If the value of offset is negative, it is taken to mean it starts from the end of the string
+rather than the beginning. Note that negative values must be preceded by a space to pre-
+vent confusion with the ${parameter:-word} expansion. length, if present, must not
+be less than zero.</p>
+
+<p>若 offset 的值為負數，則認為 offset 值是從字串的末尾開始算起，而不是從開頭。注意負數前面必須有一個空格，
+為防止與 ${parameter:-word} 展開形式混淆。length，若出現，則必須不能小於零。</p>
+
+<p>If parameter is @, the result of the expansion is length positional parameters,
+starting at offset.</p>
+
+<p>如果 parameter 是 @，展開結果是 length 個位置引數，從第 offset 個位置引數開始。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo="This string is long."
+[me@linuxbox ~]$ echo ${foo: -5}
+long.
+[me@linuxbox ~]$ echo ${foo: -5:2}
+lo
+</code></pre></div></div>
+
+<p><em>${parameter#pattern}</em></p>
+
+<p><em>${parameter##pattern}</em></p>
+
+<p>These expansions remove a leading portion of the string contained in parameter defined
+by pattern. pattern is a wildcard pattern like those used in pathname expansion. The dif-
+ference in the two forms is that the # form removes the shortest match, while the ## form
+removes the longest match.</p>
+
+<p>這些展開會從 paramter 所包含的字串中清除開頭一部分文字，這些字元要匹配定義的 pattern。pattern 是
+萬用字元模式，就如那些用在路徑名展開中的模式。這兩種形式的差異之處是該 # 形式清除最短的匹配結果，
+而該 ## 模式清除最長的匹配結果。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=file.txt.zip
+[me@linuxbox ~]$ echo ${foo#*.}
+txt.zip
+[me@linuxbox ~]$ echo ${foo##*.}
+zip
+</code></pre></div></div>
+
+<p><em>${parameter%pattern}</em></p>
+
+<p><em>${parameter%%pattern}</em></p>
+
+<p>These expansions are the same as the # and ## expansions above, except they remove
+text from the end of the string contained in parameter rather than from the beginning.</p>
+
+<p>這些展開和上面的 # 和 ## 展開一樣，除了它們清除的文字從 parameter 所包含字串的末尾開始，而不是開頭。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=file.txt.zip
+[me@linuxbox ~]$ echo ${foo%.*}
+file.txt
+[me@linuxbox ~]$ echo ${foo%%.*}
+file
+</code></pre></div></div>
+
+<p><em>${parameter/pattern/string}</em></p>
+
+<p><em>${parameter//pattern/string}</em></p>
+
+<p><em>${parameter/#pattern/string}</em></p>
+
+<p><em>${parameter/%pattern/string}</em></p>
+
+<p>This expansion performs a search-and-replace upon the contents of parameter. If text is
+found matching wildcard pattern, it is replaced with the contents of string. In the normal
+form, only the first occurrence of pattern is replaced. In the // form, all occurrences are
+replaced. The /# form requires that the match occur at the beginning of the string, and
+the /% form requires the match to occur at the end of the string. /string may be omitted,
+which causes the text matched by pattern to be deleted.</p>
+
+<p>這種形式的展開對 parameter 的內容執行查詢和替換操作。如果找到了匹配萬用字元 pattern 的文字，
+則用 string 的內容替換它。在正常形式下，只有第一個匹配項會被替換掉。在該 // 形式下，所有的匹配項都會被替換掉。
+該 /# 要求匹配項出現在字串的開頭，而 /% 要求匹配項出現在字串的末尾。/string 可能會省略掉，這樣會
+導致刪除匹配的文字。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox~]$ foo=JPG.JPG
+[me@linuxbox ~]$ echo ${foo/JPG/jpg}
+jpg.JPG
+[me@linuxbox~]$ echo ${foo//JPG/jpg}
+jpg.jpg
+[me@linuxbox~]$ echo ${foo/#JPG/jpg}
+jpg.JPG
+[me@linuxbox~]$ echo ${foo/%JPG/jpg}
+JPG.jpg
+</code></pre></div></div>
+
+<p>Parameter expansion is a good thing to know. The string manipulation expansions can be
+used as substitutes for other common commands such as sed and cut.
+Expansions improve the efficiency of scripts by eliminating the use of external programs.
+As an example, we will modify the longest-word program discussed in the previous chapter to
+use the parameter expansion ${#j} in place of the command
+substitution <em>$(echo $j | wc -c)</em> and its resulting subshell, like so:</p>
+
+<p>知道引數展開是件很好的事情。字串操作展開可以用來替換其它常見命令比方說 sed 和 cut。
+透過減少使用外部程式，展開提高了指令碼的效率。舉例說明，我們將修改在之前章節中討論的 longest-word 程式，
+用引數展開 ${#j} 取代命令 $(echo $j | wc -c) 及其 subshell ，像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># longest-word3 : find longest string in a file</span>
+<span class="k">for </span>i<span class="p">;</span> <span class="k">do
+    if</span> <span class="o">[[</span> <span class="nt">-r</span> <span class="nv">$i</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nv">max_word</span><span class="o">=</span>
+        <span class="nv">max_len</span><span class="o">=</span>
+        <span class="k">for </span>j <span class="k">in</span> <span class="k">$(</span>strings <span class="nv">$i</span><span class="k">)</span><span class="p">;</span> <span class="k">do
+            </span><span class="nv">len</span><span class="o">=</span><span class="k">${#</span><span class="nv">j</span><span class="k">}</span>
+            <span class="k">if</span> <span class="o">((</span> len <span class="o">&gt;</span> max_len <span class="o">))</span><span class="p">;</span> <span class="k">then
+                </span><span class="nv">max_len</span><span class="o">=</span><span class="nv">$len</span>
+                <span class="nv">max_word</span><span class="o">=</span><span class="nv">$j</span>
+            <span class="k">fi
+        done
+        </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$i</span><span class="s2">: '</span><span class="nv">$max_word</span><span class="s2">' (</span><span class="nv">$max_len</span><span class="s2"> characters)"</span>
+    <span class="k">fi
+    </span><span class="nb">shift
+</span><span class="k">done</span>
+</code></pre></div></div>
+
+<p>Next, we will compare the efficiency of the two versions by using the time command:</p>
+
+<p>下一步，我們將使用 time 命令來比較這兩個指令碼版本的效率：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ time longest-word2 dirlist-usr-bin.txt
+dirlist-usr-bin.txt: 'scrollkeeper-get-extended-content-list' (38
+characters)
+real 0m3.618s
+user 0m1.544s
+sys 0m1.768s
+[me@linuxbox ~]$ time longest-word3 dirlist-usr-bin.txt
+dirlist-usr-bin.txt: 'scrollkeeper-get-extended-content-list' (38
+characters)
+real 0m0.060s
+user 0m0.056s
+sys 0m0.008s
+</code></pre></div></div>
+
+<p>The original version of the script takes 3.618 seconds to scan the text file, while the new
+version, using parameter expansion, takes only 0.06 seconds — a very significant improvement.</p>
+
+<p>原來的指令碼掃描整個文字檔案需耗時3.168秒，而該新版本，使用引數展開，僅僅花費了0.06秒 —— 一個非常巨大的提高。</p>
+
+<h4 id="大小寫轉換">大小寫轉換</h4>
+
+<p>Recent versions of bash have support for upper/lowercase conversion of strings. bash
+has four parameter expansions and two options to the declare command to support it.</p>
+
+<p>最新的 bash 版本已經支援字串的大小寫轉換了。bash 有四個引數展開和 declare 命令的兩個選項來支援大小寫轉換。</p>
+
+<p>So what is case conversion good for? Aside from the obvious aesthetic value, it has an
+important role in programming. Let's consider the case of a database look-up. Imagine
+that a user has entered a string into a data input field that we want to look up in a database.
+It’s possible the user will enter the value in all uppercase letters or lowercase letters
+or a combination of both. We certainly don’t want to populate our database with every
+possible permutation of upper and lower case spellings. What to do?</p>
+
+<p>那麼大小寫轉換對什麼有好處呢？ 除了明顯的審美價值，它在程式設計領域還有一個重要的角色。
+讓我們考慮一個數據函式庫查詢的案例。假設一個使用者已經敲寫了一個字串到資料輸入框中，
+而我們想要在一個數據函式庫中查詢這個字串。該使用者輸入的字串有可能全是大寫字母或全是小寫或是兩者的結合。
+我們當然不希望把每個可能的大小寫拼寫排列填充到我們的資料庫中。那怎麼辦？</p>
+
+<p>A common approach to this problem is to normalize the user’s input. That is, convert it
+into a standardized form before we attempt the database look-up. We can do this
+by converting all of the characters in the user’s input to either lower or
+uppercase and ensure that the database entries are normalized the same way.</p>
+
+<p>解決這個問題的常見方法是規範化使用者輸入。也就是，在我們試圖查詢資料庫之前，把使用者的輸入轉換成標準化。
+我們能做到這一點，透過把使用者輸入的字元全部轉換成小寫字母或大寫字母，並且確保資料庫中的條目
+按同樣的方式規範化。</p>
+
+<p>The declare command can be used to normalize strings to either upper or lowercase.
+Using declare, we can force a variable to always contain the desired
+format no matter what is assigned to it:</p>
+
+<p>這個 declare 命令可以用來把字串規範成大寫或小寫字元。使用 declare 命令，我們能強制一個
+變數總是包含所需的格式，無論如何賦值給它。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># ul-declare: demonstrate case conversion via declare</span>
+<span class="nb">declare</span> <span class="nt">-u</span> upper
+<span class="nb">declare</span> <span class="nt">-l</span> lower
+<span class="k">if</span> <span class="o">[[</span> <span class="nv">$1</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nv">upper</span><span class="o">=</span><span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>
+    <span class="nv">lower</span><span class="o">=</span><span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>
+    <span class="nb">echo</span> <span class="nv">$upper</span>
+    <span class="nb">echo</span> <span class="nv">$lower</span>
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>In the above script, we use declare to create two variables, upper and lower. We
+assign the value of the first command line argument (positional parameter 1) to each of
+the variables and then display them on the screen:</p>
+
+<p>在上面的指令碼中，我們使用 declare 命令來建立兩個變數，upper 和 lower。我們把第一個命令列引數的值（位置引數1）賦給
+每一個變數，然後把變數值在螢幕上顯示出來：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ul-declare aBc
+ABC
+abc
+</code></pre></div></div>
+
+<p>As we can see, the command line argument (“aBc”) has been normalized.</p>
+
+<p>正如我們所看到的，命令列引數（“aBc”）已經規範化了。</p>
+
+<p>There are four parameter expansions that perform upper/lowercase conversion:</p>
+
+<p>有四個引數展開，可以執行大小寫轉換操作：</p>
+
+<table class="multi">
+<caption class="cap">Table 35-1: Case Conversion Parameter Expansions</caption>
+<tr>
+<th class="title">Format</th>
+<th class="title">Result</th>
+</tr>
+<tr>
+<td valign="top">${parameter,,} </td>
+<td valign="top">Expand the value of parameter into all lowercase.</td>
+</tr>
+<tr>
+<td valign="top">${parameter,} </td>
+<td valign="top">Expand the value of parameter changing only the first
+character to lowercase.</td>
+</tr>
+<tr>
+<td valign="top">${parameter^^} </td>
+<td valign="top">Expand the value of parameter into all uppercase letters.</td>
+</tr>
+<tr>
+<td valign="top">${parameter^}</td>
+<td valign="top">Expand the value of parameter changing only the first
+character to uppercase (capitalization).</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 35-1: 大小寫轉換引數展開</caption>
+<tr>
+<th class="title">格式</th>
+<th class="title">結果</th>
+</tr>
+<tr>
+<td valign="top">${parameter,,} </td>
+<td valign="top">把 parameter 的值全部展開成小寫字母。</td>
+</tr>
+<tr>
+<td valign="top">${parameter,} </td>
+<td valign="top">僅僅把 parameter 的第一個字元展開成小寫字母。</td>
+</tr>
+<tr>
+<td valign="top">${parameter^^} </td>
+<td valign="top">把 parameter 的值全部轉換成大寫字母。</td>
+</tr>
+<tr>
+<td valign="top">${parameter^}</td>
+<td valign="top">僅僅把 parameter 的第一個字元轉換成大寫字母（首字母大寫）。</td>
+</tr>
+</table>
+
+<p>Here is a script that demonstrates these expansions:</p>
+
+<p>這裡是一個指令碼，示範了這些展開格式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># ul-param - demonstrate case conversion via parameter expansion</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nv">$1</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="k">${</span><span class="nv">1</span><span class="p">,,</span><span class="k">}</span>
+    <span class="nb">echo</span> <span class="k">${</span><span class="nv">1</span><span class="p">,</span><span class="k">}</span>
+    <span class="nb">echo</span> <span class="k">${</span><span class="nv">1</span><span class="p">^^</span><span class="k">}</span>
+    <span class="nb">echo</span> <span class="k">${</span><span class="nv">1</span><span class="p">^</span><span class="k">}</span>
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>Here is the script in action:</p>
+
+<p>這裡是指令碼執行後的結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ul-param aBc
+abc
+aBc
+ABC
+ABc
+</code></pre></div></div>
+
+<p>Again, we process the first command line argument and output the four variations
+supported by the parameter expansions. While this script uses the first positional parameter,
+parameter my be any string, variable, or string expression.</p>
+
+<p>再次，我們處理了第一個命令列引數，輸出了由引數展開支援的四種變體。儘管這個指令碼使用了第一個位置引數，
+但引數可以是任意字串，變數，或字串表示式。</p>
+
+<h3 id="算術求值和展開">算術求值和展開</h3>
+
+<p>We looked at arithmetic expansion in Chapter 7. It is used to perform various arithmetic
+operations on integers. Its basic form is:</p>
+
+<p>我們在第七章中已經接觸過算術展開了。它被用來對整數執行各種算術運算。它的基本格式是：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$((expression))
+</code></pre></div></div>
+
+<p>where expression is a valid arithmetic expression.</p>
+
+<p>這裡的 expression 是一個有效的算術表示式。</p>
+
+<p>This is related to the compound command (( )) used for arithmetic evaluation (truth
+tests) we encountered in Chapter 27.</p>
+
+<p>這個與複合命令 (( )) 有關，此命令用做算術求值（真測試），我們在第27章中遇到過。</p>
+
+<p>In previous chapters, we saw some of the common types of expressions and operators.
+Here, we will look at a more complete list.</p>
+
+<p>在之前的章節中，我們看到過一些型別的表示式和運算子。這裡，我們將看到一個更完整的列表。</p>
+
+<h4 id="數基">數基</h4>
+
+<p>Back in Chapter 9, we got a look at octal (base 8) and hexadecimal (base 16) numbers. In
+arithmetic expressions, the shell supports integer constants in any base.</p>
+
+<p>回到第9章，我們看過八進位制（以8為底）和十六進位制（以16為底）的數字。在算術表示式中，shell 支援任意進位制的整型常量。</p>
+
+<table class="multi">
+<caption class="cap">Table 35-2: Specifying Different Number Bases</caption>
+<tr>
+<th class="title">Notation</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top">number</td>
+<td valign="top">By default, numbers without any notation are treated as decimal (base 10) integers.</td>
+</tr>
+<tr>
+<td valign="top">0number</td>
+<td valign="top">In arithmetic expressions, numbers with a leading zero are
+considered octal.</td>
+</tr>
+<tr>
+<td valign="top">0xnumber</td>
+<td valign="top">Hexadecimal notation</td>
+</tr>
+<tr>
+<td valign="top">base#number</td>
+<td valign="top">number is in base</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 35-2: 指定不同的數基</caption>
+<tr>
+<th class="title">表示法</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top">number</td>
+<td valign="top">預設情況下，沒有任何表示法的數字被看做是十進位制數（以10為底）。</td>
+</tr>
+<tr>
+<td valign="top">0number</td>
+<td valign="top">在算術表示式中，以零開頭的數字被認為是八進位制數。</td>
+</tr>
+<tr>
+<td valign="top">0xnumber</td>
+<td valign="top">十六進位制表示法</td>
+</tr>
+<tr>
+<td valign="top">base#number</td>
+<td valign="top">number 以 base 為底</td>
+</tr>
+</table>
+
+<p>Some examples:</p>
+
+<p>一些例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo $((0xff))
+255
+[me@linuxbox ~]$ echo $((2#11111111))
+255
+</code></pre></div></div>
+
+<p>In the examples above, we print the value of the hexadecimal number ff (the largest
+two-digit number) and the largest eight-digit binary (base 2) number.</p>
+
+<p>在上面的示例中，我們打印出十六進位制數 ff（最大的兩位數）的值和最大的八位二進位制數（以2為底）。</p>
+
+<h4 id="一元運算子">一元運算子</h4>
+
+<p>There are two unary operators, the + and -, which are used to indicate if a number is pos-
+itive or negative, respectively. For example, -5.</p>
+
+<p>有兩個一元運算子，+ 和 -，它們被分別用來表示一個數字是正數還是負數。例如，-5。</p>
+
+<h4 id="簡單算術">簡單算術</h4>
+
+<p>The ordinary arithmetic operators are listed in the table below:</p>
+
+<p>下表中列出了普通算術運算子：</p>
+
+<table class="multi">
+<caption class="cap">Table 35-3: Arithmetic Operators</caption>
+<tr>
+<th class="title">Operator</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top">+</td>
+<td valign="top">Addition</td>
+</tr>
+<tr>
+<td valign="top">-</td>
+<td valign="top">Subtraction</td>
+</tr>
+<tr>
+<td valign="top">*</td>
+<td valign="top">Multiplication</td>
+</tr>
+<tr>
+<td valign="top">/</td>
+<td valign="top">Integer division</td>
+</tr>
+<tr>
+<td valign="top">**</td>
+<td valign="top">Exponentiation</td>
+</tr>
+<tr>
+<td valign="top">%</td>
+<td valign="top">Modulo (remainder)</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 35-3: 算術運算子</caption>
+<tr>
+<th class="title">運算子</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top">+</td>
+<td valign="top">加</td>
+</tr>
+<tr>
+<td valign="top">-</td>
+<td valign="top">減</td>
+</tr>
+<tr>
+<td valign="top">*</td>
+<td valign="top">乘</td>
+</tr>
+<tr>
+<td valign="top">/</td>
+<td valign="top">整除</td>
+</tr>
+<tr>
+<td valign="top">**</td>
+<td valign="top">乘方</td>
+</tr>
+<tr>
+<td valign="top">%</td>
+<td valign="top">取模（餘數）</td>
+</tr>
+</table>
+
+<p>Most of these are self-explanatory, but integer division and modulo require further discussion.</p>
+
+<p>其中大部分運算子是不言自明的，但是整除和取模運算子需要進一步解釋一下。</p>
+
+<p>Since the shell’s arithmetic only operates on integers, the results of division are always
+whole numbers:</p>
+
+<p>因為 shell 算術只操作整型，所以除法運算的結果總是整數：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo $(( 5 / 2 ))
+2
+</code></pre></div></div>
+
+<p>This makes the determination of a remainder in a division operation more important:</p>
+
+<p>這使得確定除法運算的餘數更為重要：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo $(( 5 % 2 ))
+1
+</code></pre></div></div>
+
+<p>By using the division and modulo operators, we can determine that 5 divided by 2 results
+in 2, with a remainder of 1.</p>
+
+<p>透過使用除法和取模運算子，我們能夠確定5除以2得數是2，餘數是1。</p>
+
+<p>Calculating the remainder is useful in loops. It allows an operation to be performed at
+specified intervals during the loop’s execution. In the example below, we display a line of
+numbers, highlighting each multiple of 5:</p>
+
+<p>在迴圈中計算餘數是很有用處的。在迴圈執行期間，它允許某一個操作在指定的間隔內執行。在下面的例子中，
+我們顯示一行數字，並高亮顯示5的倍數：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># modulo : demonstrate the modulo operator</span>
+<span class="k">for</span> <span class="o">((</span>i <span class="o">=</span> 0<span class="p">;</span> i &lt;<span class="o">=</span> 20<span class="p">;</span> i <span class="o">=</span> i + 1<span class="o">))</span><span class="p">;</span> <span class="k">do
+    </span><span class="nv">remainder</span><span class="o">=</span><span class="k">$((</span>i <span class="o">%</span> <span class="m">5</span><span class="k">))</span>
+    <span class="k">if</span> <span class="o">((</span> remainder <span class="o">==</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">printf</span> <span class="s2">"&lt;%d&gt; "</span> <span class="nv">$i</span>
+    <span class="k">else
+        </span><span class="nb">printf</span> <span class="s2">"%d "</span> <span class="nv">$i</span>
+    <span class="k">fi
+done
+</span><span class="nb">printf</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>When executed, the results look like this:</p>
+
+<p>當指令碼執行後，輸出結果看起來像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ modulo
+&lt;0&gt; 1 2 3 4 &lt;5&gt; 6 7 8 9 &lt;10&gt; 11 12 13 14 &lt;15&gt; 16 17 18 19 &lt;20&gt;
+</code></pre></div></div>
+
+<h4 id="賦值運算子">賦值運算子</h4>
+
+<p>Although its uses may not be immediately apparent, arithmetic expressions may perform
+assignment. We have performed assignment many times, though in a different context.
+Each time we give a variable a value, we are performing assignment. We can also do it
+within arithmetic expressions:</p>
+
+<p>儘管它的使用不是那麼明顯，算術表示式可能執行賦值運算。雖然在不同的上下文中，我們已經執行了許多次賦值運算。
+每次我們給變數一個值，我們就執行了一次賦值運算。我們也能在算術表示式中執行賦值運算：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=
+[me@linuxbox ~]$ echo $foo
+[me@linuxbox ~]$ if (( foo = 5 ));then echo "It is true."; fi
+It is true.
+[me@linuxbox ~]$ echo $foo
+5
+</code></pre></div></div>
+
+<p>In the example above, we first assign an empty value to the variable foo and verify that
+it is indeed empty. Next, we perform an if with the compound command (( foo = 5 )).
+This process does two interesting things: 1) it assigns the value of 5 to the variable
+foo, and 2) it evaluates to true because foo was assigned a nonzero value.</p>
+
+<p>在上面的例子中，首先我們給變數 foo 賦了一個空值，然後驗證 foo 的確為空。下一步，我們執行一個 if 複合命令 (( foo = 5 ))。
+這個過程完成兩件有意思的事情：1）它把5賦值給變數 foo，2）它計算測試條件為真，因為 foo 的值非零。</p>
+
+<hr />
+
+<p>Note: It is important to remember the exact meaning of the = in the expression
+above. A single = performs assignment. foo = 5 says “make foo equal to 5,”
+while == evaluates equivalence. foo == 5 says “does foo equal 5?” This can
+be very confusing because the test command accepts a single = for string equiva-
+lence. This is yet another reason to use the more modern [[ ]] and (( )) com-
+pound commands in place of test.</p>
+
+<p>注意： 記住上面表示式中 = 符號的真正含義非常重要。單個 = 運算子執行賦值運算。foo = 5 是說“使得 foo 等於5”，
+而 == 運算子計算等價性。foo == 5 是說“是否 foo 等於5？”。這會讓人感到非常迷惑，因為 test 命令接受單個 = 運算子
+來測試字串等價性。這也是使用更現代的 [[ ]] 和 (( )) 複合命令來代替 test 命令的另一個原因。</p>
+
+<hr />
+
+<p>In addition to the =, the shell also provides notations that perform some very useful as-
+signments:</p>
+
+<p>除了 = 運算子，shell 也提供了其它一些表示法，來執行一些非常有用的賦值運算：</p>
+
+<table class="multi">
+<caption class="cap">Table 35-4: Assignment Operators</caption>
+<tr>
+<th class="title" width="25%">Notation</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top">parameter = value</td>
+<td valign="top">Simple assignment. Assigns value to parameter.</td>
+</tr>
+<tr>
+<td valign="top">parameter += value</td>
+<td valign="top">Addition. Equivalent to parameter = parameter + value.</td>
+</tr>
+<tr>
+<td valign="top">parameter -= value</td>
+<td valign="top">Subtraction. Equivalent to parameter = parameter - value.</td>
+</tr>
+<tr>
+<td valign="top">parameter *= value</td>
+<td valign="top">Multiplication. Equivalent to parameter = parameter * value.</td>
+</tr>
+<tr>
+<td valign="top">parameter /= value</td>
+<td valign="top">Integer division. Equivalent to parameter = parameter / value.</td>
+</tr>
+<tr>
+<td valign="top">parameter %= value</td>
+<td valign="top"> Modulo. Equivalent to parameter = parameter % value.</td>
+</tr>
+<tr>
+<td valign="top">parameter++ </td>
+<td valign="top">Variable post-increment. Equivalent to parameter = parameter + 1 (however, see discussion below).</td>
+</tr>
+<tr>
+<td valign="top">parameter-- </td>
+<td valign="top">Variable post-decrement. Equivalent to parameter = parameter - 1.</td>
+</tr>
+<tr>
+<td valign="top">++parameter</td>
+<td valign="top">Variable pre-increment. Equivalent to parameter = parameter + 1.</td>
+</tr>
+<tr>
+<td valign="top">--parameter</td>
+<td valign="top">Variable pre-decrement. Equivalent to parameter = parameter - 1.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表35-4: 賦值運算子</caption>
+<tr>
+<th class="title" width="25%">表示法</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top">parameter = value</td>
+<td valign="top">簡單賦值。給 parameter 賦值。</td>
+</tr>
+<tr>
+<td valign="top">parameter += value</td>
+<td valign="top">加。等價於 parameter = parameter + value。</td>
+</tr>
+<tr>
+<td valign="top">parameter -= value</td>
+<td valign="top">減。等價於 parameter = parameter – value。</td>
+</tr>
+<tr>
+<td valign="top">parameter *= value</td>
+<td valign="top">乘。等價於 parameter = parameter * value。</td>
+</tr>
+<tr>
+<td valign="top">parameter /= value</td>
+<td valign="top">整除。等價於 parameter = parameter / value。</td>
+</tr>
+<tr>
+<td valign="top">parameter %= value</td>
+<td valign="top"> 取模。等價於 parameter = parameter % value。</td>
+</tr>
+<tr>
+<td valign="top">parameter++ </td>
+<td valign="top">字尾自增變數。等價於 parameter = parameter + 1 (但，要看下面的討論)。</td>
+</tr>
+<tr>
+<td valign="top">parameter-- </td>
+<td valign="top">字尾自減變數。等價於 parameter = parameter - 1。</td>
+</tr>
+<tr>
+<td valign="top">++parameter</td>
+<td valign="top">字首自增變數。等價於 parameter = parameter + 1。</td>
+</tr>
+<tr>
+<td valign="top">--parameter</td>
+<td valign="top">字首自減變數。等價於 parameter = parameter - 1。</td>
+</tr>
+</table>
+
+<p>These assignment operators provide a convenient shorthand for many common arithmetic
+tasks. Of special interest are the increment (++) and decrement (--) operators,
+which increase or decrease the value of their parameters by one. This style of notation is taken
+from the C programming language and has been incorporated by several other
+programming languages, including bash.</p>
+
+<p>這些賦值運算子為許多常見算術任務提供了快捷方式。特別關注一下自增（++）和自減（--）運算子，它們會把它們的引數值加1或減1。
+這種風格的表示法取自C 程式語言並且被其它幾種程式語言吸收，包括 bash。</p>
+
+<p>The operators may appear either at the front of a parameter or at the end. While they both
+either increment or decrement the parameter by one, the two placements have a subtle
+difference. If placed at the front of the parameter, the parameter is incremented (or decre-
+mented) before the parameter is returned. If placed after, the operation is performed after
+the parameter is returned. This is rather strange, but it is the intended behavior. Here is a
+demonstration:</p>
+
+<p>自增和自減運算子可能會出現在引數的前面或者後面。然而它們都是把引數值加1或減1，這兩個位置有個微小的差異。
+若運算子放置在引數的前面，引數值會在引數返回之前增加（或減少）。若放置在後面，則運算會在引數返回之後執行。
+這相當奇怪，但這是它預期的行為。這裡是個示範的例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=1
+[me@linuxbox ~]$ echo $((foo++))
+1
+[me@linuxbox ~]$ echo $foo
+2
+</code></pre></div></div>
+
+<p>If we assign the value of one to the variable foo and then increment it
+with the ++ operator placed after the parameter name, foo is returned with the value of one.
+However, if we look at the value of the variable a second time, we see the incremented value. If we
+place the ++ operator in front of the parameter, we get the more expected behavior:</p>
+
+<p>如果我們把1賦值給變數 foo，然後透過把自增運算子 ++ 放到引數名 foo 之後來增加它，foo 返回1。
+然而，如果我們第二次檢視變數 foo 的值，我們看到它的值增加了1。若我們把 ++ 運算子放到引數 foo 之前，
+我們得到更期望的行為：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=1
+[me@linuxbox ~]$ echo $((++foo))
+2
+[me@linuxbox ~]$ echo $foo
+2
+</code></pre></div></div>
+
+<p>For most shell applications, prefixing the operator will be the most useful.</p>
+
+<p>對於大多數 shell 應用來說，字首運算子最有用。</p>
+
+<p>The ++ and -- operators are often used in conjunction with loops.
+We will make some improvements to our modulo script to tighten it up a bit:</p>
+
+<p>自增 ++ 和 自減 -- 運算子經常和迴圈操作結合使用。我們將改進我們的 modulo 指令碼，讓程式碼更緊湊些：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># modulo2 : demonstrate the modulo operator</span>
+<span class="k">for</span> <span class="o">((</span>i <span class="o">=</span> 0<span class="p">;</span> i &lt;<span class="o">=</span> 20<span class="p">;</span> ++i <span class="o">))</span><span class="p">;</span> <span class="k">do
+    if</span> <span class="o">(((</span>i % 5<span class="o">)</span> <span class="o">==</span> 0 <span class="o">))</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">printf</span> <span class="s2">"&lt;%d&gt; "</span> <span class="nv">$i</span>
+    <span class="k">else
+        </span><span class="nb">printf</span> <span class="s2">"%d "</span> <span class="nv">$i</span>
+    <span class="k">fi
+done
+</span><span class="nb">printf</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<h4 id="位運算子">位運算子</h4>
+
+<p>One class of operators manipulates numbers in an unusual way. These operators work at
+the bit level. They are used for certain kinds of low level tasks, often involving setting or
+reading bit-flags.</p>
+
+<p>位運算子是一類別以不尋常的方式運算元字的運算子。這些運算子工作在位級別的數字。它們被用在某類別底層的任務中，
+經常涉及到設定或讀取位標誌。</p>
+
+<table class="multi">
+<caption class="cap">Table 35-5: Bit Operators</caption>
+<tr>
+<th class="title">Operator</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top">~</td>
+<td valign="top">Bitwise negation. Negate all the bits in a number.</td>
+</tr>
+<tr>
+<td valign="top">&lt;&lt;</td>
+<td valign="top">Left bitwise shift. Shift all the bits in a number to the left.</td>
+</tr>
+<tr>
+<td valign="top">&gt;&gt;</td>
+<td valign="top">Right bitwise shift. Shift all the bits in a number to the right.</td>
+</tr>
+<tr>
+<td valign="top">&amp;</td>
+<td valign="top">Bitwise AND. Perform an AND operation on all the bits in two numbers.</td>
+</tr>
+<tr>
+<td valign="top">|</td>
+<td valign="top">Bitwise OR. Perform an OR operation on all the bits in two numbers.</td>
+</tr>
+<tr>
+<td valign="top">^</td>
+<td valign="top">Bitwise XOR. Perform an exclusive OR operation on all the
+bits in two numbers.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表35-5: 位運算子</caption>
+<tr>
+<th class="title">運算子</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top">~</td>
+<td valign="top">按位取反。對一個數字所有位取反。</td>
+</tr>
+<tr>
+<td valign="top">&lt;&lt;</td>
+<td valign="top">位左移. 把一個數字的所有位向左移動。</td>
+</tr>
+<tr>
+<td valign="top">&gt;&gt;</td>
+<td valign="top">位右移. 把一個數字的所有位向右移動。</td>
+</tr>
+<tr>
+<td valign="top">&amp;</td>
+<td valign="top">位與。對兩個數字的所有位執行一個 AND 操作。</td>
+</tr>
+<tr>
+<td valign="top">|</td>
+<td valign="top">位或。對兩個數字的所有位執行一個 OR 操作。</td>
+</tr>
+<tr>
+<td valign="top">^</td>
+<td valign="top">位異或。對兩個數字的所有位執行一個異或操作。</td>
+</tr>
+</table>
+
+<p>Note that there are also corresponding assignment operators (for example, &lt;&lt;=) for all
+but bitwise negation.</p>
+
+<p>注意除了按位取反運算子之外，其它所有位運算子都有相對應的賦值運算子（例如，&lt;&lt;=）。</p>
+
+<p>Here we will demonstrate producing a list of powers of 2, using the left bitwise shift operator:</p>
+
+<p>這裡我們將示範產生2的冪列表的操作，使用位左移運算子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ for ((i=0;i&lt;8;++i)); do echo $((1&lt;&lt;i)); done
+1
+2
+4
+8
+16
+32
+64
+128
+</code></pre></div></div>
+
+<h4 id="邏輯運算子">邏輯運算子</h4>
+
+<p>As we discovered in Chapter 27, the (( )) compound command supports a variety of
+comparison operators. There are a few more that can be used to evaluate logic. Here is
+the complete list:</p>
+
+<p>正如我們在第27章中所看到的，複合命令 (( )) 支援各種各樣的比較運算子。還有一些可以用來計算邏輯運算。
+這裡是比較運算子的完整列表：</p>
+
+<table class="multi">
+<caption class="cap">Table 35-6: Comparison Operators</caption>
+<tr>
+<th class="title">Operator</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top">&lt;=</td>
+<td valign="top">Less than or equal to</td>
+</tr>
+<tr>
+<td valign="top">&gt;=</td>
+<td valign="top">great than or equal to</td>
+</tr>
+<tr>
+<td valign="top">&lt;</td>
+<td valign="top">less than</td>
+</tr>
+<tr>
+<td valign="top">&gt;</td>
+<td valign="top">greater than</td>
+</tr>
+<tr>
+<td valign="top">==</td>
+<td valign="top">Equal to</td>
+</tr>
+<tr>
+<td valign="top">!=</td>
+<td valign="top">Not equal to</td>
+</tr>
+<tr>
+<td valign="top">&amp;&amp;</td>
+<td valign="top">Logical AND</td>
+</tr>
+<tr>
+<td valign="top">||</td>
+<td valign="top">Logical OR</td>
+</tr>
+<tr>
+<td valign="top">expr1?expr2:expr3</td>
+<td valign="top">Comparison (ternary) operator. If expression expr1
+ evaluates to be non-zero (arithmetic true) then expr2,
+else expr3.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表35-6: 比較運算子</caption>
+<tr>
+<th class="title">運算子</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top">&lt;=</td>
+<td valign="top">小於或相等</td>
+</tr>
+<tr>
+<td valign="top">&gt;=</td>
+<td valign="top">大於或相等</td>
+</tr>
+<tr>
+<td valign="top">&lt;</td>
+<td valign="top">小於</td>
+</tr>
+<tr>
+<td valign="top">&gt;</td>
+<td valign="top">大於</td>
+</tr>
+<tr>
+<td valign="top">==</td>
+<td valign="top">相等</td>
+</tr>
+<tr>
+<td valign="top">!=</td>
+<td valign="top">不相等</td>
+</tr>
+<tr>
+<td valign="top">&amp;&amp;</td>
+<td valign="top">邏輯與</td>
+</tr>
+<tr>
+<td valign="top">||</td>
+<td valign="top">邏輯或</td>
+</tr>
+<tr>
+<td valign="top">expr1?expr2:expr3</td>
+<td valign="top">條件（三元）運算子。若表示式 expr1 的計算結果為非零值（算術真），則
+執行表示式 expr2，否則執行表示式 expr3。</td>
+</tr>
+</table>
+
+<p>When used for logical operations, expressions follow the rules of arithmetic logic; that is,
+expressions that evaluate as zero are considered false, while non-zero expressions are
+considered true. The (( )) compound command maps the results into the shell’s normal
+exit codes:</p>
+
+<p>當表示式用於邏輯運算時，表示式遵循算術邏輯規則；也就是，表示式的計算結果是零，則認為假，而非零表示式認為真。
+該 (( )) 複合命令把結果對映成 shell 正常的退出碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ if ((1)); then echo "true"; else echo "false"; fi
+true
+[me@linuxbox ~]$ if ((0)); then echo "true"; else echo "false"; fi
+false
+</code></pre></div></div>
+
+<p>The strangest of the logical operators is the ternary operator. This operator (which is
+modeled after the one in the C programming language) performs a standalone logical test.
+It can be used as a kind of if/then/else statement. It acts on three arithmetic expressions
+(strings won’t work), and if the first expression is true (or non-zero) the second
+expression is performed. Otherwise, the third expression is performed. We can try this on the
+command line:</p>
+
+<p>最陌生的邏輯運算子就是這個三元運算子了。這個運算子（仿照於 C 程式語言裡的三元運算子）執行一個單獨的邏輯測試。
+它用起來類似於 if/then/else 語句。它操作三個算術表示式（字串不會起作用），並且若第一個表示式為真（或非零），
+則執行第二個表示式。否則，執行第三個表示式。我們可以在命令列中實驗一下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox~]$ a=0
+[me@linuxbox~]$ ((a&lt;1?++a:--a))
+[me@linuxbox~]$ echo $a
+1
+[me@linuxbox~]$ ((a&lt;1?++a:--a))
+[me@linuxbox~]$ echo $a
+0
+</code></pre></div></div>
+
+<p>Here we see a ternary operator in action. This example implements a toggle. Each time
+the operator is performed, the value of the variable a switches from zero to one or vice
+versa.</p>
+
+<p>這裡我們看到一個實際使用的三元運算子。這個例子實現了一個切換。每次運算子執行的時候，變數 a 的值從零變為1，或反之亦然。</p>
+
+<p>Please note that performing assignment within the expressions is not straightforward.</p>
+
+<p>請注意在表示式內執行賦值卻並非易事。</p>
+
+<p>When attempted, bash will declare an error:</p>
+
+<p>當企圖這樣做時，bash 會宣告一個錯誤：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ a=0
+[me@linuxbox ~]$ ((a&lt;1?a+=1:a-=1))
+bash: ((: a&lt;1?a+=1:a-=1: attempted assignment to non-variable (error token is "-=1")
+</code></pre></div></div>
+
+<p>This problem can be mitigated by surrounding the assignment expression with parentheses:</p>
+
+<p>透過把賦值表示式用括號括起來，可以解決這個錯誤：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ((a&lt;1?(a+=1):(a-=1)))
+</code></pre></div></div>
+
+<p>Next, we see a more complete example of using arithmetic operators
+in a script that produces a simple table of numbers:</p>
+
+<p>下一步，我們看一個使用算術運算子更完備的例子，該示例產生一個簡單的數字表格：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># arith-loop: script to demonstrate arithmetic operators</span>
+<span class="nv">finished</span><span class="o">=</span>0
+<span class="nv">a</span><span class="o">=</span>0
+<span class="nb">printf</span> <span class="s2">"a</span><span class="se">\t</span><span class="s2">a**2</span><span class="se">\t</span><span class="s2">a**3</span><span class="se">\n</span><span class="s2">"</span>
+<span class="nb">printf</span> <span class="s2">"=</span><span class="se">\t</span><span class="s2">====</span><span class="se">\t</span><span class="s2">====</span><span class="se">\n</span><span class="s2">"</span>
+<span class="k">until</span> <span class="o">((</span>finished<span class="o">))</span><span class="p">;</span> <span class="k">do
+    </span><span class="nv">b</span><span class="o">=</span><span class="k">$((</span>a<span class="o">**</span><span class="m">2</span><span class="k">))</span>
+    <span class="nv">c</span><span class="o">=</span><span class="k">$((</span>a<span class="o">**</span><span class="m">3</span><span class="k">))</span>
+    <span class="nb">printf</span> <span class="s2">"%d</span><span class="se">\t</span><span class="s2">%d</span><span class="se">\t</span><span class="s2">%d</span><span class="se">\n</span><span class="s2">"</span> <span class="nv">$a</span> <span class="nv">$b</span> <span class="nv">$c</span>
+    <span class="o">((</span>a&lt;10?++a:<span class="o">(</span><span class="nv">finished</span><span class="o">=</span>1<span class="o">)))</span>
+<span class="k">done</span>
+</code></pre></div></div>
+
+<p>In this script, we implement an until loop based on the value of the finished variable.
+Initially, the variable is set to zero (arithmetic false) and we continue
+the loop until it becomes non-zero. Within the loop, we calculate the square
+and cube of the counter variable <strong>a</strong>. At the end of the loop, the value of the
+counter variable is evaluated. If it is less than
+10 (the maximum number of iterations), it is incremented by one, else the
+variable <strong>finished</strong> is given the value of one, making finished arithmetically true,
+thereby terminating the loop. Running the script gives this result:</p>
+
+<p>在這個指令碼中，我們基於變數 finished 的值實現了一個 until 迴圈。首先，把變數 finished 的值設為零（算術假），
+繼續執行迴圈之道它的值變為非零。在迴圈體內，我們計算計數器 a 的平方和立方。在迴圈末尾，計算計數器變數 a 的值。
+若它小於10（最大迭代次數），則 a 的值加1，否則給變數 finished 賦值為1，使得變數 finished 算術為真，
+從而終止迴圈。執行該指令碼得到這樣的結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ arith-loop
+a    a**2     a**3
+=    ====     ====
+0    0        0
+1    1        1
+2    4        8
+3    9        27
+4    16       64
+5    25       125
+6    36       216
+7    49       343
+8    64       512
+9    81       729
+10   100      1000
+</code></pre></div></div>
+
+<h3 id="bc---一種高精度計算器語言">bc - 一種高精度計算器語言</h3>
+
+<p>We have seen how the shell can handle all types of integer arithmetic, but what if we
+need to perform higher math or even just use floating point numbers? The answer is, we
+can’t. At least not directly with the shell. To do this, we need to use an external program.
+There are several approaches we can take. Embedding Perl or AWK programs is
+one possible solution, but unfortunately, outside the scope of this book.
+Another approach is to use a specialized calculator program. One such program found on
+most Linux systems is called bc.</p>
+
+<p>我們已經看到 shell 是可以處理所有型別的整型算術的，但是如果我們需要執行更進階的數學運算或僅使用浮點數，該怎麼辦？
+答案是，我們不能這樣做。至少不能直接用 shell 完成此類別運算。為此，我們需要使用外部程式。
+有幾種途徑可供我們採用。嵌入的 Perl 或者 AWK 程式是一種可能的方案，但是不幸的是，超出了本書的內容大綱。
+另一種方式就是使用一種專業的計算器程式。這樣一個程式叫做 bc，在大多數 Linux 系統中都可以找到。</p>
+
+<p>The bc program reads a file written in its own C-like language and executes it. A bc
+script may be a separate file or it may be read from standard input. The bc language
+supports quite a few features including variables, loops, and programmer-defined functions.
+We won’t cover bc entirely here, just enough to get a taste. bc is well documented by its
+man page.</p>
+
+<p>該 bc 程式讀取一個用它自己的類似於 C 語言的語法編寫的指令碼檔案。一個 bc 指令碼可能是一個分離的檔案或者是從
+標準輸入讀入。bc 語言支援相當少的功能，包括變數，迴圈和程式設計師定義的函式。這裡我們不會討論整個 bc 語言，
+僅僅體驗一下。檢視 bc 的手冊頁，其文件整理得非常好。</p>
+
+<p>Let's start with a simple example. We’ll write a bc script to add 2 plus 2:</p>
+
+<p>讓我們從一個簡單的例子開始。我們將編寫一個 bc 指令碼來執行2加2運算：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/* A very simple bc script */
+2 + 2
+</code></pre></div></div>
+
+<p>The first line of the script is a comment. bc uses the same syntax for comments as the C
+programming language. Comments, which may span multiple lines, begin with <code class="highlighter-rouge">/*</code> and
+end with <code class="highlighter-rouge">*/</code>.</p>
+
+<p>指令碼的第一行是一行註釋。bc 使用和 C 程式語言一樣的註釋語法。註釋，可能會跨越多行，開始於 <code class="highlighter-rouge">/*</code> 結束於 <code class="highlighter-rouge">*/</code>。</p>
+
+<h4 id="使用-bc">使用 bc</h4>
+
+<p>If we save the bc script above as foo.bc, we can run it this way:</p>
+
+<p>如果我們把上面的 bc 指令碼儲存為 foo.bc，然後我們就能這樣執行它：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ bc foo.bc
+bc 1.06.94
+Copyright 1991-1994, 1997, 1998, 2000, 2004, 2006 Free Software
+Foundation, Inc.
+This is free software with ABSOLUTELY NO WARRANTY.
+For details type `warranty'.
+4
+</code></pre></div></div>
+
+<p>If we look carefully, we can see the result at the very bottom, after the copyright message.
+This message can be suppressed with the -q (quiet) option.
+bc can also be used interactively:</p>
+
+<p>如果我們仔細觀察，我們看到算術結果在最底部，版權資訊之後。可以透過 -q（quiet）選項禁止這些版權資訊。
+bc 也能夠互動使用：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ bc -q
+2 + 2
+4
+quit
+</code></pre></div></div>
+
+<p>When using bc interactively, we simply type the calculations we wish to perform, and
+the results are immediately displayed. The bc command quit ends the interactive session.</p>
+
+<p>當使用 bc 互動模式時，我們簡單地輸入我們希望執行的運算，結果就立即顯示出來。bc 的 quit 命令結束互動會話。</p>
+
+<p>It is also possible to pass a script to bc via standard input:</p>
+
+<p>也可能透過標準輸入把一個指令碼傳遞給 bc 程式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ bc &lt; foo.bc
+4
+</code></pre></div></div>
+
+<p>The ability to take standard input means that we can use here documents, here strings,
+and pipes to pass scripts. This is a here string example:</p>
+
+<p>這種接受標準輸入的能力，意味著我們可以使用 here 文件，here字串，和管道來傳遞指令碼。這裡是一個使用 here 字串的例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ bc &lt;&lt;&lt; "2+2"
+4
+</code></pre></div></div>
+
+<h4 id="一個指令碼範例">一個指令碼範例</h4>
+
+<p>As a real-world example, we will construct a script that performs a common calculation,
+monthly loan payments. In the script below, we use a here document to pass a script to bc:</p>
+
+<p>作為一個真實世界的例子，我們將建構一個指令碼，用於計算每月的還貸金額。在下面的指令碼中，
+我們使用了 here 文件把一個指令碼傳遞給 bc：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># loan-calc : script to calculate monthly loan payments</span>
+<span class="nv">PROGNAME</span><span class="o">=</span><span class="k">$(</span>basename <span class="nv">$0</span><span class="k">)</span>
+usage <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">cat</span> <span class="o">&lt;&lt;-</span> <span class="no">EOF</span><span class="sh">
+    Usage: </span><span class="nv">$PROGNAME</span><span class="sh"> PRINCIPAL INTEREST MONTHS
+    Where:
+    PRINCIPAL is the amount of the loan.
+    INTEREST is the APR as a number (7% = 0.07).
+    MONTHS is the length of the loan's term.
+</span><span class="no">    EOF
+</span><span class="o">}</span>
+<span class="k">if</span> <span class="o">((</span><span class="nv">$# </span><span class="o">!=</span> 3<span class="o">))</span><span class="p">;</span> <span class="k">then
+    </span>usage
+    <span class="nb">exit </span>1
+<span class="k">fi
+</span><span class="nv">principal</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">interest</span><span class="o">=</span><span class="nv">$2</span>
+<span class="nv">months</span><span class="o">=</span><span class="nv">$3</span>
+bc <span class="o">&lt;&lt;-</span> <span class="no">EOF</span><span class="sh">
+    scale = 10
+    i = </span><span class="nv">$interest</span><span class="sh"> / 12
+    p = </span><span class="nv">$principal</span><span class="sh">
+    n = </span><span class="nv">$months</span><span class="sh">
+    a = p * ((i * ((1 + i) ^ n)) / (((1 + i) ^ n) - 1))
+    print a, "\n"
+</span><span class="no">EOF
+</span></code></pre></div></div>
+
+<p>When executed, the results look like this:</p>
+
+<p>當指令碼執行後，輸出結果像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ loan-calc 135000 0.0775 180
+475
+1270.7222490000
+</code></pre></div></div>
+
+<p>This example calculates the monthly payment for a $135,000 loan at 7.75% APR for 180
+months (15 years). Notice the precision of the answer. This is determined by the value
+given to the special <strong>scale</strong> variable in the bc script. A full description of
+the bc scripting language is provided by the bc man page. While its mathematical notation is slightly
+different from that of the shell (bc more closely resembles C), most of it will
+be quite familiar, based on what we have learned so far.</p>
+
+<p>若貸款 135,000 美金，年利率為 7.75%，借貸180個月（15年），這個例子計算出每月需要還貸的金額。
+注意這個答案的精確度。這是由指令碼中變數 scale 的值決定的。bc 的手冊頁提供了對 bc 指令碼語言的詳盡描述。
+雖然 bc 的數學符號與 shell 的略有差異（bc 與 C 更相近），但是基於目前我們所學的內容，
+大多數符號是我們相當熟悉的。</p>
+
+<h3 id="總結">總結</h3>
+
+<p>In this chapter, we have learned about many of the little things that can be used to get the
+“real work” done in scripts. As our experience with scripting grows,
+the ability to effectively manipulate strings and numbers will prove extremely valuable.
+Our loan-calc script demonstrates that even simple scripts can be created to do some really useful things.</p>
+
+<p>在這一章中，我們學習了很多小東西，在指令碼中這些小零碎可以完成“真正的工作”。隨著我們編寫指令碼經驗的增加，
+能夠有效地操作字串和數字的能力將具有極為重要的價值。我們的 loan-calc 指令碼表明，
+甚至可以建立簡單的指令碼來完成一些真正有用的事情。</p>
+
+<h3 id="額外加分">額外加分</h3>
+
+<p>While the basic functionality of the loan-calc script is in place, the script is far from
+complete. For extra credit, try improving the loan-calc script with the following features:</p>
+
+<p>雖然該 loan-calc 指令碼的基本功能已經很到位了，但指令碼還遠遠不夠完善。為了額外加分，試著
+給指令碼 loan-calc 新增以下功能：</p>
+
+<ul>
+  <li>
+    <p>Full verification of the command line arguments</p>
+  </li>
+  <li>
+    <p>A command line option to implement an “interactive” mode that will prompt the
+user to input the principal, interest rate, and term of the loan.</p>
+  </li>
+  <li>
+    <p>A better format for the output.</p>
+  </li>
+  <li>
+    <p>完整的命令列引數驗證</p>
+  </li>
+  <li>
+    <p>用一個命令列選項來實現“互動”模式，提示使用者輸入本金、利率和貸款期限</p>
+  </li>
+  <li>
+    <p>輸出格式美化</p>
+  </li>
+</ul>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The Bash Hackers Wiki has a good discussion of parameter expansion:</p>
+  </li>
+  <li>
+    <p>《Bash Hackers Wiki》對引數展開有一個很好的論述：</p>
+
+    <p><a href="http://wiki.bash-hackers.org/syntax/pe">http://wiki.bash-hackers.org/syntax/pe</a></p>
+  </li>
+  <li>
+    <p>The Bash Reference Manual covers this, too:</p>
+  </li>
+  <li>
+    <p>《Bash 參考手冊》也介紹了這個：</p>
+
+    <p><a href="http://www.gnu.org/software/bash/manual/bashref.html#Shell-Parameter-Expansion">http://www.gnu.org/software/bash/manual/bashref.html#Shell-Parameter-Expansion</a></p>
+  </li>
+  <li>
+    <p>The Wikipedia has a good article describing bit operations:</p>
+  </li>
+  <li>
+    <p>Wikipedia 上面有一篇很好的文章描述了位運算：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Bit_operation">http://en.wikipedia.org/wiki/Bit_operation</a></p>
+  </li>
+  <li>
+    <p>and an article on ternary operations:</p>
+  </li>
+  <li>
+    <p>和一篇關於三元運算的文章：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Ternary_operation">http://en.wikipedia.org/wiki/Ternary_operation</a></p>
+  </li>
+  <li>
+    <p>as well as a description of the formula for calculating loan payments used in our loan-calc script:</p>
+  </li>
+  <li>
+    <p>還有一個對計算還貸金額公式的描述，我們的 loan-calc 指令碼中用到了這個公式：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Amortization_calculator">http://en.wikipedia.org/wiki/Amortization_calculator</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

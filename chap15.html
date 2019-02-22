@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">軟體包管理</h1><br>
+<p>If we spend any time in the Linux community, we hear many opinions as to which of the
+many Linux distributions is “best.” Often, these discussions get really silly, focusing on
+such things as the prettiness of the desktop background (some people won’t use Ubuntu
+because its default color scheme is brown!) and other trivial matters.</p>
+
+<p>如果我們花些時間在 Linux 社群裡，我們會看到很多像Linux發行版中哪一個是“最佳”之類別的觀點。
+這些討論通常非常可笑，集中在一些像桌面背景的漂亮程度（一些人不使用 Ubuntu，
+只是因為 Ubuntu 預設主題顏色是棕色的！）和其它的瑣碎東西上。</p>
+
+<p>The most important determinant of distribution quality is the packaging system and the
+vitality of the distribution’s support community. As we spend more time with Linux, we
+see that its software landscape is extremely dynamic. Things are constantly changing.
+Most of the top-tier Linux distributions release new versions every six months and many
+individual program updates every day. To keep up with this blizzard of software, we
+need good tools for package management.</p>
+
+<p>Linux 發行版本品質最重要的決定因素是軟體包管理系統和其支援社群的永續性。隨著我們
+花更多的時間在 Linux 上，我們會發現它的變化是非常快的。大多數一線
+Linux 發行版每隔六個月釋出一個新版本，並且許多獨立的程式每天都會更新。為了能和這些
+如暴風雪一般多的軟體保持聯絡，我們需要一些好工具來進行軟體包管理。</p>
+
+<p>Package management is a method of installing and maintaining software on the system.
+Today, most people can satisfy all of their software needs by installing packages from
+their Linux distributor. This contrasts with the early days of Linux, when one had to
+download and compile source code in order to install software. Not that there is anything
+wrong with compiling source code; in fact, having access to source code is the great
+wonder of Linux. It gives us (and everybody else) the ability to examine and improve the
+system. It’s just that having a pre-compiled package is faster and easier to deal with.
+In this chapter, we will look at some of the command line tools used for package
+management. While all of the major distributions provide powerful and sophisticated
+graphical programs for maintaining the system, it is important to learn about the
+command line programs, too. They can perform many tasks that are difficult (or
+impossible) to do with their graphical counterparts.</p>
+
+<p>軟體包管理是指系統中一種安裝和維護軟體的方法。今天，透過從 Linux 發行版中安裝的軟體包，
+已能滿足許多人所有的軟體需求。這不同於早期的 Linux，人們需要下載和編譯原始碼來安裝軟體。
+編譯原始碼沒有任何問題，事實上，擁有對原始碼的訪問許可權是 Linux 的偉大奇蹟。它賦予我們（
+其它每個人）檢測和提高系統性能的能力。只是若有一個預先編譯好的軟體包處理起來要相對
+容易快速些。這章中，我們將檢視一些用於包管理的命令列工具。雖然所有主流 Linux 發行版都
+提供了強大且精緻的圖形管理程式來維護系統，但是學習命令列程式也非常重要。因為它們
+可以完成許多讓圖形化管理程式處理起來困難（或者不可能）的任務。</p>
+
+<h3 id="打包系統">打包系統</h3>
+
+<p>Different distributions use different packaging systems and as a general rule, a package
+intended for one distribution is not compatible with another distribution. Most
+distributions fall into one of two camps of packaging technologies: the Debian “.deb”
+camp and the Red Hat “.rpm” camp. There are some important exceptions such as
+Gentoo, Slackware, and Foresight, but most others use one of these two basic systems.</p>
+
+<p>不同的 Linux 發行版使用不同的打包系統，一般而言，大多數發行版分別屬於兩大包管理技術陣營：
+Debian 的”.deb”，和紅帽的”.rpm”。也有一些重要的例外，比方說 Gentoo，
+Slackware，和 Foresight，但大多數會使用這兩個基本系統中的一個。</p>
+
+<table class="multi">
+<caption class="cap">Table 15-1: Major Packaging System Families</caption>
+<tr>
+<th class="title">Packaging System </th>
+<th class="title">Distributions (Partial Listing)</th>
+</tr>
+<tr>
+<td valign="top" width="25%">Debian Style (.deb) </td>
+<td valign="top">Debian, Ubuntu, Xandros, Linspire</td>
+</tr>
+<tr>
+<td valign="top">Red Hat Style (.rpm) </td>
+<td valign="top">Fedora, CentOS, Red Hat Enterprise Linux, OpenSUSE,
+Mandriva, PCLinuxOS</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表15-1: 主要的包管理系統家族</caption>
+<tr>
+<th class="title">包管理系統</th>
+<th class="title">發行版 (部分列表)</th>
+</tr>
+<tr>
+<td valign="top" width="25%">Debian Style (.deb) </td>
+<td valign="top">Debian, Ubuntu, Xandros, Linspire</td>
+</tr>
+<tr>
+<td valign="top">Red Hat Style (.rpm) </td>
+<td valign="top">Fedora, CentOS, Red Hat Enterprise Linux, OpenSUSE, Mandriva, PCLinuxOS</td>
+</tr>
+</table>
+
+<h3 id="軟體包管理系統是怎樣工作的">軟體包管理系統是怎樣工作的</h3>
+
+<p>The method of software distribution found in the proprietary software industry usually
+entails buying a piece of installation media such as an “install disk” and then running an
+“installation wizard” to install a new application on the system.</p>
+
+<p>在商業化軟體中，獲取軟體的最新版本通常需要買一張安裝媒介，比方說”安裝盤”，然後執行
+一個”安裝嚮導”，來在系統中安裝新的應用程式。</p>
+
+<p>Linux doesn’t work that way. Virtually all software for a Linux system will be found on
+the Internet. Most of it will be provided by the distribution vendor in the form of
+package files and the rest will be available in source code form that can be installed
+manually. We’ll talk a little about how to install software by compiling source code in a
+later chapter.</p>
+
+<p>Linux 不是這樣。Linux 系統中幾乎所有的軟體都可以在網際網路上找到。其中大多數軟體由發行商以
+包檔案的形式提供，剩下的則以原始碼形式存在，可以手動安裝。在後面章節裡，我們將會談談怎樣
+透過編譯原始碼來安裝軟體。</p>
+
+<h3 id="包檔案">包檔案</h3>
+
+<p>The basic unit of software in a packaging system is the package file. A package file is a
+compressed collection of files that comprise the software package. A package may
+consist of numerous programs and data files that support the programs. In addition to the
+files to be installed, the package file also includes metadata about the package, such as a
+text description of the package and its contents. Additionally, many packages contain
+pre- and post-installation scripts that perform configuration tasks before and after the
+package installation.</p>
+
+<p>在包管理系統中軟體的基本單元是包檔案。包檔案是一個構成軟體包的檔案壓縮集合。一個軟體包
+可能由大量程式以及支援這些程式的資料檔案組成。除了安裝檔案之外，軟體包檔案也包括
+關於這個包的元資料，如軟體包及其內容的文字說明。另外，許多軟體包還包括預安裝和安裝後腳本，
+這些指令碼用來在軟體安裝之前和之後執行配置任務。</p>
+
+<p>Package files are created by a person known as a package maintainer, often (but not
+always) an employee of the distribution vendor. The package maintainer gets the
+software in source code form from the upstream provider (the author of the program),
+compiles it, and creates the package metadata and any necessary installation scripts.
+Often, the package maintainer will apply modifications to the original source code to
+improve the program’s integration with the other parts of the Linux distribution.</p>
+
+<p>軟體包檔案是由軟體包維護者建立的，他通常是（但不總是）一名軟體發行商的僱員。軟體維護者
+從上游提供商（程式作者）那裡得到軟體原始碼，然後編譯原始碼，建立軟體包元資料以及所需要的
+安裝指令碼。通常，軟體包維護者要把所做的修改應用到最初的原始碼當中，來提高此軟體與 Linux
+發行版其它部分的融合性。</p>
+
+<h3 id="資源函式庫">資源函式庫</h3>
+
+<p>While some software projects choose to perform their own packaging and distribution,
+most packages today are created by the distribution vendors and interested third parties.
+Packages are made available to the users of a distribution in central repositories that may
+contain many thousands of packages, each specially built and maintained for the
+distribution.</p>
+
+<p>雖然某些軟體專案選擇執行他們自己的打包和釋出策略，但是現在大多數軟體包是由發行商和感興趣
+的第三方建立的。系統發行版的使用者可以在一箇中心資源函式庫中得到這些軟體包，這個資源函式庫可能
+包含了成千上萬個軟體包，每一個軟體包都是專門為這個系統發行版建立和維護的。</p>
+
+<p>A distribution may maintain several different repositories for different stages of the
+software development life cycle. For example, there will usually be a “testing”
+repository that contains packages that have just been built and are intended for use by
+brave souls who are looking for bugs before they are released for general distribution. A
+distribution will often have a “development” repository where work-in-progress packages
+destined for inclusion in the distribution’s next major release are kept.</p>
+
+<p>因軟體開發生命週期不同階段的需要，一個系統發行版可能維護著幾個不同的資源函式庫。例如，通常會
+有一個”測試”資源函式庫，其中包含剛剛建立的軟體包，它們想要勇敢的使用者來使用，
+在這些軟體包正式釋出之前，讓使用者查詢錯誤。系統發行版經常會有一個”開發”資源函式庫，
+這個資源函式庫中儲存著註定要包含到下一個主要版本中的半成品軟體包。</p>
+
+<p>A distribution may also have related third-party repositories. These are often needed to
+supply software that, for legal reasons such as patents or DRM anti-circumvention issues,
+cannot be included with the distribution. Perhaps the best known case is that of
+encrypted DVD support, which is not legal in the United States. The third-party
+repositories operate in countries where software patents and anti-circumvention laws do
+not apply. These repositories are usually wholly independent of the distribution they
+support and to use them, one must know about them and manually include them in the
+configuration files for the package management system.</p>
+
+<p>一個系統發行版可能也會擁有相關第三方的資源函式庫。這些資源函式庫需要支援一些因法律原因，
+比如說專利或者是 DRM 反規避問題，而不能被包含到發行版中的軟體。可能最著名的案例就是
+對加密DVD的播放支援，在美國這是不合法的。第三方資源函式庫在一些軟體專利和反規避法案不
+生效的國家中設立並分發資源。這些資源函式庫通常完全地獨立於它們所支援的資源函式庫，要想使用它們，
+你必須瞭解它們，手動地把它們包含到軟體包管理系統的配置檔案中。</p>
+
+<h3 id="依賴性">依賴性</h3>
+
+<p>Programs seldom stand alone; rather, they rely on the presence of other software
+components to get their work done. Common activities, such as input/output for
+example, are handled by routines shared by many programs. These routines are stored in
+what are called shared libraries, which provide essential services to more than one
+program. If a package requires a shared resource such as a shared library, it is said to
+have a dependency. Modern package management systems all provide some method of
+dependency resolution to ensure that when a package is installed, all of its dependencies
+are installed, too.</p>
+
+<p>程式很少獨立工作；他們需要依靠其他程式的元件來完成他們的工作。程式所共有的活動，如輸入/輸出，
+就是由一個被多個程式呼叫的子例程處理的。這些子例程儲存在動態連結函式庫中。動態連結函式庫為多個程
+序提供基本服務。如果一個軟體包需要一些共享的資源，如一個動態連結函式庫，它就被稱作有一個依賴。
+現代的軟體包管理系統都提供了一些依賴項解析方法，以確保安裝軟體包時，其所有的依賴也被安裝。</p>
+
+<h3 id="上層和底層軟體包工具">上層和底層軟體包工具</h3>
+
+<p>Package management systems usually consist of two types of tools: low-level tools which
+handle tasks such as installing and removing package files, and high-level tools that
+perform metadata searching and dependency resolution. In this chapter, we will look at
+the tools supplied with Debian-style systems (such as Ubuntu and many others) and those
+used by recent Red Hat products. While all Red Hat-style distributions rely on the same
+low-level program (rpm), they use different high-level tools. For our discussion, we will
+cover the high-level program yum, used by Fedora, Red Hat Enterprise Linux, and
+CentOS. Other Red Hat-style distributions provide high-level tools with comparable
+features.</p>
+
+<p>軟體包管理系統通常由兩種工具型別組成：底層工具用來處理這些任務，比方說安裝和刪除軟體包檔案，
+和上層工具，完成元資料搜尋和依賴解析。在這一章中，我們將看一下由 Debian 風格的系統
+（比如說 Ubuntu，還有許多其它系統）提供的工具，還有那些由 Red
+Hat 產品使用的工具。雖然所有基於 Red Hat 風格的發行版都依賴於相同的底層程式（rpm）,
+但是它們卻使用不同的上層工具。在我們的討論中，我們將研究Fedora, Red
+Hat 企業版，和 CentOs所使用的 yum 。其它Red Hat 風格的發行版提供了帶有類似yum的其他上層工具。</p>
+
+<table class="multi">
+<caption class="cap">Table15- 2: Packaging System Tools</caption>
+<tr>
+<th class="title">Distributions</th>
+<th class="title">Low-Level Tools</th>
+<th class="title">High-Level Tools</th>
+</tr>
+<tr>
+<td valign="top">Debian-Style</td>
+<td valign="top">dpkg</td>
+<td valign="top">apt-get, aptitude</td>
+</tr>
+<tr>
+<td valign="top">Fedora, Red Hat Enterprise Linux, CentOS</td>
+<td valign="top">rpm</td>
+<td valign="top">yum</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表15-2: 包管理工具</caption>
+<tr>
+<th class="title">發行版</th>
+<th class="title">底層工具</th>
+<th class="title">上層工具</th>
+</tr>
+<tr>
+<td valign="top">Debian-Style</td>
+<td valign="top">dpkg</td>
+<td valign="top">apt-get, aptitude</td>
+</tr>
+<tr>
+<td valign="top">Fedora, Red Hat Enterprise Linux, CentOS</td>
+<td valign="top">rpm</td>
+<td valign="top">yum</td>
+</tr>
+</table>
+
+<h3 id="常見軟體包管理任務">常見軟體包管理任務</h3>
+
+<p>There are many operations that can be performed with the command line package
+management tools. We will look at the most common. Be aware that the low-level tools
+also support creation of package files, an activity outside the scope of this book.
+In the discussion below, the term “package_name” refers to the actual name of a
+package rather than the term “package_file,” which is the name of the file that
+contains the package.</p>
+
+<p>透過命令列軟體包管理工具可以完成許多操作。我們將會看一下最常用的工具。注意底層工具也
+支援軟體包檔案的建立，這個話題超出了本書敘述的範圍。在以下的討論中，”package_name”
+這個術語是指軟體包實際名稱，而不是指”package_file”，它是包含在軟體包中的檔名。</p>
+
+<h3 id="查詢資源函式庫中的軟體包">查詢資源函式庫中的軟體包</h3>
+
+<p>Using the high-level tools to search repository metadata, a package can be located based
+on its name or description.</p>
+
+<p>使用上層工具來搜尋資源函式庫元資料，可以根據軟體包的名字和說明來定位它。</p>
+
+<table class="multi">
+<caption class="cap">Table 15-3: Package Search Commands</caption>
+<tr>
+<th class="title">Style</th>
+<th class="title">Command(s)</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">apt-get update; apt-cache search search_string</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">yum search search_string</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表15-3: 軟體包查詢工具</caption>
+<tr>
+<th class="title">風格</th>
+<th class="title">命令</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">apt-get update; apt-cache search search_string</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">yum search search_string</td>
+</tr>
+</table>
+
+<p>Example: To search a yum repository for the emacs text editor, this command could be
+used:</p>
+
+<p>例如：搜尋一個 yum 資源函式庫來查詢 emacs 文字編輯器，使用以下命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yum search emacs
+</code></pre></div></div>
+
+<h3 id="從資源函式庫中安裝一個軟體包">從資源函式庫中安裝一個軟體包</h3>
+
+<p>High-level tools permit a package to be downloaded from a repository and installed with
+full dependency resolution.</p>
+
+<p>上層工具允許從一個資源函式庫中下載一個軟體包，並經過完全依賴解析來安裝它。</p>
+
+<table class="multi">
+<caption class="cap">Table 15-4: Package Installation Commands</caption>
+<tr>
+<th class="title">Style</th>
+<th class="title">Command(s)</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">apt-get update; apt-get install package_name</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">yum install package_name</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表15-4: 軟體包安裝命令</caption>
+<tr>
+<th class="title">風格</th>
+<th class="title">命令</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">apt-get update; apt-get install package_name</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">yum install package_name</td>
+</tr>
+</table>
+
+<p>Example: To install the emacs text editor from an apt repository:</p>
+
+<p>例如：從一個 apt 資源函式庫來安裝 emacs 文字編輯器：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apt-get update; apt-get install emacs
+</code></pre></div></div>
+
+<h3 id="透過軟體包檔案來安裝軟體">透過軟體包檔案來安裝軟體</h3>
+
+<p>If a package file has been downloaded from a source other than a repository, it can be
+installed directly (though without dependency resolution) using a low-level tool.</p>
+
+<p>如果從某處而不是從資源函式庫中下載了一個軟體包檔案，可以使用底層工具來直接（沒有經過依賴解析）安裝它。</p>
+
+<table class="multi">
+<caption class="cap">Table 15-5: Low-Level Package Installation Commands</caption>
+<tr>
+<th class="title">Style</th>
+<th class="title">Command(s)</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">dpkg --install package_file</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">rpm -i package_file</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表15-5: 底層軟體包安裝命令</caption>
+<tr>
+<th class="title">風格</th>
+<th class="title">命令</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">dpkg --install package_file</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">rpm -i package_file</td>
+</tr>
+</table>
+
+<p>Example: If the emacs-22.1-7.fc7-i386.rpm package file had been downloaded
+from a non-repository site, it would be installed this way:</p>
+
+<p>例如：如果已經從一個並非資源函式庫的網站下載了軟體包檔案 emacs-22.1-7.fc7-i386.rpm，
+則可以透過這種方法來安裝它：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpm -i emacs-22.1-7.fc7-i386.rpm
+</code></pre></div></div>
+
+<hr />
+
+<p>Note: Since this technique uses the low-level rpm program to perform the
+installation, no dependency resolution is performed. If rpm discovers a missing
+dependency, rpm will exit with an error.</p>
+
+<p>注意：因為這項技術使用底層的 rpm 程式來執行安裝任務，所以沒有執行依賴解析。
+如果 rpm 程式發現缺少了一個依賴，則會報錯並退出。</p>
+
+<hr />
+
+<h3 id="解除安裝軟體">解除安裝軟體</h3>
+
+<p>Packages can be uninstalled using either the high-level or low-tools. The high-level tools
+are shown below.</p>
+
+<p>可以使用上層或者底層工具來解除安裝軟體。下面是可用的上層工具。</p>
+
+<table class="multi">
+<caption class="cap">Table15-6: Package Removal Commands</caption>
+<tr>
+<th class="title">Style</th>
+<th class="title">Command(s)</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">apt-get remove package_name</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">yum erase package_name</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表15-6: 軟體包刪除命令</caption>
+<tr>
+<th class="title">風格</th>
+<th class="title">命令</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">apt-get remove package_name</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">yum erase package_name</td>
+</tr>
+</table>
+
+<p>Example: To uninstall the emacs package from a Debian-style system:</p>
+
+<p>例如：從 Debian 風格的系統中解除安裝 emacs 軟體包：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apt-get remove emacs
+</code></pre></div></div>
+
+<h3 id="經過資源函式庫來更新軟體包">經過資源函式庫來更新軟體包</h3>
+
+<p>The most common package management task is keeping the system up-to-date with the
+latest packages. The high-level tools can perform this vital task in one single step.</p>
+
+<p>最常見的軟體包管理任務是保持系統中的軟體包都是最新的。上層工具僅需一步就能完成
+這個至關重要的任務。</p>
+
+<table class="multi">
+<caption class="cap">Table 15-7: Package Update Commands</caption>
+<tr>
+<th class="title">Style</th>
+<th class="title">Command(s)</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">apt-get update; apt-get upgrade
+</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">yum update
+</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表15-7: 軟體包更新命令</caption>
+<tr>
+<th class="title">風格</th>
+<th class="title">命令</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">apt-get update; apt-get upgrade
+</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">yum update
+</td>
+</tr>
+</table>
+
+<p>Example: To apply any available updates to the installed packages on a Debian-style
+system:</p>
+
+<p>例如：更新安裝在 Debian 風格系統中的軟體包：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apt-get update; apt-get upgrade
+</code></pre></div></div>
+
+<h3 id="經過軟體包檔案來升級軟體">經過軟體包檔案來升級軟體</h3>
+
+<p>If an updated version of a package has been downloaded from a non-repository source, it
+can be installed, replacing the previous version:</p>
+
+<p>如果已經從一個非資源函式庫網站下載了一個軟體包的最新版本，可以安裝這個版本，用它來
+替代先前的版本：</p>
+
+<table class="multi">
+<caption class="cap">Table 15-8: Low-Level Package Upgrade Commands</caption>
+<tr>
+<th class="title">Style</th>
+<th class="title">Command(s)</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">dpkg --install package_file</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">rpm -U package_file</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表15-8: 底層軟體包升級命令</caption>
+<tr>
+<th class="title">風格</th>
+<th class="title">命令</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">dpkg --install package_file</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">rpm -U package_file</td>
+</tr>
+</table>
+
+<p>Example: Updating an existing installation of emacs to the version contained in the
+package file emacs-22.1-7.fc7-i386.rpm on a Red Hat system:</p>
+
+<p>例如：把 Red Hat 系統中所安裝的 emacs 的版本更新到軟體包檔案 emacs-22.1-7.fc7-i386.rpmz 所包含的 emacs 版本。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpm -U emacs-22.1-7.fc7-i386.rpm
+</code></pre></div></div>
+
+<hr />
+
+<p>Note: dpkg does not have a specific option for upgrading a package versus
+installing one as rpm does.</p>
+
+<p>注意：rpm 程式安裝一個軟體包和升級一個軟體包所用的選項是不同的，而 dpkg 程式所用的選項是相同的。</p>
+
+<hr />
+
+<h3 id="列出所安裝的軟體包">列出所安裝的軟體包</h3>
+
+<p>These commands can be used to display a list of all the packages installed on the system:</p>
+
+<p>下表中的命令可以用來顯示安裝到系統中的所有軟體包列表：</p>
+
+<table class="multi">
+<caption class="cap">Table 15-9: Package Listing Commands</caption>
+<tr>
+<th class="title">Style</th>
+<th class="title">Command(s)</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">dpkg --list</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">rpm -qa</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表15-9: 列出所安裝的軟體包命令</caption>
+<tr>
+<th class="title">風格</th>
+<th class="title">命令</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">dpkg --list</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">rpm -qa</td>
+</tr>
+</table>
+
+<h3 id="確定是否安裝了一個軟體包">確定是否安裝了一個軟體包</h3>
+
+<p>These low-level tools can be used to display whether a specified package is installed:</p>
+
+<p>這些底端工具可以用來顯示是否安裝了一個指定的軟體包：</p>
+
+<table class="multi">
+<caption class="cap">Table 15-10: Package Status Commands</caption>
+<tr>
+<th class="title">Style</th>
+<th class="title">Command(s)</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">dpkg --status package_name</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">rpm -q package_name</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表15-10: 軟體包狀態命令</caption>
+<tr>
+<th class="title">風格</th>
+<th class="title">命令</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">dpkg --status package_name</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">rpm -q package_name</td>
+</tr>
+</table>
+
+<p>Example: To determine if the emacs package is installed on a Debian style system:</p>
+
+<p>例如：確定是否 Debian 風格的系統中安裝了這個 emacs 軟體包：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dpkg --status emacs
+</code></pre></div></div>
+
+<h3 id="顯示所安裝軟體包的資訊">顯示所安裝軟體包的資訊</h3>
+
+<p>If the name of an installed package is known, the following commands can be used to
+display a description of the package:</p>
+
+<p>如果知道了所安裝軟體包的名字，使用以下命令可以顯示這個軟體包的說明資訊：</p>
+
+<table class="multi">
+<caption class="cap">Table 15-11: Package Information Commands</caption>
+<tr>
+<th class="title">Style</th>
+<th class="title">Command(s)</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">apt-cache show package_name</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">yum info package_name</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表15-11: 檢視軟體包資訊命令</caption>
+<tr>
+<th class="title">風格</th>
+<th class="title">命令</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">apt-cache show package_name</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">yum info package_name</td>
+</tr>
+</table>
+
+<p>Example: To see a description of the emacs package on a Debian-style system:</p>
+
+<p>例如：檢視 Debian 風格的系統中 emacs 軟體包的說明資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apt-cache show emacs
+</code></pre></div></div>
+
+<h3 id="查詢安裝了某個檔案的軟體包">查詢安裝了某個檔案的軟體包</h3>
+
+<p>To determine what package is responsible for the installation of a particular file, the
+following commands can be used:</p>
+
+<p>確定哪個軟體包對所安裝的某個特殊檔案負責，使用下表中的命令：</p>
+
+<table class="multi">
+<caption class="cap">Table 15-12: Package File Identification Commands</caption>
+<tr>
+<th class="title">Style</th>
+<th class="title">Command(s)</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">dpkg --search file_name</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">rpm -qf file_name</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表15-12: 包檔案識別命令</caption>
+<tr>
+<th class="title">風格</th>
+<th class="title">命令</th>
+</tr>
+<tr>
+<td valign="top">Debian</td>
+<td valign="top">dpkg --search file_name</td>
+</tr>
+<tr>
+<td valign="top">Red Hat</td>
+<td valign="top">rpm -qf file_name</td>
+</tr>
+</table>
+
+<p>Example: To see what package installed the /usr/bin/vim file on a Red Hat system:</p>
+
+<p>例如：在 Red Hat 系統中，檢視哪個軟體包安裝了/usr/bin/vim 這個檔案</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpm -qf /usr/bin/vim
+</code></pre></div></div>
+
+<h3 id="總結歸納">總結歸納</h3>
+
+<p>In the chapters that follow, we will explore many different programs covering a wide
+range of application areas. While most of these programs are commonly installed by
+default, we may need to install additional packages if necessary programs are not already
+installed on our system. With our newfound knowledge (and appreciation) of package
+management, we should have no problem installing and managing the programs we need.</p>
+
+<p>在隨後的章節裡面，我們將探討許多不同的程式，這些程式涵蓋了廣泛的應用程式領域。雖然
+大多數程式一般是預設安裝的，但是若所需程式沒有安裝在系統中，那麼我們可能需要安裝額外的軟體包。
+透過我們新學到的（和了解的）軟體包管理知識，我們應該能夠安裝和管理所需程式。</p>
+
+<blockquote>
+  <p>The Linux Software Installation Myth</p>
+
+  <p>Linux 軟體安裝謠言</p>
+
+  <p>People migrating from other platforms sometimes fall victim to the myth that
+software is somehow difficult to install under Linux and that the variety of
+packaging schemes used by different distributions is a hindrance. Well, it is a
+hindrance, but only to proprietary software vendors who wish to distribute binary-
+only versions of their secret software.</p>
+
+  <p>從其它平臺遷移過來的使用者有時會成為謠言的受害者，說是在 Linux 系統中，安裝軟體有些
+困難，並且不同系統發行版所使用的各種各樣的打包方案是一個障礙。唉，它是一個障礙，
+但只是針對於那些希望把他們的祕密軟體只以二進位制版本發行的專有軟體供應商。</p>
+
+  <p>The Linux software ecosystem is based on the idea of open source code. If a
+program developer releases source code for a product, it is likely that a person
+associated with a distribution will package the product and include it in their
+repository. This method ensures that the product is well integrated into the
+distribution and the user is given the convenience of “one-stop shopping” for
+software, rather than having to search for each product’s web site.</p>
+
+  <p>Linux 軟體生態系統是基於開放原始碼理念。如果一個程式開發人員釋出了一款產品的
+原始碼，那麼與系統發行版相關聯的開發人員可能就會把這款產品打包，並把它包含在
+他們的資源函式庫中。這種方法保證了這款產品能很好地與系統發行版整合在一起，同時為使用者
+“一站式採購”軟體提供了方便，從而使用者不必去搜索每個產品的網站。</p>
+
+  <p>Device drivers are are handled in much the same way, except that instead of being
+separate items in a distribution’s repository, they become part of the Linux kernel
+itself. Generally speaking, there is no such thing as a “driver disk” in Linux.
+Either the kernel supports a device or it doesn’t, and the Linux kernel supports a
+lot of devices. Many more, in fact, than Windows does. Of course, this is of no
+consolation if the particular device you need is not supported. When that
+happens, you need to look at the cause. A lack of driver support is usually caused
+by one of three things:</p>
+
+  <p>裝置驅動差不多也以同樣的方式來處理，但它們不是系統發行版資源函式庫中單獨的專案，
+它們本身是 Linux 系統核心的一部分。一般來說，在 Linux 當中沒有一個類似於“驅動盤”的東西。
+Linux核心要麼支援一個裝置，要不就不支援。Linux 核心支援很多裝置，事實上，Linux支援的裝置數目多於 Windows
+所支援的。當然，萬一你需要的特定裝置不被Linux支援，也於事無補。當那種情況
+發生時，你需要查詢一下原因。缺少驅動程式支援通常是由以下三種情況之一導致：</p>
+
+  <ol>
+    <li>
+      <p><em>The device is too new.</em> Since many hardware vendors don’t actively support
+Linux development, it falls upon a member of the Linux community to write the
+kernel driver code. This takes time.</p>
+    </li>
+    <li>
+      <p><em>The device is too exotic.</em> Not all distributions include every possible device
+driver. Each distribution builds their own kernels, and since kernels are very
+configurable (which is what makes it possible to run Linux on everything from
+wristwatches to mainframes) they may have overlooked a particular device. By
+locating and downloading the source code for the driver, it is possible for you
+(yes, you) to compile and install the driver yourself. This process is not overly
+difficult, but it is rather involved. We’ll talk about compiling software in a later
+chapter.</p>
+    </li>
+    <li>
+      <p><em>The hardware vendor is hiding something.</em> They have neither released
+source code for a Linux driver, nor have they released the technical
+documentation for somebody to create one for them. This means that the
+hardware vendor is trying to keep the programming interfaces to the device a
+secret. Since we don’t want secret devices in our computers, I suggest that you
+remove the offending hardware and pitch it into the trash, with your other useless
+items.</p>
+    </li>
+  </ol>
+  <ol>
+    <li>
+      <p><em>裝置太新。</em> 因為許多硬體供應商沒有積極地支援 Linux 的發展，那麼編寫核心
+驅動程式碼的任務就由一些 Linux 社群來承擔，而這需要花費時間。</p>
+    </li>
+    <li>
+      <p><em>裝置太奇異。</em> 不是所有的發行版都包含每個可能的裝置驅動。每個發行版會建立
+它們自己的核心，因為核心是可以配置的（這使得從手錶到主機的每臺裝置上執行 Linux 成為可能），
+這樣它們可能會忽略某個特殊裝置。透過定位和下載驅動程式的原始碼，可能需要你自己（是的，由你）
+來編譯和安裝驅動。這個過程不是很難，而是需要參與的。我們將在隨後的章節裡來討論編譯軟體。</p>
+    </li>
+    <li>
+      <p><em>硬體供應商隱藏資訊。</em> 他們既不釋出應用於 Linux 系統的驅動程式程式碼，
+也不釋出技術文件來讓某人建立它。這意味著硬體供應商試圖保密此裝置的程式介面。因為我們
+不想在計算機中使用保密的裝置，所以我建議刪除這令人厭惡的硬體，
+把它和其它無用的東西都扔到垃圾桶裡。</p>
+    </li>
+  </ol>
+</blockquote>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<p>Spend some time getting to know the package management system for your distribution.
+Each distribution provides documentation for its package management tools. In addition,
+here are some more generic sources:</p>
+
+<p>花些時間來了解你所用發行版中的軟體包管理系統。每個發行版都提供了關於自帶軟體包管理工具的
+文件。另外，這裡有一些更普遍的資源：</p>
+
+<ul>
+  <li>
+    <p>The Debian GNU/Linux FAQ chapter on package management provides an
+overview of package management on Debian systems :</p>
+  </li>
+  <li>
+    <p>Debian GNU/Linux FAQ 關於軟體包管理一章對軟體包管理進行了概述：</p>
+
+    <p><a href="http://www.debian.org/doc/FAQ/ch-pkgtools.en.html">http://www.debian.org/doc/FAQ/ch-pkgtools.en.html</a></p>
+  </li>
+  <li>
+    <p>The home page for the RPM project:</p>
+  </li>
+  <li>
+    <p>RPM 工程的主頁：</p>
+
+    <p><a href="http://www.rpm.org">http://www.rpm.org</a></p>
+  </li>
+  <li>
+    <p>The home page for the YUM project at Duke University:</p>
+  </li>
+  <li>
+    <p>杜克大學 YUM 工程的主頁：</p>
+
+    <p><a href="http://linux.duke.edu/projects/yum/">http://linux.duke.edu/projects/yum/</a></p>
+  </li>
+  <li>
+    <p>For a little background, the Wikipedia has an article on metadata:</p>
+  </li>
+  <li>
+    <p>瞭解一點背景知識，Wikipedia 上有一篇關於 metadata 的文章：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Metadata">http://en.wikipedia.org/wiki/Metadata</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

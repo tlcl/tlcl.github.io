@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">操作檔案和目錄</h1><br>
+<p>At this point, we are ready for some real work! This chapter will introduce
+the following commands:</p>
+
+<p>此時此刻，我們已經準備好了做些真正的工作！這一章節將會介紹以下命令：</p>
+
+<ul>
+  <li>
+    <p>cp – Copy files and directories</p>
+  </li>
+  <li>
+    <p>mv – Move/rename files and directories</p>
+  </li>
+  <li>
+    <p>mkdir – Create directories</p>
+  </li>
+  <li>
+    <p>rm – Remove files and directories</p>
+  </li>
+  <li>
+    <p>ln – Create hard and symbolic links</p>
+  </li>
+  <li>
+    <p>cp — 複製檔案和目錄</p>
+  </li>
+  <li>
+    <p>mv — 移動/重新命名檔案和目錄</p>
+  </li>
+  <li>
+    <p>mkdir — 建立目錄</p>
+  </li>
+  <li>
+    <p>rm — 刪除檔案和目錄</p>
+  </li>
+  <li>
+    <p>ln — 建立硬連結和符號連結</p>
+  </li>
+</ul>
+
+<p>These five commands are among the most frequently used Linux commands. They
+are used for manipulating both files and directories.</p>
+
+<p>這五個命令屬於最常使用的 Linux 命令之列。它們用來操作檔案和目錄。</p>
+
+<p>Now, to be frank, some of the tasks performed by these commands are more
+easily done with a graphical file manager. With a file manager, we can drag and drop a
+file from one directory to another, cut and paste files, delete files, etc. So why use these
+old command line programs?</p>
+
+<p>現在，坦誠地說，用圖形檔案管理器來完成一些由這些命令執行的任務會更容易些。使用檔案管理器，
+我們可以把檔案從一個目錄拖放到另一個目錄、剪貼和貼上檔案、刪除檔案等等。那麼，
+為什麼還使用早期的命令列程式呢？</p>
+
+<p>The answer is power and flexibility. While it is easy to perform simple file
+manipulations with a graphical file manager, complicated tasks can be easier with the
+command line programs. For example, how could we copy all the HTML files from one directory
+to another, but only copy files that do not exist in the destination directory or
+are newer than the versions in the destination directory? Pretty hard with a file
+manager. Pretty easy with the command line:</p>
+
+<p>答案是命令列程式，功能強大靈活。雖然圖形檔案管理器能輕鬆地實現簡單的檔案操作，但是對於
+複雜的檔案操作任務，則使用命令列程式比較容易完成。例如，怎樣拷貝一個目錄下所有的HTML檔案
+——這些檔案在目標目錄不存在或者版本比目標目錄的檔案更新——到目標目錄呢？
+要完成這個任務，使用檔案管理器相當難，使用命令列相當容易：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cp -u *.html destination
+</code></pre></div></div>
+
+<h3 id="萬用字元">萬用字元</h3>
+
+<p>Before we begin using our commands, we need to talk about a shell feature that
+makes these commands so powerful. Since the shell uses filenames so much, it
+provides special characters to help you rapidly specify groups of filenames. These special
+characters are called wildcards. Using wildcards (which is also known as globbing) allow you
+to select filenames based on patterns of characters. The table below lists the wildcards
+and what they select:</p>
+
+<p>在開始使用命令之前，我們需要介紹一個使命令列如此強大的 shell 特性。因為 shell 頻繁地使用
+檔名，shell 提供了特殊字元來幫助你快速指定一組檔名。這些特殊字元叫做萬用字元。
+使用萬用字元（也以檔名代換著稱）允許你依據字元的組合模式來選擇檔名。下表列出這些萬用字元
+以及它們所選擇的物件：</p>
+
+<table class="multi">
+<caption class="cap">Table 5-1: Wildcards</caption>
+<tr>
+<th class="title">Wildcard</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top">*</td>
+<td valign="top">Matches any characters</td>
+</tr>
+<tr>
+<td valign="top">?</td>
+<td valign="top">Matches any single character</td>
+</tr>
+<tr>
+<td valign="top">[characters]</td>
+<td valign="top">Matches any character that is a member of the set characters</td>
+</tr>
+<tr>
+<td valign="top">[!characters]</td>
+<td valign="top">Matches any character that is not a member of the set
+characters</td>
+</tr>
+<tr>
+<td valign="top" width="25%">[[:class:]]</td>
+<td valign="top">Matches any character that is a member of the specified class</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表5-1: 萬用字元</caption>
+<tr>
+<th class="title">萬用字元</th>
+<th class="title">意義</th>
+</tr>
+<tr>
+<td valign="top">*</td>
+<td valign="top">匹配任意多個字元（包括零個或一個）</td>
+</tr>
+<tr>
+<td valign="top">?</td>
+<td valign="top">匹配任意一個字元（不包括零個）</td>
+</tr>
+<tr>
+<td valign="top">[characters]</td>
+<td valign="top">匹配任意一個屬於字符集中的字元</td>
+</tr>
+<tr>
+<td valign="top">[!characters]</td>
+<td valign="top">匹配任意一個不是字符集中的字元</td>
+</tr>
+<tr>
+<td valign="top" width="25%">[[:class:]]</td>
+<td valign="top">匹配任意一個屬於指定字元類別中的字元</td>
+</tr>
+</table>
+
+<p>Table 5-2 lists the most commonly used character classes:</p>
+
+<p>表5-2列出了最常使用的字元類別：</p>
+
+<table class="multi">
+<caption class="cap">Table 5-2: Commonly Used Character Classes</caption>
+<tr>
+<th class="title">Character Class</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td>[:alnum:]</td>
+<td>Matches any alphanumeric character</td>
+</tr>
+<tr>
+<td>[:alpha:]</td>
+<td>Matches any alphabetic character</td>
+</tr>
+<tr>
+<td>[:digit:]</td>
+<td>Matches any numeral</td>
+</tr>
+<tr>
+<td width="25%">[:lower:]</td>
+<td>Matches any lowercase letter</td>
+</tr>
+<tr>
+<td>[:upper:]</td>
+<td>Matches any uppercase letter</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表5-2: 普遍使用的字元類別</caption>
+<tr>
+<th class="title">字元類別</th>
+<th class="title">意義</th>
+</tr>
+<tr>
+<td>[:alnum:]</td>
+<td>匹配任意一個字母或數字</td>
+</tr>
+<tr>
+<td>[:alpha:]</td>
+<td>匹配任意一個字母</td>
+</tr>
+<tr>
+<td>[:digit:]</td>
+<td>匹配任意一個數字</td>
+</tr>
+<tr>
+<td>[:lower:]</td>
+<td>匹配任意一個小寫字母</td>
+</tr>
+<tr>
+<td width="25%">[:upper:]</td>
+<td>匹配任意一個大寫字母</td>
+</tr>
+</table>
+
+<p>Using wildcards makes it possible to construct very sophisticated selection criteria for
+filenames. Here are some examples of patterns and what they match:</p>
+
+<p>藉助萬用字元，為檔名建構非常複雜的選擇標準成為可能。下面是一些型別匹配的範例:</p>
+
+<table class="multi">
+<caption class="cap">Table 5-3: Wildcard Examples</caption>
+<tr>
+<th class="title">Pattern</th>
+<th class="title">Matches</th>
+</tr>
+<tr>
+<td valign="top">*</td>
+<td valign="top">All files</td>
+</tr>
+<tr>
+<td valign="top">g*</td>
+<td valign="top">All file beginning with "g"</td>
+</tr>
+<tr>
+<td valign="top">b*.txt</td>
+<td valign="top">Any file beginning with "b" followed by any characters and
+ending with ".txt"</td>
+</tr>
+<tr>
+<td valign="top">Data???</td>
+<td valign="top">Any file beginning with "Data" followed by exactly three
+characters</td>
+</tr>
+<tr>
+<td valign="top">[abc]*</td>
+<td valign="top">Any file beginning with either an "a", a "b", or a "c"</td>
+</tr>
+<tr>
+<td valign="top">BACKUP.[0-9][0-9][0-9]</td>
+<td valign="top">Any file beginning with "BACKUP." followed by exactly three
+numerals</td>
+</tr>
+<tr>
+<td valign="top">[[:upper:]]*</td>
+<td valign="top">Any file beginning with an uppercase letter</td>
+</tr>
+<tr>
+<td valign="top">[![:digit:]]*</td>
+<td valign="top">Any file not beginning with a numeral</td>
+</tr>
+<tr>
+<td valign="top" width="25%">*[[:lower:]123]</td>
+<td valign="top">Any file ending with a lowercase letter or the numerals "1",
+"2", or "3"</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表5-3: 萬用字元範例</caption>
+<tr>
+<th class="title">模式</th>
+<th class="title">匹配物件</th>
+</tr>
+<tr>
+<td valign="top">*</td>
+<td valign="top">所有檔案</td>
+</tr>
+<tr>
+<td valign="top">g*</td>
+<td valign="top">檔名以“g”開頭的檔案</td>
+</tr>
+<tr>
+<td valign="top">b*.txt</td>
+<td valign="top">以"b"開頭，中間有零個或任意多個字元，並以".txt"結尾的檔案</td>
+</tr>
+<tr>
+<td valign="top">Data???</td>
+<td valign="top">以“Data”開頭，其後緊接著3個字元的檔案</td>
+</tr>
+<tr>
+<td valign="top">[abc]*</td>
+<td valign="top">檔名以"a","b",或"c"開頭的檔案</td>
+</tr>
+<tr>
+<td valign="top">BACKUP.[0-9][0-9][0-9]</td>
+<td valign="top">以"BACKUP."開頭，並緊接著3個數字的檔案</td>
+</tr>
+<tr>
+<td valign="top">[[:upper:]]*</td>
+<td valign="top">以大寫字母開頭的檔案</td>
+</tr>
+<tr>
+<td valign="top">[![:digit:]]*</td>
+<td valign="top">不以數字開頭的檔案</td>
+</tr>
+<tr>
+<td valign="top" width="25%">*[[:lower:]123]</td>
+<td valign="top">檔名以小寫字母結尾，或以「1”，“2”，或 “3」結尾的檔案</td>
+</tr>
+</table>
+
+<p>Wildcards can be used with any command that accepts filenames as arguments,
+but we’ll talk more about that in Chapter 8.</p>
+
+<p>接受檔名作為引數的任何命令，都可以使用萬用字元，我們會在第八章更深入地談到這個知識點。</p>
+
+<blockquote>
+  <p>Character Ranges</p>
+
+  <p>字元範圍</p>
+
+  <p>If you are coming from another Unix-like environment or have been reading
+some other books on this subject, you may have encountered the [A-Z] or the
+[a-z] character range notations. These are traditional Unix notations and
+worked in older versions of Linux as well. They can still work, but you have to
+be very careful with them because they will not produce the expected results
+unless properly configured. For now, you should avoid using them and use
+character classes instead.</p>
+
+  <p>如果你用過別的類別 Unix 系統的操作環境，或者是讀過這方面的書籍，你可能遇到過[A-Z]或
+[a-z]形式的字元範圍表示法。這些都是傳統的 Unix 表示法，並且在早期的 Linux 版本中仍有效。
+雖然它們仍然起作用，但是你必須小心地使用它們，因為它們不會產生你期望的輸出結果，除非
+你合理地配置它們。從現在開始，你應該避免使用它們，並且用字元類別來代替它們。</p>
+
+  <p>Wildcards Work In The GUI Too</p>
+
+  <p>萬用字元在 GUI 中也有效</p>
+
+  <p>Wildcards are especially valuable not only because they are used so frequently on
+the command line, but are also supported by some graphical file managers.</p>
+
+  <p>萬用字元非常重要，不僅因為它們經常用在命令列中，而且一些圖形檔案管理器也支援它們。</p>
+
+  <ul>
+    <li>
+      <p>In Nautilus (the file manager for GNOME), you can select files using the
+Edit/Select Pattern menu item. Just enter a file selection pattern with
+wildcards and the files in the currently viewed directory will be highlighted
+for selection.</p>
+    </li>
+    <li>
+      <p>In Dolphin and Konqueror (the file managers for KDE), you can enter
+wildcards directly on the location bar. For example, if you want to see all the
+files starting with a lowercase “u” in the /usr/bin directory, type “/usr/bin/u*”
+into the location bar and it will display the result.</p>
+    </li>
+    <li>
+      <p>在 Nautilus (GNOME 檔案管理器）中，可以透過 Edit/Select 模式選單項來選擇檔案。
+輸入一個用萬用字元表示的檔案選擇模式後，那麼當前所瀏覽的目錄中，所匹配的檔名就會高亮顯示。</p>
+    </li>
+    <li>
+      <p>在 Dolphin 和 Konqueror（KDE 檔案管理器）中，可以在位址列中直接輸入萬用字元。例如，
+如果你想檢視目錄 /usr/bin 中，所有以小寫字母 ‘u’ 開頭的檔案，
+在位址列中敲入 ‘/usr/bin/u*‘，則 檔案管理器會顯示匹配的結果。</p>
+    </li>
+  </ul>
+
+  <p>Many ideas originally found in the command line interface make their way into
+the graphical interface, too. It is one of the many things that make the Linux
+desktop so powerful.</p>
+
+  <p>最初源於命令列介面中的想法，在圖形介面中也適用。這就是使 Linux 桌面系統
+如此強大的眾多原因中的一個</p>
+</blockquote>
+
+<h3 id="mkdir---建立目錄">mkdir - 建立目錄</h3>
+
+<p>The mkdir command is used to create directories. It works like this:</p>
+
+<p>mkdir 命令是用來建立目錄的。它這樣工作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mkdir directory...
+</code></pre></div></div>
+
+<p><strong>A note on notation:</strong> When three periods follow an argument in the
+description of a command (as above), it means that the argument can be
+repeated, thus:</p>
+
+<p><strong>注意表示法:</strong> 在描述一個命令時（如上所示），當有三個圓點跟在一個命令的引數後面，
+這意味著那個引數可以重複，就像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mkdir dir1
+</code></pre></div></div>
+
+<p>would create a single directory named “dir1”, while</p>
+
+<p>會建立一個名為”dir1”的目錄，而</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mkdir dir1 dir2 dir3
+</code></pre></div></div>
+
+<p>would create three directokries named “dir1”, “dir2”, “dir3”.</p>
+
+<p>會建立三個目錄，名為 dir1, dir2, dir3。</p>
+
+<h3 id="cp---複製檔案和目錄">cp - 複製檔案和目錄</h3>
+
+<p>The cp command copies files or directories. It can be used two different ways:</p>
+
+<p>cp 命令，複製檔案或者目錄。它有兩種使用方法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cp item1 item2
+</code></pre></div></div>
+
+<p>to copy the single file or directory “item1” to file or directory “item2” and:</p>
+
+<p>複製單個檔案或目錄”item1”到檔案或目錄”item2”，和：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cp item... directory
+</code></pre></div></div>
+
+<p>to copy multiple items (either files or directories) into a directory.</p>
+
+<p>複製多個專案（檔案或目錄）到一個目錄下。</p>
+
+<h3 id="有用的選項和範例">有用的選項和範例</h3>
+
+<p>Here are some of the commonly used options (the short option and the equivalent long option) for cp:</p>
+
+<p>這裡列舉了 cp 命令一些有用的選項（短選項和等效的長選項）：</p>
+
+<table class="multi">
+<caption class="cap">Table 5-4: cp Options</caption>
+<tr>
+<th class="title">Option</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-a, --archive</td>
+<td valign="top">Copy the files and directories and all of their attributes,
+including ownerships and permissions. Normally, copies take on the default
+attributes of the user performing the copy</td>
+</tr>
+<tr>
+<td valign="top">-i, --interactive</td>
+<td valign="top">Before overwriting an existing file, prompt the user for
+confirmation. If this option is not specified, cp will
+silently overwrite files.
+</td>
+</tr>
+<tr>
+<td valign="top">-r, --recursive</td>
+<td valign="top">Recursively copy directories and their contents. This
+option (or the -a option) is required when copying directories.
+</td>
+</tr>
+<tr>
+<td valign="top">-u, --update </td>
+<td valign="top">When copying files from one directory to another, only
+copy files that either don't exist, or are newer than the
+existing corresponding files, in the destination
+directory.</td>
+</tr>
+<tr>
+<td valign="top">-v, --verbose</td>
+<td valign="top">Display informative messages as the copy is
+performed.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表5-4: cp 選項</caption>
+<tr>
+<th class="title">選項</th>
+<th class="title">意義</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-a, --archive</td>
+<td valign="top">複製檔案和目錄，以及它們的屬性，包括所有權和許可權。
+通常，複本具有使用者所操作檔案的預設屬性。</td>
+</tr>
+<tr>
+<td valign="top">-i, --interactive</td>
+<td valign="top">在重寫已存在檔案之前，提示使用者確認。如果這個選項不指定，
+cp 命令會預設重寫檔案。</td>
+</tr>
+<tr>
+<td valign="top">-r, --recursive</td>
+<td valign="top">遞迴地複製目錄及目錄中的內容。當複製目錄時，
+需要這個選項（或者-a 選項）。</td>
+</tr>
+<tr>
+<td valign="top">-u, --update </td>
+<td valign="top">當把檔案從一個目錄複製到另一個目錄時，僅複製
+目標目錄中不存在的檔案，或者是檔案內容新於目標目錄中已經存在的檔案。</td>
+</tr>
+<tr>
+<td valign="top">-v, --verbose</td>
+<td valign="top">顯示翔實的命令操作資訊</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">Table 5-5: cp Examples</caption>
+<tr>
+<th class="title">Command</th>
+<th class="title">Results</th>
+</tr>
+<tr>
+<td valign="top" width="25%">cp file1 file2</td>
+<td valign="top">Copy file1 to file2. If file2 exists, it is overwritten
+with the contents of file1. If file2 does not exist, it is created.</td>
+</tr>
+<tr>
+<td valign="top">cp -i file1 file2 </td>
+<td valign="top">Same as above, except that if file2 exists, the user is
+prompted before it is overwritten.</td>
+</tr>
+<tr>
+<td valign="top">cp file1 file2 dir1 </td>
+<td valign="top">Copy file1 and file2 into directory dir1. dir1 must
+already exist.</td>
+</tr>
+<tr>
+<td valign="top">cp dir1/* dir2 </td>
+<td valign="top">Using a wildcard, all the files in dir1 are copied
+into dir2. dir2 must already exist.</td>
+</tr>
+<tr>
+<td valign="top">cp -r dir1 dir2 </td>
+<td valign="top">Copy the contents of directory dir1 to directory
+dir2. If directory dir2 does not exist, it is created
+and, after the copy, will contain the same contents
+as directory dir1.
+If directory dir2 does exist, then directory dir1 (and
+its contents) will be copied into dir2.
+</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表5-5: cp 範例</caption>
+<tr>
+<th class="title">命令</th>
+<th class="title">執行結果</th>
+</tr>
+<tr>
+<td valign="top" width="25%">cp file1 file2</td>
+<td valign="top">複製檔案 file1 內容到檔案 file2。如果 file2 已經存在，
+file2 的內容會被 file1 的內容重寫。如果 file2 不存在，則會建立 file2。</td>
+</tr>
+<tr>
+<td valign="top">cp -i file1 file2 </td>
+<td valign="top">這條命令和上面的命令一樣，除了如果檔案 file2 存在的話，在檔案 file2 被重寫之前，
+會提示使用者確認資訊。</td>
+</tr>
+<tr>
+<td valign="top">cp file1 file2 dir1 </td>
+<td valign="top">複製檔案 file1 和檔案 file2 到目錄 dir1。目錄 dir1 必須存在。
+</td>
+</tr>
+<tr>
+<td valign="top">cp dir1/* dir2 </td>
+<td valign="top">使用一個萬用字元，在目錄 dir1 中的所有檔案都被複制到目錄 dir2 中。
+dir2 必須已經存在。</td>
+</tr>
+<tr>
+<td valign="top">cp -r dir1 dir2 </td>
+<td valign="top">複製目錄 dir1 中的內容到目錄 dir2。如果目錄 dir2 不存在，
+建立目錄 dir2，操作完成後，目錄 dir2 中的內容和 dir1 中的一樣。
+如果目錄 dir2 存在，則目錄 dir1 (和目錄中的內容)將會被複制到 dir2 中。</td>
+</tr>
+</table>
+
+<h3 id="mv---移動和重新命名檔案">mv - 移動和重新命名檔案</h3>
+
+<p>The mv command performs both file moving and file renaming, depending on how it is used.
+In either case, the original filename no longer exists after the operation.
+mv is used in much the same way as cp:</p>
+
+<p>mv 命令可以執行檔案移動和檔案命名任務，這依賴於你怎樣使用它。任何一種
+情況下，完成操作之後，原來的檔名不再存在。mv 使用方法與 cp 很相像：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mv item1 item2
+</code></pre></div></div>
+
+<p>to move or rename file or directory “item1” to “item2” or:</p>
+
+<p>把檔案或目錄 “item1” 移動或重新命名為 “item2”, 或者：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mv item... directory
+</code></pre></div></div>
+
+<p>to move one or more items from one directory to another.</p>
+
+<p>把一個或多個條目從一個目錄移動到另一個目錄中。</p>
+
+<h3 id="有用的選項和範例-1">有用的選項和範例</h3>
+
+<p>mv shares many of the same options as cp:</p>
+
+<p>mv 與 cp 共享了很多一樣的選項：</p>
+
+<table class="multi">
+<caption class="cap">Table 5-6: mv options</caption>
+<tr>
+<th class="title">Option</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-i --interactive</td>
+<td valign="top">Before overwriting an existing file, prompt the user for
+confirmation. <b>If this option is not specified, mv command will silently
+overwrite files</b></td>
+</tr>
+<tr>
+<td valign="top">-u --update</td>
+<td valign="top">When moving files from one directory to another, only
+move files that either don't exist, or are newer than the
+existing corresponding files in the destination
+directory.
+</td>
+</tr>
+<tr>
+<td valign="top">-v --verbose</td>
+<td valign="top">Display informative messages as the move is performed.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表5-6: mv 選項</caption>
+<tr>
+<th class="title">選項</th>
+<th class="title">意義</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-i --interactive</td>
+<td valign="top">在重寫一個已經存在的檔案之前，提示使用者確認資訊。
+<b>如果不指定這個選項，mv 命令會預設重寫檔案內容。</b></td>
+</tr>
+<tr>
+<td valign="top">-u --update</td>
+<td valign="top">當把檔案從一個目錄移動另一個目錄時，只是移動不存在的檔案，
+或者檔案內容新於目標目錄相對應檔案的內容。</td>
+</tr>
+<tr>
+<td valign="top">-v --verbose</td>
+<td valign="top">當操作 mv 命令時，顯示翔實的操作資訊。</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">Table 5-7: mv Examples</caption>
+<tr>
+<td class="title">mv file1 file2</td>
+<td class="title">Move file1 to file2. <b>If file2 exists, it is overwritten
+with the contents of files. </b>If file2 does not exist, it is created. <b>In
+either case, file1 ceases to exist.</b></td>
+</tr>
+<tr>
+<td valign="top" width="25%">mv -i file1 file2</td>
+<td valign="top">Same as above, except that if file2 exists, the user is
+prompted before it is overwritten.</td>
+</tr>
+<tr>
+<td valign="top">mv file1 file2 dir1</td>
+<td valign="top">Move file1 and file2 into dirctory dir1. dir1 must
+already exist.
+</td>
+</tr>
+<tr>
+<td valign="top">mv dir1 dir2</td>
+<td valign="top">if directory dir2 does not exist, create directory dir2 and
+move the contents of directory dir1 into dir2 and delete directory dir1.
+if directory dir2 does exist, move directory dir1 (and its contents) into
+directory dir2.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表5-7: mv 範例</caption>
+<tr>
+<td class="title">mv file1 file2</td>
+<td class="title">移動 file1 到 file2。<b>如果 file2 存在，它的內容會被 file1 的內容重寫。
+</b>如果 file2 不存在，則建立 file2。<b> 這兩種情況下，file1 都不再存在。</b></td>
+</tr>
+<tr>
+<td valign="top" width="25%">mv -i file1 file2</td>
+<td valign="top">除了如果 file2 存在的話，在 file2 被重寫之前，使用者會得到
+提示資訊外，這個和上面的選項一樣。</td>
+</tr>
+<tr>
+<td valign="top">mv file1 file2 dir1</td>
+<td valign="top">移動 file1 和 file2 到目錄 dir1 中。dir1 必須已經存在。</td>
+</tr>
+<tr>
+<td valign="top">mv dir1 dir2</td>
+<td valign="top">如果目錄 dir2 不存在，建立目錄 dir2，並且移動目錄 dir1 的內容到
+目錄 dir2 中，同時刪除目錄 dir1。如果目錄 dir2 存在，移動目錄 dir1（及它的內容）到目錄 dir2。</td>
+</tr>
+</table>
+
+<h3 id="rm---刪除檔案和目錄">rm - 刪除檔案和目錄</h3>
+
+<p>The rm command is used to remove(delete)files and directories:</p>
+
+<p>rm 命令用來移除（刪除）檔案和目錄：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rm item...
+</code></pre></div></div>
+
+<p>where “item” is one or more files or directories.</p>
+
+<p>“item”代表一個或多個檔案或目錄。</p>
+
+<h3 id="有用的選項和範例-2">有用的選項和範例</h3>
+
+<p>Here are some of the common options for rm:</p>
+
+<p>下表是一些普遍使用的 rm 選項：</p>
+
+<table class="multi">
+<caption class="cap">Table 5-8: rm Options</caption>
+<tr>
+<th class="title">Option</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-i, --interactive </td>
+<td valign="top">Before deleting an existing file, prompt the user for
+confirmation. <b>If this option is not specified, rm will
+silently delete files.</b></td>
+</tr>
+<tr>
+<td valign="top">-r, --recursive </td>
+<td valign="top">Recursively delete directories. This means that if a
+directory being deleted has subdirectories, delete them too. To delete a
+directory, this option must be specified.</td>
+</tr>
+<tr>
+<td valign="top">-f, --force </td>
+<td valign="top">Ignore nonexistent files and do not prompt. This
+overrides the --interactive option.
+</td>
+</tr>
+<tr>
+<td valign="top">-v, --verbose</td>
+<td valign="top">Display informative messages as the deletion is
+performed.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表5-8: rm 選項</caption>
+<tr>
+<th class="title">選項</th>
+<th class="title">意義</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-i, --interactive </td>
+<td valign="top">在刪除已存在的檔案前，提示使用者確認資訊。
+<b>如果不指定這個選項，rm 會默默地刪除檔案</b>
+</td>
+</tr>
+<tr>
+<td valign="top">-r, --recursive</td>
+<td valign="top">遞迴地刪除檔案，這意味著，如果要刪除一個目錄，而此目錄
+又包含子目錄，那麼子目錄也會被刪除。要刪除一個目錄，必須指定這個選項。</td>
+</tr>
+<tr>
+<td valign="top">-f, --force</td>
+<td valign="top">忽視不存在的檔案，不顯示提示資訊。這選項覆蓋了“--interactive”選項。</td>
+</tr>
+<tr>
+<td valign="top">-v, --verbose</td>
+<td valign="top">在執行 rm 命令時，顯示翔實的操作資訊。</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">Table 5-9: rm Examples</caption>
+<tr>
+<th class="title">Command</th>
+<th class="title">Results</th>
+</tr>
+<tr>
+<td valign="top" width="25%">rm file1</td>
+<td valign="top">Delete file1 silently</td>
+</tr>
+<tr>
+<td valign="top">rm -i file1</td>
+<td valign="top">Same as above, except that the user is prompted for
+confirmation before the deletion is performed.</td>
+</tr>
+<tr>
+<td valign="top">rm -r file1 dir1</td>
+<td valign="top">Delete file1 and dir1 and its contents.</td>
+</tr>
+<tr>
+<td valign="top">rm -rf file1 dir1</td>
+<td valign="top">Same as above, except that if either file1 or dir1 do not
+exist, rm will continue silently.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表5-9: rm 範例</caption>
+<tr>
+<th class="title">命令</th>
+<th class="title">執行結果</th>
+</tr>
+<tr>
+<td valign="top" width="25%">rm file1</td>
+<td valign="top">默默地刪除檔案</td>
+</tr>
+<tr>
+<td valign="top">rm -i file1</td>
+<td valign="top">除了在刪除檔案之前，提示使用者確認資訊之外，和上面的命令作用一樣。</td>
+</tr>
+<tr>
+<td valign="top">rm -r file1 dir1</td>
+<td valign="top">刪除檔案 file1, 目錄 dir1，及 dir1 中的內容。</td>
+</tr>
+<tr>
+<td valign="top">rm -rf file1 dir1</td>
+<td valign="top">同上，除了如果檔案 file1，或目錄 dir1 不存在的話，rm 仍會繼續執行。</td>
+</tr>
+</table>
+
+<blockquote>
+  <p>Be Careful With rm!</p>
+
+  <p>小心 rm!</p>
+
+  <p>Unix-like operating systems such as Linux do not have an undelete command.
+Once you delete something with rm, it’s gone. Linux assumes you’re smart and
+you know what you’re doing.</p>
+
+  <p>類別 Unix 的作業系統，比如說 Linux，沒有復原命令。一旦你用 rm 刪除了一些東西，
+它就消失了。Linux 假定你很聰明，你知道你在做什麼。</p>
+
+  <p>Be particularly careful with wildcards. Consider this classic example.
+Let's say you want to delete just the HTML files in a directory.
+To do this, you type:</p>
+
+  <p>尤其要小心萬用字元。思考一下這個經典的例子。假如說，你只想刪除一個目錄中的 HTML
+檔案。輸入：</p>
+
+  <p><em>rm *.html</em></p>
+
+  <p>which is correct, but if you accidentally place a space between the “*” and the “.html” like so:</p>
+
+  <p>這是正確的，如果你不小心在「*」和 “.html” 之間多輸入了一個空格，就像這樣：</p>
+
+  <p><em>rm * .html</em></p>
+
+  <p>the rm command will delete all the files in the directory
+and then complain that there is no file called “.html”.</p>
+
+  <p>這個 rm 命令會刪除目錄中的所有檔案，還會抱怨沒有檔案叫做 “.html”。</p>
+
+  <p><em>Here is a useful tip.</em> Whenever you use wildcards with rm (besides carefully
+checking your typing!), test the wildcard first with ls. This will let you see the
+files that will be deleted. Then press the up arrow key to recall the command and
+replace the ls with rm.</p>
+
+  <p><em>小貼士。</em> 當你使用帶有萬用字元的rm命令時（除了仔細檢查輸入的內容外），
+先用 ls 命令來測試萬用字元。這會讓你看到將要被刪除的檔案是什麼。然後按下上箭頭按鍵，重新呼叫
+剛剛執行的命令，用 rm 替換 ls。</p>
+</blockquote>
+
+<h3 id="ln--建立連結">ln — 建立連結</h3>
+
+<p>The ln command is used to create either hard or symbolic links. It is used in one of two
+ways:</p>
+
+<p>ln 命令既可建立硬連結，也可以建立符號連結。可以用其中一種方法來使用它：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ln file link
+</code></pre></div></div>
+
+<p>to create a hard link, and:</p>
+
+<p>建立硬連結，和：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ln -s item link
+</code></pre></div></div>
+
+<p>to create a symbolic link where “item” is either a file or a directory.</p>
+
+<p>建立符號連結，”item” 可以是一個檔案或是一個目錄。</p>
+
+<h3 id="硬連結">硬連結</h3>
+
+<p>Hard links are the original Unix way of creating links; symbolic links are
+more modern. By default, every file has a single hard link that gives the file
+its name. When we create a hard link, we create an additional directory entry
+for a file. Hard links have two important limitations:</p>
+
+<p>與更加現代的符號連結相比，硬連結是最初 Unix 建立連結的方式。每個檔案預設會有一個硬連結，
+這個硬連結給予檔名字。我們每建立一個硬連結，就為一個檔案建立了一個額外的目錄項。
+硬連結有兩個重要侷限性：</p>
+
+<ol>
+  <li>
+    <p>A hard link cannot reference a file outside its own file system. This means a link
+may not reference a file that is not on the same disk partition as the link itself.</p>
+  </li>
+  <li>
+    <p>A hard link may not reference a directory.</p>
+  </li>
+</ol>
+<ol>
+  <li>
+    <p>一個硬連結不能關聯它所在檔案系統之外的檔案。這是說一個連結不能關聯
+與連結本身不在同一個磁碟分割槽上的檔案。</p>
+  </li>
+  <li>
+    <p>一個硬連結不能關聯一個目錄。</p>
+  </li>
+</ol>
+
+<p>A hard link is indistinguishable from the file itself. Unlike a symbolic link, when you list
+a directory containing a hard link you will see no special indication of the link. When a
+hard link is deleted, the link is removed but the contents of the file itself continue to exist
+(that is, its space is not deallocated) until all links to the file are deleted.
+It is important to be aware of hard links because you might encounter them from time to
+time, but modern practice prefers symbolic links, which we will cover next.</p>
+
+<p>一個硬連結和檔案本身沒有什麼區別。不像符號連結，當你列出一個包含硬連結的目錄
+內容時，你會看到沒有特殊的連結指示說明。當一個硬連結被刪除時，這個連結
+被刪除，但是檔案本身的內容仍然存在（這是說，它所佔的磁碟空間不會被重新分配），
+直到所有關聯這個檔案的連結都刪除掉。知道硬連結很重要，因為你可能有時
+會遇到它們，但現在實際中更喜歡使用符號連結，下一步我們會討論符號連結。</p>
+
+<h3 id="符號連結">符號連結</h3>
+
+<p>Symbolic links were created to overcome the limitations of hard links. Symbolic links
+work by creating a special type of file that contains a text pointer to the referenced file or
+directory. In this regard, they operate in much the same way as a Windows shortcut
+though of course, they predate the Windows feature by many years ;-)</p>
+
+<p>建立符號連結是為了克服硬連結的侷限性。符號連結生效，是透過建立一個
+特殊型別的檔案，這個檔案包含一個關聯檔案或目錄的文字指標。在這一方面，
+它們和 Windows 的快捷方式差不多，當然，符號連結早於 Windows 的快捷方式
+很多年;-)</p>
+
+<p>A file pointed to by a symbolic link, and the symbolic link itself are largely
+indistinguishable from one another. For example, if you write some something to the
+symbolic link, the referenced file is also written to. However when you delete a symbolic
+link, only the link is deleted, not the file itself. If the file is deleted before the symbolic
+link, the link will continue to exist, but will point to nothing. In this case, the link is said
+to be broken. In many implementations, the ls command will display broken links in a
+distinguishing color, such as red, to reveal their presence.</p>
+
+<p>一個符號連結指向一個檔案，而且這個符號連結本身與其它的符號連結幾乎沒有區別。
+例如，如果你往一個符號連結裡面寫入東西，那麼相關聯的檔案也被寫入。然而，
+當你刪除一個符號連結時，只有這個連結被刪除，而不是檔案自身。如果先於符號連結
+刪除檔案，這個連結仍然存在，但是不指向任何東西。在這種情況下，這個連結被稱為
+壞連結。在許多實現中，ls 命令會以不同的顏色展示壞連結，比如說紅色，來顯示它們
+的存在。</p>
+
+<p>The concept of links can seem very confusing, but hang in there. We’re going to try all
+this stuff and it will, hopefully, become clear.</p>
+
+<p>關於連結的概念，看起來很迷惑，但不要膽怯。我們將要試著練習
+這些命令，希望，它變得清晰起來。</p>
+
+<h3 id="建立遊戲場實戰演習">建立遊戲場（實戰演習）</h3>
+
+<p>Since we are going to do some real file manipulation, Let's build a safe place to “play”
+with our file manipulation commands. First we need a directory to work in. We’ll create
+one in our home directory and call it “playground.”</p>
+
+<p>下面我們將要做些真正的檔案操作，讓我們先建立一個安全地帶，
+來玩一下檔案操作命令。首先，我們需要一個工作目錄。在我們的
+家目錄下建立一個叫做“playground”的目錄。</p>
+
+<h3 id="建立目錄">建立目錄</h3>
+
+<p>The mkdir command is used to create a directory. To create our playground
+directory we will first make sure we are in our home directory and will then
+create the new directory:</p>
+
+<p>mkdir 命令被用來建立目錄。首先確定我們在我們的家目錄下，然後建立 playground 目錄：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cd
+[me@linuxbox ~]$ mkdir playground
+</code></pre></div></div>
+
+<p>To make our playground a little more interesting, Let's create a couple of
+directories inside it called “dir1” and “dir2”. To do this, we will change
+our current working directory to playground and execute another mkdir:</p>
+
+<p>為了讓我們的遊戲場更加有趣，在 playground 目錄下建立一對目錄
+，分別叫做 “dir1” 和 “dir2”。更改我們的當前工作目錄到 playground，然後
+執行 mkdir 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cd playground
+[me@linuxbox playground]$ mkdir dir1 dir2
+</code></pre></div></div>
+
+<p>Notice that the mkdir command will accept multiple arguments allowing us to create
+both directories with a single command.</p>
+
+<p>注意到 mkdir 命令可以接受多個引數，它允許我們用一個命令來建立這兩個目錄。</p>
+
+<p>###　複製檔案</p>
+
+<p>Next, Let's get some data into our playground. We’ll do this by copying a file. Using the
+cp command, we’ll copy the passwd file from the /etc directory to the current
+working directory:</p>
+
+<p>下一步，讓我們輸入一些資料到我們的遊戲場中。我們可以透過複製一個檔案來實現目的。
+我們使用 cp 命令從 /etc 目錄複製 passwd 檔案到當前工作目錄下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ cp /etc/passwd .
+</code></pre></div></div>
+
+<p>Notice how we used the shorthand for the current working directory, the single trailing
+period. So now if we perform an ls, we will see our file:</p>
+
+<p>請注意，我們使用命令末尾的一個圓點來簡化當前工作目錄的寫法。如果我們執行 ls 命令，
+可以看到我們的檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ ls -l
+total 12
+drwxrwxr-x 2  me  me   4096 2008-01-10 16:40 dir1
+drwxrwxr-x 2  me  me   4096 2008-01-10 16:40 dir2
+-rw-r--r-- 1  me  me   1650 2008-01-10 16:07 passwd
+</code></pre></div></div>
+
+<p>Now, just for fun, Let's repeat the copy using the “-v” option (verbose) to see what it does:</p>
+
+<p>現在，僅僅是為了高興，重複操作複製命令，使用”-v”選項（詳細），看看它做了些什麼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ cp -v /etc/passwd .
+`/etc/passwd' -&gt; `./passwd'
+</code></pre></div></div>
+
+<p>The cp command performed the copy again, but this time displayed a concise
+message indicating what operation it was performing. Notice that cp overwrote
+the first copy without any warning. Again this is a case of cp assuming that
+you know what you’re are doing. To get a warning, we’ll include
+the “-i” (interactive) option:</p>
+
+<p>cp 命令再一次執行了複製操作，但是這次顯示了一條簡潔的資訊，指明它
+進行了什麼操作。注意，cp 沒有警告，就重寫了第一次複製的檔案。這是一個案例，
+cp 會假設你知道自己在做什麼。如果希望得到警告的話，需要加入“-i”（互動）選項：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ cp -i /etc/passwd .
+cp: overwrite `./passwd'?
+</code></pre></div></div>
+
+<p>Responding to the prompt by entering a “y” will cause the file to be
+overwritten, any other character (for example, “n”)
+will cause cp to leave the file alone.</p>
+
+<p>在提示資訊後輸入”y”，檔案就會被重寫，輸入其它的字元（例如，”n”） cp 命令會保留原檔案。</p>
+
+<h3 id="移動和重新命名檔案">移動和重新命名檔案</h3>
+
+<p>Now, the name “passwd” doesn’t seem very playful and this is a playground,
+so Let's change it to something else:</p>
+
+<p>現在，”passwd” 這個名字，看起來不怎麼有趣，這是個遊戲場，所以我們給它改個名字：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ mv passwd fun
+</code></pre></div></div>
+
+<p>Let's pass the fun around a little by moving our renamed file to each of the directories and back again:</p>
+
+<p>讓我們來傳送 fun 檔案，透過移動重新命名的檔案到各個子目錄，
+然後再把它移回到當前目錄：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ mv fun dir1
+</code></pre></div></div>
+
+<p>to move it first to directory dir1, then:</p>
+
+<p>首先，把 fun 檔案移動目錄 dir1 中，然後：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ mv dir1/fun dir2
+</code></pre></div></div>
+
+<p>to move it from dir1 to dir2, then:</p>
+
+<p>再把 fun 檔案從 dir1 移到目錄 dir2, 然後：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ mv dir2/fun .
+</code></pre></div></div>
+
+<p>to finally bringing it back to the current working directory.
+Next, Let's see the effect of mv on directories.
+First we will move our data file into dir1 again:</p>
+
+<p>最後，再把 fun 檔案帶回到當前工作目錄。接下來，來看看移動目錄的效果。
+首先，我們先移動我們的資料檔案到 dir1 目錄：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ mv fun dir1
+</code></pre></div></div>
+
+<p>then move dir1 into dir2 and confirm it with ls:</p>
+
+<p>然後移動 dir1到 dir2目錄，用 ls 來確認執行結果:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ mv dir1 dir2
+[me@linuxbox playground]$ ls -l dir2
+total 4
+drwxrwxr-x 2 me me 4096 2008-01-11 06:06 dir1
+[me@linuxbox playground]$ ls -l dir2/dir1
+total 4
+-rw-r--r-- 1 me me 1650 2008-01-10 16:33 fun
+</code></pre></div></div>
+
+<p>Note that since dir2 already existed, mv moved dir1 into dir2. If dir2 had not
+existed, mv would have renamed dir1 to dir2. Lastly, Let's put everything back:</p>
+
+<p>注意：因為目錄 dir2 已經存在，mv 命令會把 dir1 移動到 dir2 目錄中。如果 dir2 不存在，
+mv 會把dir1重新命名為 dir2。最後，讓我們把所有的東西放回原處：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ mv dir2/dir1 .
+[me@linuxbox playground]$ mv dir1/fun .
+</code></pre></div></div>
+
+<h3 id="建立硬連結">建立硬連結</h3>
+
+<p>Now we’ll try some links. First the hard links. We’ll create some links to our data file
+like so:</p>
+
+<p>現在，我們試著建立連結。首先是硬連結。我們建立一些關聯我們
+資料檔案的連結：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ ln fun fun-hard
+[me@linuxbox playground]$ ln fun dir1/fun-hard
+[me@linuxbox playground]$ ln fun dir2/fun-hard
+</code></pre></div></div>
+
+<p>So now we have four instances of the file “fun”. Let's take a look our playground
+directory:</p>
+
+<p>所以現在，我們有四個檔案”fun”的範例。看一下目錄 playground 中的內容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ ls -l
+total 16
+drwxrwxr-x 2 me  me 4096 2008-01-14 16:17 dir1
+drwxrwxr-x 2 me  me 4096 2008-01-14 16:17 dir2
+-rw-r--r-- 4 me  me 1650 2008-01-10 16:33 fun
+-rw-r--r-- 4 me  me 1650 2008-01-10 16:33 fun-hard
+</code></pre></div></div>
+
+<p>One thing you notice is that the second field in the listing
+for fun and fun-hard both contain a “4” which is the number of
+hard links that now exist for the file. You’ll remember that a file will
+always have at least one because the file’s name is created by a link. So, how
+do we know that fun and fun-hard are, in fact, the same file? In this case,
+ls is not very helpful. While we can see that fun and fun-hard are both the
+same size (field 5), our listing provides no way to be sure. To solve this
+problem, we’re going to have to dig a little deeper.</p>
+
+<p>注意到一件事，列表中，檔案 fun 和 fun-hard 的第二個欄位是”4”，這個數字
+是檔案”fun”的硬連結數目。你要記得一個檔案至少有一個硬連結，因為檔案
+名就是由連結建立的。那麼，我們怎樣知道實際上 fun 和 fun-hard 是同一個檔案呢？
+在這個例子裡，ls 不是很有用。雖然我們能夠看到 fun 和 fun-hard 檔案大小一樣
+（第五欄位），但我們的列表沒有提供可靠的資訊來確定（這兩個檔案一樣）。
+為了解決這個問題，我們更深入的研究一下。</p>
+
+<p>When thinking about hard links, it is helpful to imagine that files are made
+up of two parts: the data part containing the file’s contents and the name
+part which holds the file’s name. When we create hard links, we are actually
+creating additional name parts that all refer to the same data part. The
+system assigns a chain of disk blocks to what is called an inode, which is
+then associated with the name part. Each hard link therefore refers to a
+specific inode containing the file’s contents.</p>
+
+<p>當考慮到硬連結的時候，我們可以假設檔案由兩部分組成：包含檔案內容的資料部分和持有檔名的名字部分
+，這將有助於我們理解這個概念。當我們建立檔案硬連結的時候，實際上是為檔案建立了額外的名字部分，
+並且這些名字都關聯到相同的資料部分。這時系統會分配一連串的磁碟塊給所謂的索引節點，然後索引節點與文
+件名字部分相關聯。因此每一個硬連結都關係到一個具體的包含檔案內容的索引節點。</p>
+
+<p>The ls command has a way to reveal this information. It is invoked with the “-i” option:</p>
+
+<p>ls 命令有一種方法，來展示（檔案索引節點）的資訊。在命令中加上”-i”選項：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ ls -li
+total 16
+12353539 drwxrwxr-x 2 me  me 4096  2008-01-14  16:17  dir1
+12353540 drwxrwxr-x 2 me  me 4096  2008-01-14  16:17  dir2
+12353538 -rw-r--r-- 4 me  me 1650  2008-01-10  16:33  fun
+12353538 -rw-r--r-- 4 me  me 1650  2008-01-10  16:33  fun-hard
+</code></pre></div></div>
+
+<p>In this version of the listing, the first field is the inode number and, as we
+can see, both fun and fun-hard share the same inode number, which confirms
+they are the same file.</p>
+
+<p>在這個版本的列表中，第一欄位表示檔案索引節點號，正如我們所見到的，
+fun 和 fun-hard 共享一樣的索引節點號，這就證實這兩個檔案是同一個檔案。</p>
+
+<h3 id="建立符號連結">建立符號連結</h3>
+
+<p>Symbolic links were created to overcome the two disadvantages of hard links: hard links
+cannot span physical devices and hard links cannot reference directories, only files.
+Symbolic links are a special type of file that contains a text pointer to the target file or
+directory.</p>
+
+<p>建立符號連結的目的是為了克服硬連結的兩個缺點：硬連結不能跨越物理裝置，
+硬連結不能關聯目錄，只能是檔案。符號連結是檔案的特殊型別，它包含一個指向
+目標檔案或目錄的文字指標。</p>
+
+<p>Creating symbolic links is similar to creating hard links:</p>
+
+<p>符號連結的建立過程相似於建立硬連結：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ ln -s fun fun-sym
+[me@linuxbox playground]$ ln -s ../fun dir1/fun-sym
+[me@linuxbox playground]$ ln -s ../fun dir2/fun-sym
+</code></pre></div></div>
+
+<p>The first example is pretty straightforward, we simply add the “-s” option to create a
+symbolic link rather than a hard link. But what about the next two? Remember, when we
+create a symbolic link, we are creating a text description of where the target file is
+relative to the symbolic link. It’s easier to see if we look at the ls output:</p>
+
+<p>第一個例子相當直接，在 ln 命令中，簡單地加上”-s”選項就可以建立一個符號連結，
+而不是一個硬連結。下面兩個例子又是怎樣呢？ 記住，當我們建立一個符號連結
+的時候，會建立一個目標檔案在哪裡和符號連結有關聯的文字描述。如果我們看看
+ls 命令的輸出結果，比較容易理解。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ ls -l dir1
+total 4
+-rw-r--r-- 4 me  me 1650 2008-01-10 16:33 fun-hard
+lrwxrwxrwx 1 me  me    6 2008-01-15 15:17 fun-sym -&gt; ../fun
+</code></pre></div></div>
+
+<p>The listing for fun-sym in dir1 shows that is it a symbolic link by the leading “l” in
+the first field and that it points to “../fun”, which is correct. Relative to the location of
+fun-sym, fun is in the directory above it. Notice too, that the length of the symbolic
+link file is 6, the number of characters in the string “../fun” rather than the length of the
+file to which it is pointing.</p>
+
+<p>目錄 dir1 中，fun-sym 的列表說明了它是一個符號連結，透過在第一欄位中的首字元”l”
+可知，並且它還指向”../fun”，也是正確的。相對於 fun-sym 的儲存位置，fun 在它的
+上一個目錄。同時注意，符號連結檔案的長度是6，這是字串”../fun”所包含的字元數，
+而不是符號連結所指向的檔案長度。</p>
+
+<p>When creating symbolic links, you can either use absolute pathnames:</p>
+
+<p>當建立符號連結時，你既可以使用絕對路徑名：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ln -s /home/me/playground/fun dir1/fun-sym
+</code></pre></div></div>
+
+<p>or relative pathnames, as we did in our earlier example. Using relative pathnames is
+more desirable because it allows a directory containing symbolic links to be renamed
+and/or moved without breaking the links.</p>
+
+<p>也可用相對路徑名，正如前面例題所展示的。使用相對路徑名更令人滿意，
+因為它允許一個包含符號連結的目錄重新命名或移動，而不會破壞連結。</p>
+
+<p>In addition to regular files, symbolic links can also reference directories:</p>
+
+<p>除了普通檔案，符號連結也能關聯目錄：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ ln -s dir1 dir1-sym
+[me@linuxbox playground]$ ls -l
+total 16
+...省略
+</code></pre></div></div>
+
+<h3 id="移動檔案和目錄">移動檔案和目錄</h3>
+
+<p>As we covered earlier, the rm command is used to delete files and directories. We are
+going to use it to clean up our playground a little bit. First, Let's delete one of our hard
+links:</p>
+
+<p>正如我們之前討論的，rm 命令被用來刪除檔案和目錄。我們將要使用它
+來清理一下我們的遊戲場。首先，刪除一個硬連結：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ rm fun-hard
+[me@linuxbox playground]$ ls -l
+total 12
+...省略
+</code></pre></div></div>
+
+<p>That worked as expected. The file fun-hard is gone and the link count shown for fun
+is reduced from four to three, as indicated in the second field of the directory listing.
+Next, we’ll delete the file fun, and just for enjoyment, we’ll include the “-i” option to
+show what that does:</p>
+
+<p>結果不出所料。檔案 fun-hard 消失了，檔案 fun 的連結數從4減到3，正如
+目錄列表第二欄位所示。下一步，我們會刪除檔案 fun，僅為了娛樂，我們會加入”-i”
+選項，看一看它的作用：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ rm -i fun
+rm: remove regular file `fun'?
+</code></pre></div></div>
+
+<p>Enter “y” at the prompt and the file is deleted. But Let's look at the output of ls now.
+Noticed what happened to fun-sym? Since it’s a symbolic link pointing to a now-
+nonexistent file, the link is broken:</p>
+
+<p>在提示符下輸入”y”，刪除檔案。讓我們看一下 ls 的輸出結果。注意，fun-sym 發生了
+什麼事? 因為它是一個符號連結，指向已經不存在的檔案，連結已經壞了：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ ls -l
+total 8
+drwxrwxr-x 2 me  me     4096 2008-01-15 15:17 dir1
+lrwxrwxrwx 1 me  me        4 2008-01-16 14:45 dir1-sym -&gt; dir1
+drwxrwxr-x 2 me  me     4096 2008-01-15 15:17 dir2
+lrwxrwxrwx 1 me  me        3 2008-01-15 15:15 fun-sym -&gt; fun
+</code></pre></div></div>
+
+<p>Most Linux distributions configure ls to display broken links. On a Fedora box, broken
+links are displayed in blinking red text! The presence of a broken link is not, in and of
+itself dangerous but it is rather messy. If we try to use a broken link we will see this:</p>
+
+<p>大多數 Linux 的發行版本配置 ls 顯示損壞的連結。在 Fedora 系統中，壞的連結以閃爍的
+紅色文字顯示！損壞連結的出現，並不危險，但是相當混亂。如果我們試著使用
+損壞的連結，會看到以下情況：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ less fun-sym
+fun-sym: No such file or directory
+</code></pre></div></div>
+
+<p>Let's clean up a little. We’ll delete the symbolic links:</p>
+
+<p>稍微清理一下現場。刪除符號連結：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ rm fun-sym dir1-sym
+[me@linuxbox playground]$ ls -l
+total 8
+drwxrwxr-x 2 me  me    4096 2008-01-15 15:17 dir1
+drwxrwxr-x 2 me  me    4096 2008-01-15 15:17 dir2
+</code></pre></div></div>
+
+<p>One thing to remember about symbolic links is that most file operations are carried out
+on the link’s target, not the link itself. rm is an exception. When you delete a link, it is
+the link that is deleted, not the target.</p>
+
+<p>對於符號連結，有一點值得記住，執行的大多數檔案操作是針對連結的物件，而不是連結本身。
+而 rm 命令是個特例。當你刪除連結的時候，刪除連結本身，而不是連結的物件。</p>
+
+<p>Finally, we will remove our playground. To do this, we will return to our home directory
+and use rm with the recursive option (-r) to delete playground and all of its contents,
+including its subdirectories:</p>
+
+<p>最後，我們將刪除我們的遊戲場。為了完成這個工作，我們將返回到
+我們的家目錄，然後用 rm 命令加上選項(-r)，來刪除目錄 playground，
+和目錄下的所有內容，包括子目錄：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox playground]$ cd
+[me@linuxbox ~]$ rm -r playground
+</code></pre></div></div>
+
+<blockquote>
+  <p>Creating Symlinks With The GUI</p>
+
+  <p>用 GUI 來建立符號連結</p>
+
+  <p>The file managers in both GNOME and KDE provide an easy and automatic
+method of creating symbolic links. With GNOME, holding the Ctrl+Shift keys
+while dragging a file will create a link rather than copying (or moving) the file.
+In KDE, a small menu appears whenever a file is dropped, offering a choice of
+copying, moving, or linking the file.</p>
+
+  <p>檔案管理器 GNOME 和 KDE 都提供了一個簡單而且自動化的方法來建立符號連結。
+在 GNOME 裡面，當拖動檔案時，同時按下 Ctrl+Shift 按鍵會建立一個連結，而不是
+複製（或移動）檔案。在 KDE 中，無論什麼時候放下一個檔案，會彈出一個小選單，
+這個選單會提供複製，移動，或建立連結檔案選項。</p>
+</blockquote>
+
+<h3 id="總結">總結</h3>
+
+<p>We’ve covered a lot of ground here and it will take a while to fully sink in. Perform the
+playground exercise over and over until it makes sense. It is important to get a good
+understanding of basic file manipulation commands and wildcards. Feel free to expand
+on the playground exercise by adding more files and directories, using wildcards to
+specify files for various operations. The concept of links is a little confusing at first, but
+take the time to learn how they work. They can be a real lifesaver.</p>
+
+<p>在這一章中，我們已經研究了許多基礎知識。我們得花費一些時間來全面地理解。
+反覆練習 playground 例題，直到你覺得它有意義。能夠良好地理解基本檔案操作
+命令和萬用字元，非常重要。隨意透過新增檔案和目錄來拓展 playground 練習，
+使用萬用字元來為各種各樣的操作命令指定檔案。關於連結的概念，在剛開始接觸
+時會覺得有點迷惑，花些時間來學習它們是怎樣工作的。它們能成為真正的救星。</p>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">歸檔和備份</h1><br>
+<p>One of the primary tasks of a computer system’s administrator is keeping the system’s
+data secure. One way this is done is by performing timely backups of the system’s files.
+Even if you’re not system administrators, it is often useful to make copies of things and
+to move large collections of files from place to place and from device to device.
+In this chapter, we will look at several common programs that are used to manage
+collections of files. There are the file compression programs:</p>
+
+<p>計算機系統管理員的一個主要任務就是保護系統的資料安全，其中一種方法是透過時時備份系統檔案，來保護
+資料。即使你不是一名系統管理員，像做做拷貝或者在各個位置和裝置之間移動大量的檔案，通常也是很有幫助的。
+在這一章中，我們將會看看幾個經常用來管理檔案集合的程式。它們就是檔案壓縮程式：</p>
+
+<ul>
+  <li>
+    <p>gzip – Compress or expand files</p>
+  </li>
+  <li>
+    <p>gzip – 壓縮或者展開檔案</p>
+  </li>
+  <li>
+    <p>bzip2 – A block sorting file compressor</p>
+  </li>
+  <li>
+    <p>bzip2 – 塊排序檔案壓縮器</p>
+  </li>
+</ul>
+
+<p>The archiving programs:</p>
+
+<p>歸檔程式：</p>
+
+<ul>
+  <li>
+    <p>tar – Tape archiving utility</p>
+  </li>
+  <li>
+    <p>tar – 磁帶打包工具</p>
+  </li>
+  <li>
+    <p>zip – Package and compress files</p>
+  </li>
+  <li>
+    <p>zip – 打包和壓縮檔案</p>
+  </li>
+</ul>
+
+<p>And the file synchronization program:</p>
+
+<p>還有檔案同步程式：</p>
+
+<ul>
+  <li>
+    <p>rsync – Remote file and directory synchronization</p>
+  </li>
+  <li>
+    <p>rsync – 同步遠端檔案和目錄</p>
+  </li>
+</ul>
+
+<h3 id="壓縮檔案">壓縮檔案</h3>
+
+<p>Throughout the history of computing, there has been a struggle to get the most data into
+the smallest available space, whether that space be memory, storage devices or network
+bandwidth. Many of the data services that we take for granted today, such as portable
+music players, high definition television, or broadband Internet, owe their existence to
+effective data compression techniques.</p>
+
+<p>縱觀計算領域的發展歷史，人們努力想把最多的資料存放到到最小的可用空間中，不管是記憶體，儲存裝置
+還是網路頻寬。今天我們把許多資料服務都看作是理所當然的事情，但是諸如行動式音樂播放器，
+高清電視，或寬頻網路之類別的存在都應歸功於高效的資料壓縮技術。</p>
+
+<p>Data compression is the process of removing redundancy from data. Let's consider an
+imaginary example. Say we had an entirely black picture file with the dimensions of one
+hundred pixels by one hundred pixels. In terms of data storage (assuming twenty-four
+bits, or three bytes per pixel), the image will occupy thirty thousand bytes of storage:</p>
+
+<p>資料壓縮就是一個刪除冗餘資料的過程。讓我們考慮一個假想的例子，比方說我們有一張100*100畫素的
+純黑的圖片檔案。根據資料儲存方案（假定每個畫素佔24位，或者3個位元組），那麼這張影象將會佔用
+30,000個位元組的儲存空間：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>100 * 100 * 3 = 30,000
+</code></pre></div></div>
+
+<p>An image that is all one color contains entirely redundant data. If we were clever, we
+could encode the data in such a way that we simply describe the fact that we have a block
+of thirty thousand black pixels. So, instead of storing a block of data containing thirty
+thousand zeros (black is usually represented in image files as zero), we could compress
+the data into the number 30,000, followed by a zero to represent our data. Such a data
+compression scheme is called run-length encoding and is one of the most rudimentary
+compression techniques. Today’s techniques are much more advanced and complex but
+the basic goal remains the same—get rid of redundant data.</p>
+
+<p>一張單色影象包含的資料全是多餘的。我們要是聰明的話，可以用這種方法來編碼這些資料，
+我們只要簡單地描述這個事實，我們有3萬個黑色的畫素資料塊。所以，我們不儲存包含3萬個0
+（通常在影象檔案中，黑色由0來表示）的資料塊，取而代之，我們把這些資料壓縮為數字30,000，
+後跟一個0，來表示我們的資料。這種資料壓縮方案被稱為遊程編碼，是一種最基本的壓縮技術。今天的技術更加先進和複雜，但是基本目標依然不變——避免多餘資料。</p>
+
+<p>Compression algorithms (the mathematical techniques used to carry out the compression)
+fall into two general categories, lossless and lossy. Lossless compression preserves all
+the data contained in the original. This means that when a file is restored from a
+compressed version, the restored file is exactly the same as the original, uncompressed
+version. Lossy compression, on the other hand, removes data as the compression is
+performed, to allow more compression to be applied. When a lossy file is restored, it
+does not match the original version; rather, it is a close approximation. Examples of
+lossy compression are JPEG (for images) and MP3 (for music.) In our discussion, we
+will look exclusively at lossless compression, since most data on computers cannot
+tolerate any data loss.</p>
+
+<p>壓縮演算法（數學技巧被用來執行壓縮任務）分為兩大類別，無失真壓縮和有失真壓縮。無失真壓縮保留了
+原始檔案的所有資料。這意味著，當還原一個壓縮檔案的時候，還原的檔案與原檔案一模一樣。
+而另一方面，有失真壓縮，執行壓縮操作時會刪除資料，允許更大的壓縮。當一個有損檔案被還原的時候，
+它與原檔案不相匹配; 相反，它是一個近似值。有失真壓縮的例子有 JPEG（影象）檔案和 MP3（音訊）檔案。
+在我們的討論中，我們將看看完全無失真壓縮，因為計算機中的大多數資料是不能容忍丟失任何資料的。</p>
+
+<h4 id="gzip">gzip</h4>
+
+<p>The gzip program is used to compress one or more files. When executed, it replaces the
+original file with a compressed version of the original. The corresponding gunzip
+program is used to restore compressed files to their original, uncompressed form. Here is
+an example:</p>
+
+<p>這個 gzip 程式被用來壓縮一個或多個檔案。當執行 gzip 命令時，則原始檔案的壓縮版會替代原始檔案。
+相對應的 gunzip 程式被用來把壓縮檔案復原為沒有被壓縮的版本。這裡有個例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /etc &gt; foo.txt
+[me@linuxbox ~]$ ls -l foo.*
+-rw-r--r-- 1 me     me 15738 2008-10-14 07:15 foo.txt
+[me@linuxbox ~]$ gzip foo.txt
+[me@linuxbox ~]$ ls -l foo.*
+-rw-r--r-- 1 me     me 3230 2008-10-14 07:15 foo.txt.gz
+[me@linuxbox ~]$ gunzip foo.txt.gz
+[me@linuxbox ~]$ ls -l foo.*
+-rw-r--r-- 1 me     me 15738 2008-10-14 07:15 foo.txt
+</code></pre></div></div>
+
+<p>In this example, we create a text file named foo.txt from a directory listing. Next, we
+run gzip, which replaces the original file with a compressed version named
+foo.txt.gz. In the directory listing of foo.*, we see that the original file has been
+replaced with the compressed version, and that the compressed version about one-fifth
+the size of the original. We can also see that the compressed file has the same
+permissions and time stamp as the original.</p>
+
+<p>在這個例子裡，我們建立了一個名為 foo.txt 的文字檔案，其內容包含一個目錄的列表清單。
+接下來，我們執行 gzip 命令，它會把原始檔案替換為一個叫做 foo.txt.gz 的壓縮檔案。在
+foo.* 檔案列表中，我們看到原始檔案已經被壓縮檔案替代了，並將這個壓縮檔案大約是原始
+檔案的五分之一。我們也能看到壓縮檔案與原始檔案有著相同的許可權和時間戳。</p>
+
+<p>Next, we run the gunzip program to uncompress the file. Afterward, we can see that
+the compressed version of the file has been replaced with the original, again with the
+permissions and time stamp preserved.</p>
+
+<p>接下來，我們執行 gunzip 程式來解壓縮檔案。隨後，我們能見到壓縮檔案已經被原始檔案替代了，
+同樣地保留了相同的許可權和時間戳。</p>
+
+<p>gzip has many options. Here are a few:</p>
+
+<p>gzip 命令有許多選項。這裡列出了一些：</p>
+
+<table class="multi">
+<caption class="cap">Table 19-1: gzip Options </caption>
+<tr>
+<th class="title">Option</th>
+<th class="title">Description </th>
+</tr>
+<tr>
+<td valign="top" width="25%">-c </td>
+<td valign="top">Write output to standard output and keep original files. May also be
+specified with --stdout and --to-stdout.</td>
+</tr>
+<tr>
+<td valign="top">-d</td>
+<td valign="top">Decompress. This causes gzip to act like gunzip. May also be
+specified with --decompress or --uncompress.</td>
+</tr>
+<tr>
+<td valign="top">-f</td>
+<td valign="top">Force compression even if compressed version of the original file
+already exists. May also be specified with --force.</td>
+</tr>
+<tr>
+<td valign="top">-h</td>
+<td valign="top">Display usage information. May also be specified with --help.</td>
+</tr>
+<tr>
+<td valign="top">-l</td>
+<td valign="top">List compression statistics for each file compressed. May also be
+specified with --list.</td>
+</tr>
+<tr>
+<td valign="top">-r</td>
+<td valign="top">If one or more arguments on the command line are directories,
+recursively compress files contained within them. May also be specified with --recursive.</td>
+</tr>
+<tr>
+<td valign="top">-t</td>
+<td valign="top">Test the integrity of a compressed file. May also be specified with --test.</td>
+</tr>
+<tr>
+<td valign="top">-v</td>
+<td valign="top">Display verbose messages while compressing. May also be specified
+with --verbose.</td>
+</tr>
+<tr>
+<td valign="top">-number</td>
+<td valign="top">Set amount of compression. number is an integer in the range of 1
+(fastest, least compression) to 9 (slowest, most compression). The
+values 1 and 9 may also be expressed as --fast and --best,
+respectively. The default value is 6.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表19-1: gzip 選項 </caption>
+<tr>
+<th class="title">選項</th>
+<th class="title">說明</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-c </td>
+<td valign="top">把輸出寫入到標準輸出，並且保留原始檔案。也有可能用--stdout 和--to-stdout 選項來指定。 </td>
+</tr>
+<tr>
+<td valign="top">-d</td>
+<td valign="top">解壓縮。正如 gunzip 命令一樣。也可以用--decompress 或者--uncompress 選項來指定. </td>
+</tr>
+<tr>
+<td valign="top">-f</td>
+<td valign="top">強制壓縮，即使原始檔案的壓縮檔案已經存在了，也要執行。也可以用--force 選項來指定。 </td>
+</tr>
+<tr>
+<td valign="top">-h</td>
+<td valign="top">顯示用法資訊。也可用--help 選項來指定。</td>
+</tr>
+<tr>
+<td valign="top">-l</td>
+<td valign="top">列出每個被壓縮檔案的壓縮資料。也可用--list 選項。 </td>
+</tr>
+<tr>
+<td valign="top">-r</td>
+<td valign="top">若命令的一個或多個引數是目錄，則遞迴地壓縮目錄中的檔案。也可用--recursive 選項來指定。 </td>
+</tr>
+<tr>
+<td valign="top">-t</td>
+<td valign="top">測試壓縮檔案的完整性。也可用--test 選項來指定。</td>
+</tr>
+<tr>
+<td valign="top">-v</td>
+<td valign="top">顯示壓縮過程中的資訊。也可用--verbose 選項來指定。 </td>
+</tr>
+<tr>
+<td valign="top">-number</td>
+<td valign="top">設定壓縮指數。number 是一個在1（最快，最小壓縮）到9（最慢，最大壓縮）之間的整數。
+數值1和9也可以各自用--fast 和--best 選項來表示。預設值是整數6。 </td>
+</tr>
+</table>
+
+<p>Going back to our earlier example:</p>
+
+<p>返回到我們之前的例子中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ gzip foo.txt
+[me@linuxbox ~]$ gzip -tv foo.txt.gz
+foo.txt.gz: OK
+[me@linuxbox ~]$ gzip -d foo.txt.gz
+</code></pre></div></div>
+
+<p>Here, we replaced the file foo.txt with a compressed version, named foo.txt.gz.
+Next, we tested the integrity of the compressed version, using the -t and -v options.
+Finally, we decompressed the file back to its original form.
+gzip can also be used in interesting ways via standard input and output:</p>
+
+<p>這裡，我們用壓縮檔案來替代檔案 foo.txt，壓縮檔名為 foo.txt.gz。下一步，我們測試了壓縮檔案
+的完整性，使用了-t 和-v 選項。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /etc | gzip &gt; foo.txt.gz
+</code></pre></div></div>
+
+<p>This command creates a compressed version of a directory listing.</p>
+
+<p>這個命令建立了一個目錄列表的壓縮檔案。</p>
+
+<p>The gunzip program, which uncompresses gzip files, assumes that filenames end in the
+extension .gz, so it’s not necessary to specify it, as long as the specified name is not in
+conflict with an existing uncompressed file:</p>
+
+<p>這個 gunzip 程式，會解壓縮 gzip 檔案，假定那些檔名的副檔名是.gz，所以沒有必要指定它，
+只要指定的名字與現有的未壓縮檔案不衝突就可以：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ gunzip foo.txt.gz
+</code></pre></div></div>
+
+<p>If our goal were only to view the contents of a compressed text file, we can do this:</p>
+
+<p>如果我們的目標只是為了瀏覽一下壓縮文字檔案的內容，我們可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ gunzip -c foo.txt.gz | less
+</code></pre></div></div>
+
+<p>Alternately, there is a program supplied with gzip, called zcat, that is equivalent to
+gunzip with the -c option. It can be used like the cat command on gzip compressed
+files:</p>
+
+<p>另外，對應於 gzip 還有一個程式，叫做 zcat，它等同於帶有-c 選項的 gunzip 命令。
+它可以被用來如 cat 命令作用於 gzip 壓縮檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ zcat foo.txt.gz | less
+</code></pre></div></div>
+
+<hr />
+
+<p><em>Tip:</em> There is a zless program, too. It performs the same function as the pipeline above.</p>
+
+<p><em>小貼士:</em> 還有一個 zless 程式。它與上面的管道線有相同的功能。</p>
+
+<hr />
+
+<h4 id="bzip2">bzip2</h4>
+
+<p>The bzip2 program, by Julian Seward, is similar to gzip, but uses a different
+compression algorithm that achieves higher levels of compression at the cost of
+compression speed. In most regards, it works in the same fashion as gzip. A file
+compressed with bzip2 is denoted with the extension .bz2:</p>
+
+<p>這個 bzip2 程式，由 Julian Seward 開發，與 gzip 程式相似，但是使用了不同的壓縮演算法，
+捨棄了壓縮速度，而實現了更高的壓縮級別。在大多數情況下，它的工作模式等同於 gzip。
+由 bzip2 壓縮的檔案，用副檔名 .bz2 來表示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /etc &gt; foo.txt
+[me@linuxbox ~]$ ls -l foo.txt
+-rw-r--r-- 1 me     me      15738 2008-10-17 13:51 foo.txt
+[me@linuxbox ~]$ bzip2 foo.txt
+[me@linuxbox ~]$ ls -l foo.txt.bz2
+-rw-r--r-- 1 me     me      2792 2008-10-17 13:51 foo.txt.bz2
+[me@linuxbox ~]$ bunzip2 foo.txt.bz2
+</code></pre></div></div>
+
+<p>As we can see, bzip2 can be used the same way as gzip. All the options (except for -r)
+ that we discussed for gzip are also supported in bzip2. Note, however, that the
+compression level option (-number) has a somewhat different meaning to bzip2.
+bzip2 comes with bunzip2 and bzcat for decompressing files.
+bzip2 also comes with the bzip2recover program, which will try to recover
+damaged .bz2 files.</p>
+
+<p>正如我們所看到的，bzip2 程式使用起來和 gzip 程式一樣。我們之前討論的 gzip 程式的所有選項（除了-r）
+，bzip2 程式同樣也支援。注意，然而，壓縮級別選項（-number）對於 bzip2 程式來說，有少許不同的含義。
+伴隨著 bzip2 程式，有 bunzip2 和 bzcat 程式來解壓縮檔案。bzip2 檔案也帶有 bzip2recover 程式，其會
+試圖恢復受損的 .bz2 檔案。</p>
+
+<blockquote>
+  <p>Don’t Be Compressive Compulsive</p>
+
+  <p>不要強迫性壓縮</p>
+
+  <p>I occasionally see people attempting to compress a file, which has been already
+compressed with an effective compression algorithm, by doing something like
+this:</p>
+
+  <p>我偶然見到人們試圖用高效的壓縮演算法，來壓縮一個已經被壓縮過的檔案，透過這樣做：</p>
+
+  <p><em>$ gzip picture.jpg</em></p>
+
+  <p>Don’t do it. You’re probably just wasting time and space! If you apply
+compression to a file that is already compressed, you will actually end up a larger
+file. This is because all compression techniques involve some overhead that is
+added to the file to describe the compression. If you try to compress a file that
+already contains no redundant information, the compression will not result in any
+savings to offset the additional overhead.</p>
+
+  <p>不要這樣。你可能只是在浪費時間和空間！如果你再次壓縮已經壓縮過的檔案，實際上你
+會得到一個更大的檔案。這是因為所有的壓縮技術都會涉及一些開銷，檔案中會被新增描述
+此次壓縮過程的資訊。如果你試圖壓縮一個已經不包含多餘資訊的檔案，那麼再次壓縮不會節省
+空間，以抵消額外的花費。</p>
+</blockquote>
+
+<h3 id="歸檔檔案">歸檔檔案</h3>
+
+<p>A common file management task used in conjunction with compression is archiving.
+Archiving is the process of gathering up many files and bundling them together into a
+single large file. Archiving is often done as a part of system backups. It is also used
+when old data is moved from a system to some type of long-term storage.</p>
+
+<p>一個常見的，與檔案壓縮結合一塊使用的檔案管理任務是歸檔。歸檔就是收集許多檔案，並把它們
+捆綁成一個大檔案的過程。歸檔經常作為系統備份的一部分來使用。當把舊資料從一個系統移到某
+種類型的長期儲存裝置中時，也會用到歸檔程式。</p>
+
+<h4 id="tar">tar</h4>
+
+<p>In the Unix-like world of software, the tar program is the classic tool for archiving files.
+Its name, short for tape archive, reveals its roots as a tool for making backup tapes.
+While it is still used for that traditional task, it is equally adept on other storage devices as
+well. We often see filenames that end with the extension .tar or .tgz which indicate a
+“plain” tar archive and a gzipped archive, respectively. A tar archive can consist of a
+group of separate files, one or more directory hierarchies, or a mixture of both. The
+command syntax works like this:</p>
+
+<p>在類別 Unix 的軟體世界中，這個 tar 程式是用來歸檔檔案的經典工具。它的名字，是 tape
+archive 的簡稱，揭示了它的根源，它是一款製作磁帶備份的工具。而它仍然被用來完成傳統任務，
+它也同樣適用於其它的儲存裝置。我們經常看到副檔名為 .tar 或者 .tgz 的檔案，它們各自表示“普通”
+的 tar 包和被 gzip 程式壓縮過的 tar 包。一個 tar 包可以由一組獨立的檔案，一個或者多個目錄，或者
+兩者混合體組成。命令語法如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tar mode[options] pathname...
+</code></pre></div></div>
+
+<p>where mode is one of the following operating modes (only a partial list is shown here;
+see the tar man page for a complete list):</p>
+
+<p>這裡的 mode 是指以下操作模式（這裡只展示了一部分，檢視 tar 的手冊來得到完整列表）之一：</p>
+
+<table class="multi">
+<caption class="cap">Table 19-2: tar Modes</caption>
+<tr>
+<th class="title">Mode</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="25%">c</td>
+<td valign="top">Create an archive from a list of files and/or directories.  </td>
+</tr>
+<tr>
+<td valign="top">x</td>
+<td valign="top">Extract an archive.</td>
+</tr>
+<tr>
+<td valign="top">r</td>
+<td valign="top">Append specified pathnames to the end of an archive.</td>
+</tr>
+<tr>
+<td valign="top">t</td>
+<td valign="top">List the contents of an archive.  </td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表19-2: tar 模式</caption>
+<tr>
+<th class="title">模式</th>
+<th class="title">說明</th>
+</tr>
+<tr>
+<td valign="top" width="25%">c</td>
+<td valign="top">為檔案和／或目錄列表建立歸檔檔案。 </td>
+</tr>
+<tr>
+<td valign="top">x</td>
+<td valign="top">抽取歸檔檔案。</td>
+</tr>
+<tr>
+<td valign="top">r</td>
+<td valign="top">追加具體的路徑到歸檔檔案的末尾。</td>
+</tr>
+<tr>
+<td valign="top">t</td>
+<td valign="top">列出歸檔檔案的內容。</td>
+</tr>
+</table>
+
+<p>tar uses a slightly odd way of expressing options, so we’ll need some examples to show
+how it works. First, Let's re-create our playground from the previous chapter:</p>
+
+<p>tar 命令使用了稍微有點奇怪的方式來表達它的選項，所以我們需要一些例子來展示它是
+怎樣工作的。首先，讓我們重新建立之前我們用過的操練場:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mkdir -p playground/dir-{00{1..9},0{10..99},100}
+[me@linuxbox ~]$ touch playground/dir-{00{1..9},0{10..99},100}/file-{A..Z}
+</code></pre></div></div>
+
+<p>Next, Let's create a tar archive of the entire playground:</p>
+
+<p>下一步，讓我們建立整個操練場的 tar 包：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ tar cf playground.tar playground
+</code></pre></div></div>
+
+<p>This command creates a tar archive named playground.tar that contains the entire
+playground directory hierarchy. We can see that the mode and the f option, which is
+used to specify the name of the tar archive, may be joined together, and do not require a
+leading dash. Note, however, that the mode must always be specified first, before any
+other option.</p>
+
+<p>這個命令建立了一個名為 playground.tar 的 tar 包，其包含整個 playground 目錄層次結果。我們
+可以看到模式 c 和選項 f，其被用來指定這個 tar 包的名字，模式和選項可以寫在一起，而且不
+需要開頭的短橫線。注意，然而，必須首先指定模式，然後才是其它的選項。</p>
+
+<p>To list the contents of the archive, we can do this:</p>
+
+<p>要想列出歸檔檔案的內容，我們可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ tar tf playground.tar
+</code></pre></div></div>
+
+<p>For a more detailed listing, we can add the v (verbose) option:</p>
+
+<p>為了得到更詳細的列表資訊，我們可以新增選項 v：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ tar tvf playground.tar
+</code></pre></div></div>
+
+<p>Now, Let's extract the playground in a new location. We will do this by creating a new
+directory named foo, and changing the directory and extracting the tar archive:</p>
+
+<p>現在，抽取 tar 包 playground 到一個新位置。我們先建立一個名為 foo 的新目錄，更改目錄，
+然後抽取 tar 包中的檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mkdir foo
+[me@linuxbox ~]$ cd foo
+[me@linuxbox ~]$ tar xf ../playground.tar
+[me@linuxbox ~]$ ls
+playground
+</code></pre></div></div>
+
+<p>If we examine the contents of ~/foo/playground, we see that the archive was
+successfully installed, creating a precise reproduction of the original files. There is one
+caveat, however: unless you are operating as the superuser, files and directories extracted
+from archives take on the ownership of the user performing the restoration, rather than
+the original owner.</p>
+
+<p>如果我們檢查 ~/foo/playground 目錄中的內容，會看到這個歸檔檔案已經被成功地安裝了，也即建立了
+一個精確的原始檔案的副本。然而，這裡有一個警告：除非你是超級使用者，要不然從歸檔檔案中抽取的檔案
+和目錄的所有權由執行此復原操作的使用者所擁有，而不屬於原始所有者。</p>
+
+<p>Another interesting behavior of tar is the way it handles pathnames in archives. The
+default for pathnames is relative, rather than absolute. tar does this by simply removing
+any leading slash from the pathname when creating the archive. To demonstrate, we will
+recreate our archive, this time specifying an absolute pathname:</p>
+
+<p>tar 命令另一個有趣的行為是它處理歸檔檔案路徑名的方式。預設情況下，路徑名是相對的，而不是絕對
+路徑。當以相對路徑建立歸檔檔案的時候，tar 命令會簡單地刪除路徑名開頭的斜槓。為了說明問題，我們將會
+重新建立我們的歸檔檔案，但是這次指定用絕對路徑建立：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox foo]$ cd
+[me@linuxbox ~]$ tar cf playground2.tar ~/playground
+</code></pre></div></div>
+
+<p>Remember, ~/playground will expand into /home/me/playground when we
+press the enter key, so we will get an absolute pathname for our demonstration. Next, we
+will extract the archive as before and watch what happens:</p>
+
+<p>記住，當按下回車鍵後，~/playground 會展開成 /home/me/playground，所以我們將會得到一個
+絕對路徑名。接下來，和之前一樣我們會抽取歸檔檔案，觀察發生什麼事情：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cd foo
+[me@linuxbox foo]$ tar xf ../playground2.tar
+[me@linuxbox foo]$ ls
+home     playground
+[me@linuxbox foo]$ ls home
+me
+[me@linuxbox foo]$ ls home/me
+playground
+</code></pre></div></div>
+
+<p>Here we can see that when we extracted our second archive, it recreated the directory
+home/me/playground relative to our current working directory, ~/foo, not relative
+to the root directory, as would have been the case with an absolute pathname. This may
+seem like an odd way for it to work, but it’s actually more useful this way, as it allows us
+to extract archives to any location rather than being forced to extract them to their
+original locations. Repeating the exercise with the inclusion of the verbose option (v)
+will give a clearer picture of what’s going on.</p>
+
+<p>這裡我們看到當我們抽取第二個歸檔檔案時，它重新建立了 home/me/playground 目錄，
+相對於我們當前的工作目錄，~/foo，而不是相對於 root 目錄，作為帶有絕對路徑名的案例。
+這看起來似乎是一種奇怪的工作方式，但事實上這種方式很有用，因為這樣就允許我們抽取檔案
+到任意位置，而不是強制地把抽取的檔案放置到原始目錄下。加上 verbose（v）選項，重做
+這個練習，將會展現更加詳細的資訊。</p>
+
+<p>Let's consider a hypothetical, yet practical example, of tar in action. Imagine we want
+to copy the home directory and its contents from one system to another and we have a
+large USB hard drive that we can use for the transfer. On our modern Linux system, the
+drive is “automagically” mounted in the /media directory. Let's also imagine that the
+disk has a volume name of BigDisk when we attach it. To make the tar archive, we
+can do the following:</p>
+
+<p>讓我們考慮一個假設，tar 命令的實際應用。假定我們想要複製家目錄及其內容到另一個系統中，
+並且有一個大容量的 USB 硬碟，可以把它作為傳輸工具。在現代 Linux 系統中，
+這個硬碟會被“自動地”掛載到 /media 目錄下。我們也假定硬碟中有一個名為 BigDisk 的邏輯卷。
+為了製作 tar 包，我們可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sudo tar cf /media/BigDisk/home.tar /home
+</code></pre></div></div>
+
+<p>After the tar file is written, we unmount the drive and attach it to the second computer.
+Again, it is mounted at /media/BigDisk. To extract the archive, we do this:</p>
+
+<p>tar 包製作完成之後，我們解除安裝硬碟，然後把它連線到第二個計算機上。再一次，此硬碟被
+掛載到 /media/BigDisk 目錄下。為了抽取歸檔檔案，我們這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox2 ~]$ cd /
+[me@linuxbox2 /]$ sudo tar xf /media/BigDisk/home.tar
+</code></pre></div></div>
+
+<p>What’s important to see here is that we must first change directory to /, so that the
+extraction is relative to the root directory, since all pathnames within the archive are
+relative.</p>
+
+<p>值得注意的一點是，因為歸檔檔案中的所有路徑名都是相對的，所以首先我們必須更改目錄到根目錄下，
+這樣抽取的檔案路徑就相對於根目錄了。</p>
+
+<p>When extracting an archive, it’s possible to limit what is extracted from the archive. For
+example, if we wanted to extract a single file from an archive, it could be done like this:</p>
+
+<p>當抽取一個歸檔檔案時，有可能限制從歸檔檔案中抽取什麼內容。例如，如果我們想要抽取單個檔案，
+可以這樣實現：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tar xf archive.tar pathname
+</code></pre></div></div>
+
+<p>By adding the trailing pathname to the command, tar will only restore the specified file.
+Multiple pathnames may be specified. Note that the pathname must be the full, exact
+relative pathname as stored in the archive. When specifying pathnames, wildcards are
+not normally supported; however, the GNU version of tar (which is the version most
+often found in Linux distributions) supports them with the –wildcards option. Here
+is an example using our previous playground.tar file:</p>
+
+<p>透過給命令新增末尾的路徑名，tar 命令就只會恢復指定的檔案。可以指定多個路徑名。注意
+路徑名必須是完全的，精準的相對路徑名，就如儲存在歸檔檔案中的一樣。當指定路徑名的時候，
+通常不支援萬用字元；然而，GNU 版本的 tar 命令（在 Linux 發行版中最常出現）透過 --wildcards 選項來
+支援萬用字元。這個例子使用了之前 playground.tar 檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cd foo
+[me@linuxbox foo]$ tar xf ../playground2.tar --wildcards 'home/me/playground/dir-\*/file-A'
+</code></pre></div></div>
+
+<p>This command will extract only files matching the specified pathname including the
+wildcard dir-*.</p>
+
+<p>這個命令將只會抽取匹配特定路徑名的檔案，路徑名中包含了萬用字元 dir-*。</p>
+
+<p>tar is often used in conjunction with find to produce archives. In this example, we
+will use find to produce a set of files to include in an archive:</p>
+
+<p>tar 命令經常結合 find 命令一起來製作歸檔檔案。在這個例子裡，我們將會使用 find 命令來
+產生一個檔案集合，然後這些檔案被包含到歸檔檔案中。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find playground -name 'file-A' -exec tar rf playground.tar '{}' '+'
+</code></pre></div></div>
+
+<p>Here we use find to match all the files in playground named file-A and then,
+using the -exec action, we invoke tar in the append mode (r) to add the matching
+files to the archive playground.tar.</p>
+
+<p>這裡我們使用 find 命令來匹配 playground 目錄中所有名為 file-A 的檔案，然後使用-exec 行為，來
+喚醒帶有追加模式（r）的 tar 命令，把匹配的檔案新增到歸檔檔案 playground.tar 裡面。</p>
+
+<p>Using tar with find is a good way of creating incremental backups of a directory tree
+or an entire system. By using find to match files newer than a timestamp file, we could
+create an archive that only contains files newer than the last archive, assuming that the
+timestamp file is updated right after each archive is created.</p>
+
+<p>使用 tar 和 find 命令，來建立逐漸增加的目錄樹或者整個系統的備份，是個不錯的方法。透過 find
+命令匹配新於某個時間戳的檔案，我們就能夠建立一個歸檔檔案，其只包含新於上一個 tar 包的檔案，
+假定這個時間戳檔案恰好在每個歸檔檔案建立之後被更新了。</p>
+
+<p>tar can also make use of both standard input and output. Here is a comprehensive
+example:</p>
+
+<p>tar 命令也可以利用標準輸出和輸入。這裡是一個完整的例子:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox foo]$ cd
+[me@linuxbox ~]$ find playground -name 'file-A' | tar cf - --files-from=-
+   | gzip &gt; playground.tgz
+</code></pre></div></div>
+
+<p>In this example, we used the find program to produce a list of matching files and piped
+them into tar. If the filename “-” is specified, it is taken to mean standard input or
+output, as needed (by the way, this convention of using “-” to represent standard
+input/output is used by a number of other programs, too.) The –files-from option
+(which may be also be specified as -T) causes tar to read its list of pathnames from a
+file rather than the command line. Lastly, the archive produced by tar is piped into
+gzip to create the compressed archive playground.tgz. The .tgz extension is the
+conventional extension given to gzip-compressed tar files. The extension .tar.gz is
+also used sometimes.</p>
+
+<p>在這個例子裡面，我們使用 find 程式產生了一個匹配檔案列表，然後把它們管道到 tar 命令中。
+如果指定了檔名“-”，則其被看作是標準輸入或輸出，正是所需（順便說一下，使用“-”來表示
+標準輸入／輸出的慣例，也被大量的其它程式使用）。這個 --file-from 選項（也可以用 -T 來指定）
+導致 tar 命令從一個檔案而不是命令列來讀入它的路徑名列表。最後，這個由 tar 命令產生的歸檔
+檔案被管道到 gzip 命令中，然後建立了壓縮歸檔檔案 playground.tgz。此 .tgz 副檔名是命名
+由 gzip 壓縮的 tar 檔案的常規副檔名。有時候也會使用 .tar.gz 這個副檔名。</p>
+
+<p>While we used the gzip program externally to produced our compressed archive,
+modern versions of GNU tar support both gzip and bzip2 compression directly, with the
+use of the z and j options, respectively. Using our previous example as a base, we can
+simplify it this way:</p>
+
+<p>雖然我們使用 gzip 程式來製作我們的壓縮歸檔檔案，但是現在的 GUN 版本的 tar 命令
+，gzip 和 bzip2 壓縮兩者都直接支援，各自使用 z 和 j 選項。以我們之前的例子為基礎，
+我們可以這樣簡化它：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find playground -name 'file-A' | tar czf playground.tgz -T -
+</code></pre></div></div>
+
+<p>If we had wanted to create a bzip2 compressed archive instead, we could have done this:</p>
+
+<p>如果我們本要建立一個由 bzip2 壓縮的歸檔檔案，我們可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find playground -name 'file-A' | tar cjf playground.tbz -T -
+</code></pre></div></div>
+
+<p>By simply changing the compression option from z to j (and changing the output file’s
+extension to .tbz to indicate a bzip2 compressed file) we enabled bzip2 compression.
+Another interesting use of standard input and output with the tar command involves
+transferring files between systems over a network. Imagine that we had two machines
+running a Unix-like system equipped with tar and ssh. In such a scenario, we could
+transfer a directory from a remote system (named remote-sys for this example) to our
+local system:</p>
+
+<p>透過簡單地修改壓縮選項，把 z 改為 j（並且把輸出檔案的副檔名改為 .tbz，來指示一個 bzip2 壓縮檔案），
+就使 bzip2 命令壓縮生效了。另一個 tar 命令與標準輸入和輸出的有趣使用，涉及到在系統之間經過
+網路傳輸檔案。假定我們有兩臺機器，每臺都執行著類別 Unix，且裝備著 tar 和 ssh 工具的作業系統。
+在這種情景下，我們可以把一個目錄從遠端系統（名為 remote-sys）傳輸到我們的本地系統中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mkdir remote-stuff
+[me@linuxbox ~]$ cd remote-stuff
+[me@linuxbox remote-stuff]$ ssh remote-sys 'tar cf - Documents' | tar xf -
+me@remote-sys’s password:
+[me@linuxbox remote-stuff]$ ls
+Documents
+</code></pre></div></div>
+
+<p>Here we were able to copy a directory named Documents from the remote system
+remote-sys to a directory within the directory named remote-stuff on the local
+system. How did we do this? First, we launched the tar program on the remote system
+using ssh. You will recall that ssh allows us to execute a program remotely on a
+networked computer and “see” the results on the local system—the standard output
+produced on the remote system is sent to the local system for viewing. We can take
+advantage of this by having tar create an archive (the c mode) and send it to standard
+output, rather than a file (the f option with the dash argument), thereby transporting the
+archive over the encrypted tunnel provided by ssh to the local system. On the local
+system, we execute tar and have it expand an archive (the x mode) supplied from
+standard input (again, the f option with the dash argument).</p>
+
+<p>這裡我們能夠從遠端系統 remote-sys 中複製目錄 Documents 到本地系統名為 remote-stuff 目錄中。
+我們怎樣做的呢？首先，透過使用 ssh 命令在遠端系統中啟動 tar 程式。你可記得 ssh 允許我們
+在遠端聯網的計算機上執行程式，並且在本地系統中看到執行結果——遠端系統中產生的輸出結果
+被髮送到本地系統中檢視。我們可以利用。在本地系統中，我們執行 tar 命令，</p>
+
+<h4 id="zip">zip</h4>
+
+<p>The zip program is both a compression tool and an archiver. The file format used by
+the program is familiar to Windows users, as it reads and writes .zip files. In Linux,
+however, gzip is the predominant compression program with bzip2 being a close
+second.</p>
+
+<p>這個 zip 程式既是壓縮工具，也是一個打包工具。這程式使用的檔案格式，Windows 使用者比較熟悉，
+因為它讀取和寫入.zip 檔案。然而，在 Linux 中 gzip 是主要的壓縮程式，而 bzip2則位居第二。</p>
+
+<p>In its most basic usage, zip is invoked like this:</p>
+
+<p>在 zip 命令最基本的使用中，可以這樣喚醒 zip 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zip options zipfile file...
+</code></pre></div></div>
+
+<p>For example, to make a zip archive of our playground, we would do this:</p>
+
+<p>例如，製作一個 playground 的 zip 版本的檔案包，這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ zip -r playground.zip playground
+</code></pre></div></div>
+
+<p>Unless we include the -r option for recursion, only the playground directory (but
+none of its contents) is stored. Although the addition of the extension .zip is automatic
+a, we will include the file extension for clarity.</p>
+
+<p>除非我們包含-r 選項，要不然只有 playground 目錄（沒有任何它的內容）被儲存。雖然會自動新增
+.zip 副檔名，但為了清晰起見，我們還是包含副檔名。</p>
+
+<p>During the creation of the zip archive, zip will normally display a series of messages
+like this:</p>
+
+<p>在建立 zip 版本的檔案包時，zip 命令通常會顯示一系列的資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adding: playground/dir-020/file-Z (stored 0%)
+adding: playground/dir-020/file-Y (stored 0%)
+adding: playground/dir-020/file-X (stored 0%)
+adding: playground/dir-087/ (stored 0%)
+adding: playground/dir-087/file-S (stored 0%)
+</code></pre></div></div>
+
+<p>These messages show the status of each file added to the archive. zip will add files to
+the archive using one of two storage methods: either it will “store” a file without
+compression, as shown here, or it will “deflate” the file which performs compression.
+The numeric value displayed after the storage method indicates the amount of
+compression achieved. Since our playground only contains empty files, no compression
+is performed on its contents.</p>
+
+<p>這些資訊顯示了新增到檔案包中每個檔案的狀態。zip 命令會使用兩種儲存方法之一，來新增
+檔案到檔案包中：要不它會“store”沒有壓縮的檔案，正如這裡所示，或者它會“deflate”檔案，
+執行壓縮操作。在儲存方法之後顯示的數值表明了壓縮量。因為我們的 playground 目錄
+只是包含空檔案，沒有對它的內容執行壓縮操作。</p>
+
+<p>Extracting the contents of a zip file is straightforward when using the unzip program:</p>
+
+<p>使用 unzip 程式，來直接抽取一個 zip 檔案的內容。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cd foo
+[me@linuxbox foo]$ unzip ../playground.zip
+</code></pre></div></div>
+
+<p>One thing to note about zip (as opposed to tar) is that if an existing archive is
+specified, it is updated rather than replaced. This means that the existing archive is
+preserved, but new files are added and matching files are replaced.
+Files may be listed and extracted selectively from a zip archive by specifying them to
+unzip:</p>
+
+<p>對於 zip 命令（與 tar 命令相反）要注意一點，就是如果指定了一個已經存在的檔案包，其被更新
+而不是被替代。這意味著會保留此檔案包，但是會新增新檔案，同時替換匹配的檔案。可以列出
+檔案或者有選擇地從一個 zip 檔案包中抽取檔案，只要給 unzip 命令指定檔名：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ unzip -l playground.zip playground/dir-87/file-Z
+Archive: ../playground.zip
+    Length      Date    Time    Name
+
+         0    10-05-08  09:25   playground/dir-87/file-Z
+
+         0                      1 file
+[me@linuxbox ~]$ cd foo
+[me@linuxbox foo]$ unzip ./playground.zip playground/dir-87/file-Z
+Archive: ../playground.zip
+replace playground/dir-87/file-Z? [y]es, [n]o, [A]ll, [N]one,
+[r]ename: y
+extracting: playground/dir-87/file-Z
+</code></pre></div></div>
+
+<p>Using the -l option causes unzip to merely list the contents of the archive without
+extracting the file. If no file(s) are specified, unzip will list all files in the archive. The
+-v option can be added to increase the verbosity of the listing. Note that when the
+archive extraction conflicts with an existing file, the user is prompted before the file is
+replaced.</p>
+
+<p>使用-l 選項，導致 unzip 命令只是列出檔案包中的內容而沒有抽取檔案。如果沒有指定檔案，
+unzip 程式將會列出檔案包中的所有檔案。新增這個-v 選項會增加列表的冗餘資訊。注意當抽取的
+檔案與已經存在的檔案衝突時，會在替代此檔案之前提醒使用者。</p>
+
+<p>Like tar, zip can make use of standard input and output, though its implementation is
+somewhat less useful. It is possible to pipe a list of filenames to zip via the -@ option:</p>
+
+<p>像 tar 命令一樣，zip 命令能夠利用標準輸入和輸出，雖然它的實施不大有用。透過-@選項，有可能把一系列的
+檔名管道到 zip 命令。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox foo]$ cd
+[me@linuxbox ~]$ find playground -name "file-A" | zip -@ file-A.zip
+</code></pre></div></div>
+
+<p>Here we use find to generate a list of files matching the test -name “file-A”, and
+pipe the list into zip, which creates the archive file-A.zip containing the selected
+files.</p>
+
+<p>這裡我們使用 find 命令產生一系列與“file-A”相匹配的檔案列表，並且把此列表管道到 zip 命令，
+然後建立包含所選檔案的檔案包 file-A.zip。</p>
+
+<p>zip also supports writing its output to standard output, but its use is limited because very
+few programs can make use of the output. Unfortunately, the unzip program, does not
+accept standard input. This prevents zip and unzip from being used together to
+perform network file copying like tar.</p>
+
+<p>zip 命令也支援把它的輸出寫入到標準輸出，但是它的使用是有限的，因為很少的程式能利用輸出。
+不幸地是，這個 unzip 程式，不接受標準輸入。這就阻止了 zip 和 unzip 一塊使用，像 tar 命令那樣，
+來複制網路上的檔案。</p>
+
+<p>zip can, however, accept standard input, so it can be used to compress the output of
+other programs:</p>
+
+<p>然而，zip 命令可以接受標準輸入，所以它可以被用來壓縮其它程式的輸出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /etc/ | zip ls-etc.zip -
+adding: - (deflated 80%)
+</code></pre></div></div>
+
+<p>In this example we pipe the output of ls into zip. Like tar, zip interprets the trailing
+dash as “use standard input for the input file.”</p>
+
+<p>在這個例子裡，我們把 ls 命令的輸出管道到 zip 命令。像 tar 命令，zip 命令把末尾的橫槓解釋為
+“使用標準輸入作為輸入檔案。”</p>
+
+<p>The unzip program allows its output to be sent to standard output when the -p (for
+pipe) option is specified:</p>
+
+<p>這個 unzip 程式允許它的輸出傳送到標準輸出，當指定了-p 選項之後：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ unzip -p ls-etc.zip | less
+</code></pre></div></div>
+
+<p>We touched on some of the basic things that zip/unzip can do. They both have a lot of
+options that add to their flexibility, though some are platform specific to other systems.
+The man pages for both zip and unzip are pretty good and contain useful examples.
+However, the main use of these programs is for exchanging files with Windows systems,
+rather than performing compression and archiving on Linux, where tar and gzip are
+greatly preferred.</p>
+
+<p>我們討論了一些 zip/unzip 可以完成的基本操作。它們兩個都有許多選項，其增加了
+命令的靈活性，雖然一些選項只針對於特定的平臺。zip 和 unzip 命令的說明手冊都相當不錯，
+並且包含了有用的範例。然而，這些程式的主要用途是為了和 Windows 系統交換檔案，
+而不是在 Linux 系統中執行壓縮和打包操作，tar 和 gzip 程式在 Linux 系統中更受歡迎。</p>
+
+<h3 id="同步檔案和目錄">同步檔案和目錄</h3>
+
+<p>A common strategy for maintaining a backup copy of a system involves keeping one or
+more directories synchronized with another directory (or directories) located on either the
+local system (usually a removable storage device of some kind) or with a remote system.
+We might, for example, have a local copy of a web site under development and
+synchronize it from time to time with the “live” copy on a remote web server.
+In the Unix-like world, the preferred tool for this task is rsync. This program can
+synchronize both local and remote directories by using the rsync remote-update protocol,
+which allows rsync to quickly detect the differences between two directories and
+perform the minimum amount of copying required to bring them into sync. This makes
+rsync very fast and economical to use, compared to other kinds of copy programs.</p>
+
+<p>維護系統備份的常見策略是保持一個或多個目錄與另一個本地系統（通常是某種可移動的儲存裝置）
+或者遠端系統中的目錄（或多個目錄）同步。我們可能，例如有一個正在開發的網站的本地備份，
+需要時不時的與遠端網路伺服器中的檔案備份保持同步。在類別 Unix 系統的世界裡，能完成此任務且
+備受人們喜愛的工具是 rsync。這個程式能同步本地與遠端的目錄，透過使用 rsync 遠端更新協議，此協議
+允許 rsync 快速地檢測兩個目錄的差異，執行最小量的複製來達到目錄間的同步。比起其它種類的複製程式，
+這就使 rsync 命令非常快速和高效。</p>
+
+<p>rsync is invoked like this:</p>
+
+<p>rsync 被這樣喚醒：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rsync options source destination
+</code></pre></div></div>
+
+<p>where source and destination are one of the following:</p>
+
+<p>這裡 source 和 destination 是下列選項之一：</p>
+
+<ul>
+  <li>
+    <p>A local file or directory</p>
+  </li>
+  <li>
+    <p>A remote file or directory in the form of [user@]host:path</p>
+  </li>
+  <li>
+    <p>A remote rsync server specified with a URI of rsync://[user@]host[:port]/path</p>
+  </li>
+</ul>
+<ul>
+  <li>
+    <p>一個本地檔案或目錄</p>
+  </li>
+  <li>
+    <p>一個遠端檔案或目錄，以[user@]host:path 的形式存在</p>
+  </li>
+  <li>
+    <p>一個遠端 rsync 伺服器，由 rsync://[user@]host[:port]/path 指定</p>
+  </li>
+</ul>
+
+<p>Note that either the source or destination must be a local file. Remote to remote copying
+is not supported.</p>
+
+<p>注意 source 和 destination 兩者之一必須是本地檔案。rsync 不支援遠端到遠端的複製</p>
+
+<p>Let's try rsync out on some local files. First, Let's clean out our foo directory:</p>
+
+<p>讓我們試著對一些本地檔案使用 rsync 命令。首先，清空我們的 foo 目錄：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ rm -rf foo/*
+</code></pre></div></div>
+
+<p>Next, we’ll synchronize the playground directory with a corresponding copy in foo:</p>
+
+<p>下一步，我們將同步 playground 目錄和它在 foo 目錄中相對應的副本</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ rsync -av playground foo
+</code></pre></div></div>
+
+<p>We’ve included both the -a option (for archiving—causes recursion and preservation of
+file attributes) and the -v option (verbose output) to make a mirror of the playground
+directory within foo. While the command runs, we will see a list of the files and
+directories being copied. At the end, we will see a summary message like this:</p>
+
+<p>我們包括了-a 選項（遞迴和保護檔案屬性）和-v 選項（冗餘輸出），
+來在 foo 目錄中製作一個 playground 目錄的映象。當這個命令執行的時候，
+我們將會看到一系列的檔案和目錄被複制。在最後，我們將看到一條像這樣的總結資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sent 135759 bytes received 57870 bytes 387258.00 bytes/sec
+total size is 3230 speedup is 0.02
+</code></pre></div></div>
+
+<p>indicating the amount of copying performed. If we run the command again, we will see a
+different result:</p>
+
+<p>說明覆制的數量。如果我們再次執行這個命令，我們將會看到不同的結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ rsync -av playgound foo
+building file list ... done
+sent 22635 bytes received 20 bytes
+total size is 3230 speedup is 0.14
+45310.00 bytes/sec
+</code></pre></div></div>
+
+<p>Notice that there was no listing of files. This is because rsync detected that there were
+no differences between ~/playground and ~/foo/playground, and therefore it
+didn’t need to copy anything. If we modify a file in playground and run rsync
+again:</p>
+
+<p>注意到沒有檔案列表。這是因為 rsync 程式檢測到在目錄~/playground 和 ~/foo/playground 之間
+不存在差異，因此它不需要複製任何資料。如果我們在 playground 目錄中修改一個檔案，然後
+再次執行 rsync 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ touch playground/dir-099/file-Z
+[me@linuxbox ~]$ rsync -av playground foo
+building file list ... done
+playground/dir-099/file-Z
+sent 22685 bytes received 42 bytes 45454.00 bytes/sec
+total size is 3230 speedup is 0.14
+</code></pre></div></div>
+
+<p>we see that rsync detected the change and copied only the updated file.
+As a practical example, Let's consider the imaginary external hard drive that we used
+earlier with tar. If we attach the drive to our system and, once again, it is mounted at /
+media/BigDisk, we can perform a useful system backup by first creating a directory,
+named /backup on the external drive and then using rsync to copy the most important
+stuff from our system to the external drive:</p>
+
+<p>我們看到 rsync 命令檢測到更改，並且只是複製了更新的檔案。作為一個實際的例子，
+讓我們考慮一個假想的外部硬碟，之前我們在 tar 命令中用到過的。如果我們再次把此
+硬碟連線到我們的系統中，它被掛載到/media/BigDisk 目錄下，我們可以執行一個有
+用的系統備份了，首先在外部硬碟上建立一個目錄，名為/backup，然後使用 rsync 程式
+從我們的系統中複製最重要的資料到此外部硬碟上：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mkdir /media/BigDisk/backup
+[me@linuxbox ~]$ sudo rsync -av --delete /etc /home /usr/local /media/BigDisk/backup
+</code></pre></div></div>
+
+<p>In this example, we copied the /etc, /home, and /usr/local directories from our
+system to our imaginary storage device. We included the –delete option to remove
+files that may have existed on the backup device that no longer existed on the source
+device (this is irrelevant the first time we make a backup, but will be useful on
+subsequent copies.) Repeating the procedure of attaching the external drive and running
+this rsync command would be a useful (though not ideal) way of keeping a small
+system backed up. Of course, an alias would be helpful here, too. We could create an
+alias and add it to our .bashrc file to provide this feature:</p>
+
+<p>在這個例子裡，我們把/etc，/home，和/usr/local 目錄從我們的系統中複製到假想的儲存裝置中。
+我們包含了–delete 這個選項，來刪除可能在備份裝置中已經存在但卻不再存在於源裝置中的檔案，
+（這與我們第一次建立備份無關，但是會在隨後的複製操作中有用途）。掛載外部驅動器，執行
+rsync 命令，不斷重複這個過程，是一個不錯的（雖然不理想）方式來儲存少量的系統備份檔案。
+當然，別名會對這個操作更有幫助些。我們將會建立一個別名，並把它新增到.bashrc 檔案中，
+來提供這個特性：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alias backup='sudo rsync -av --delete /etc /home /usr/local /media/BigDisk/backup'
+</code></pre></div></div>
+
+<p>Now all we have to do is attach our external drive and run the backup command to do
+the job.</p>
+
+<p>現在我們所做的事情就是連線外部驅動器，然後執行 backup 命令來完成工作。</p>
+
+<h4 id="在網路間使用-rsync-命令">在網路間使用 rsync 命令</h4>
+
+<p>One of the real beauties of rsync is that it can be used to copy files over a network.
+After all, the “r” in rsync stands for “remote.” Remote copying can be done in one of
+two ways. The first way is with another system that has rsync installed, along with a
+remote shell program such as ssh. Let's say we had another system on our local
+network with a lot of available hard drive space and we wanted to perform our backup
+operation using the remote system instead of an external drive. Assuming that it already
+had a directory named /backup where we could deliver our files, we could do this:</p>
+
+<p>rsync 程式的真正好處之一，是它可以被用來在網路間複製檔案。畢竟，rsync 中的“r”象徵著“remote”。
+遠端複製可以透過兩種方法完成。第一個方法要求另一個系統已經安裝了 rsync 程式，還安裝了
+遠端 shell 程式，比如 ssh。比方說我們本地網路中的一個系統有大量可用的硬碟空間，我們想要
+用遠端系統來代替一個外部驅動器，來執行檔案備份操作。假定遠端系統中有一個名為/backup 的目錄，
+其用來存放我們傳送的檔案，我們這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sudo rsync -av --delete --rsh=ssh /etc /home /usr/local remote-sys:/backup
+</code></pre></div></div>
+
+<p>We made two changes to our command to facilitate the network copy. First, we added
+the –rsh=ssh option, which instructs rsync to use the ssh program as its remote
+shell. In this way, we were able to use an ssh encrypted tunnel to securely transfer the
+data from the local system to the remote host. Second, we specified the remote host by
+prefixing its name (in this case the remote host is named remote-sys) to the
+destination path name.</p>
+
+<p>我們對命令做了兩處修改，來方便網路間檔案複製。首先，我們添加了--rsh=ssh 選項，其指示
+rsync 使用 ssh 程式作為它的遠端 shell。以這種方式，我們就能夠使用一個 ssh 加密通道，把資料
+安全地傳送到遠端主機中。其次，透過在目標路徑名前加上遠端主機的名字（在這種情況下，
+遠端主機名為 remote-sys），來指定遠端主機。</p>
+
+<p>The second way that rsync can be used to synchronize files over a network is by using
+an rysnc server. rsync can be configured to run as a daemon and listen to incoming
+requests for synchronization. This is often done to allow mirroring of a remote system.
+For example, Red Hat Software maintains a large repository of software packages under
+development for its Fedora distribution. It is useful for software testers to mirror this
+collection during the testing phase of the distribution release cycle. Since files in the
+repository change frequently (often more than once a day), it is desirable to maintain a
+local mirror by periodic synchronization, rather than by bulk copying of the repository.
+One of these repositories is kept at Georgia Tech; we could mirror it using our local copy
+of rsync and their rsync server like this:</p>
+
+<p>rsync 可以被用來在網路間同步檔案的第二種方式是透過使用 rsync 伺服器。rsync 可以被配置為一個
+守護程序，監聽即將到來的同步請求。這樣做經常是為了進行一個遠端系統的映象操作。例如，Red
+Hat 軟體中心為它的 Fedora 發行版，維護著一個巨大的正在開發中的軟體包的儲存庫。對於軟體測試人員，
+在發行週期的測試階段，定期映象這些軟體集合是非常有幫助的。因為儲存庫中的這些檔案會頻繁地
+（通常每天不止一次）改動，定期同步本地映象而不是大量地拷貝軟體儲存庫，這是更為明智的。
+這些軟體函式庫之一被維護在喬治亞理工大學；我們可以使用本地 rsync 程式和它們的 rsync 伺服器來映象它。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mkdir fedora-devel
+[me@linuxbox ~]$ rsync -av -delete rsync://rsync.gtlib.gatech.edu/fedora-linux-
+ core/development/i386/os fedora-devel
+</code></pre></div></div>
+
+<p>In this example, we use the URI of the remote rsync server, which consists of a protocol
+(rsync://), followed by the remote host name (rsync.gtlib.gatech.edu),
+followed by the pathname of the repository.</p>
+
+<p>在這個例子裡，我們使用了遠端 rsync 伺服器的 URI，其由協議（rsync://），遠端主機名
+（rsync.gtlib.gatech.edu），和軟體儲存庫的路徑名組成。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The man pages for all of the commands discussed here are pretty clear and
+contain useful examples. In addition, the GNU Project has a good online manual
+for its version of tar. It can be found here:</p>
+  </li>
+  <li>
+    <p>在這裡討論的所有命令的手冊文件都相當清楚明白，並且包含了有用的例子。另外，
+GNU 版本的 tar 命令有一個不錯的線上文件。可以在下面連結處找到：</p>
+
+    <p><a href="http://www.gnu.org/software/tar/manual/index.html">http://www.gnu.org/software/tar/manual/index.html</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

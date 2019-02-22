@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">探究作業系統</h1><br>
+<p>Now that we know how to move around the file system, it’s time for a guided tour of our
+Linux system. Before we start however, we’re going to learn some more commands that
+will be useful along the way:</p>
+
+<p>既然我們已經知道了如何在檔案系統中跳轉，是時候開始 Linux 作業系統之旅了。然而在開始之前，我們先學習一些對研究
+Linux 系統有幫助的命令。</p>
+
+<ul>
+  <li>
+    <p>ls – List directory contents</p>
+  </li>
+  <li>
+    <p>file – Determine file type</p>
+  </li>
+  <li>
+    <p>less – View file contents</p>
+  </li>
+  <li>
+    <p>ls — 列出目錄內容</p>
+  </li>
+  <li>
+    <p>file — 確定檔案型別</p>
+  </li>
+  <li>
+    <p>less — 瀏覽檔案內容</p>
+  </li>
+</ul>
+
+<h3 id="ls-樂趣">ls 樂趣</h3>
+
+<p>The ls command is probably the most used command, and for good reason. With it, we
+can see directory contents and determine a variety of important file and directory
+attributes. As we have seen, we can simply type ls to see a list of files and
+subdirectories contained in the current working directory:</p>
+
+<p>ls 可能是使用者最常使用的命令了，這自有它的道理。透過它，我們可以知道目錄的內容，以及各種各樣重要檔案和目錄的
+屬性。正如我們已經見到的，只要簡單地輸入 ls 就能看到在當前目錄下所有檔案和子目錄的列表。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls
+Desktop Documents Music Pictures Publica Templates Videos
+</code></pre></div></div>
+
+<p>Besides the current working directory, we can specify the directory to list, like so:</p>
+
+<p>除了當前工作目錄以外，也可以指定別的目錄，就像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>me@linuxbox ~]$ ls /usr
+bin games   kerberos    libexec  sbin   src
+etc include lib         local    share  tmp
+</code></pre></div></div>
+
+<p>Or even specify multiple directories. In this example we will list both the user’s home
+directory (symbolized by the “~” character) and the /usr directory:</p>
+
+<p>甚至可以列出多個指定目錄的內容。在這個例子中，將會列出使用者家目錄（用字元“~”代表）和/usr 目錄的內容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls ~ /usr
+/home/me:
+Desktop  Documents  Music  Pictures  Public  Templates  Videos
+
+/usr:
+bin  games      kerberos  libexec  sbin   src
+etc  include    lib       local    share  tmp
+</code></pre></div></div>
+
+<p>We can also change the format of the output to reveal more detail:</p>
+
+<p>我們也可以改變輸出格式，來得到更多的細節：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l
+total 56
+drwxrwxr-x 2  me  me  4096  2007-10-26  17:20  Desktop
+drwxrwxr-x 2  me  me  4096  2007-10-26  17:20  Documents
+drwxrwxr-x 2  me  me  4096  2007-10-26  17:20  Music
+drwxrwxr-x 2  me  me  4096  2007-10-26  17:20  Pictures
+drwxrwxr-x 2  me  me  4096  2007-10-26  17:20  Public
+drwxrwxr-x 2  me  me  4096  2007-10-26  17:20  Templates
+drwxrwxr-x 2  me  me  4096  2007-10-26  17:20  Videos
+</code></pre></div></div>
+
+<p>By adding “-l” to the command, we changed the output to the long format.</p>
+
+<p>使用 ls 命令的“-l”選項，則結果以長模式輸出。</p>
+
+<h3 id="選項和引數">選項和引數</h3>
+
+<p>This brings us to a very important point about how most commands work. Commands are often
+followed by one or more options that modify their behavior, and further, by one or more arguments,
+the items upon which the command acts. So most commands look kind of like this:</p>
+
+<p>我們將學習一個非常重要的知識點，即大多數命令是如何工作的。命令名經常會帶有一個或多個用來更正命令列為的選項，
+更進一步，選項後面會帶有一個或多個引數，這些引數是命令作用的物件。所以大多數命令看起來像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>command -options arguments
+</code></pre></div></div>
+
+<p>Most commands use options consisting of a single character preceded by a dash,
+for example, “-l”, but many commands, including those from the GNU Project, also support long options,
+consisting of a word preceded by two dashes. Also, many commands allow multiple short options
+ to be strung together. In this example, the ls command is given two options, the “l” option
+to produce long format output, and the “t” option to sort the result by the file’s modification time.</p>
+
+<p>大多數命令使用的選項，是由一箇中劃線加上一個字元組成，例如，“-l”，但是許多命令，包括來自於
+GNU 專案的命令，也支援長選項，長選項由兩個中劃線加上一個字組成。當然，
+許多命令也允許把多個短選項串在一起使用。下面這個例子，ls 命令有兩個選項，
+“l” 選項產生長格式輸出，“t”選項按檔案修改時間的先後來排序。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -lt
+</code></pre></div></div>
+
+<p>We’ll add the long option “–reverse” to reverse the order of the sort:</p>
+
+<p>加上長選項 “–reverse”，則結果會以相反的順序輸出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -lt --reverse
+</code></pre></div></div>
+
+<p>The ls command has a large number of possible options. The most common are listed in
+the Table 4-1.</p>
+
+<p>ls 命令有大量的選項。表4-1列出了最常使用的選項。</p>
+
+<table class="multi">
+<caption class="cap">Table 4-1: Common ls Options</caption>
+<tr>
+<th class="title" width="10%">Option</th>
+<th class="title" width="20%">Long Option</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td>-a</td>
+<td>--all</td>
+<td>List all files, even those with names that
+begin with a period, which are normally not listed(i.e.,hidden).</td>
+</tr>
+<tr>
+<td>-d</td>
+<td>--directory</td>
+<td>Ordinaryly,if a directory is specified, ls
+will list the contents of the directory, not the directory
+itself. Use this option in conjunction with the -l option
+to see details about the directory rather than its contents.</td>
+</tr>
+<tr>
+<td>-F</td>
+<td>--classify</td>
+<td>This option will append an indicator character
+to the end of each listed name. For example, a '/' if the name is a directory.  </td>
+</tr>
+<tr>
+<td>-h</td>
+<td>--human-readable</td>
+<td>In long format listings, display file sizes in
+human readable format rather than in bytes.  </td>
+</tr>
+<tr>
+<td>-l</td>
+<td> </td>
+<td>Display results in long format.  </td>
+</tr>
+<tr>
+<td>-r</td>
+<td>--reverse</td>
+<td>Display the results in reverse order. Normally,
+ls display its results in ascending alphabetical order.  </td>
+</tr>
+<tr>
+<td>-S</td>
+<td> </td>
+<td>Sort results by file size. </td>
+</tr>
+<tr>
+<td>-t</td>
+<td> </td>
+<td>Sort by modification time. </td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 4-1: ls 命令選項 </caption>
+<tr>
+<th class="title" width="10%">選項</th>
+<th width="20%">長選項</th>
+<th>描述</th>
+</tr>
+<tr>
+<td valign="top">-a</td>
+<td>--all</td>
+<td>列出所有檔案，甚至包括檔名以圓點開頭的預設會被隱藏的隱藏檔案。</td>
+</tr>
+<tr>
+<td valign="top">-d</td>
+<td>--directory</td>
+<td>通常，如果指定了目錄名，ls 命令會列出這個目錄中的內容，而不是目錄本身。
+把這個選項與 -l 選項結合使用，可以看到所指定目錄的詳細資訊，而不是目錄中的內容。</td>
+</tr>
+<tr>
+<td>-F</td>
+<td>--classify</td>
+<td>這個選項會在每個所列出的名字後面加上一個指示符。例如，如果名字是
+目錄名，則會加上一個'/'字元。 </td>
+</tr>
+<tr>
+<td>-h</td>
+<td>--human-readable</td>
+<td>當以長格式列出時，以人們可讀的格式，而不是以位元組數來顯示檔案的大小。</td>
+</tr>
+<tr>
+<td>-l</td>
+<td> </td>
+<td>以長格式顯示結果。 </td>
+</tr>
+<tr>
+<td>-r</td>
+<td>--reverse</td>
+<td>以相反的順序來顯示結果。通常，ls 命令的輸出結果按照字母升序排列。</td>
+</tr>
+<tr>
+<td>-S</td>
+<td> </td>
+<td>命令輸出結果按照檔案大小來排序。 </td>
+</tr>
+<tr>
+<td>-t</td>
+<td> </td>
+<td>按照修改時間來排序。</td>
+</tr>
+</table>
+
+<h3 id="深入研究長格式輸出">深入研究長格式輸出</h3>
+
+<p>As we saw before, the “-l” option causes ls to display its results in long format. This
+format contains a great deal of useful information. Here is the Examples directory
+from an Ubuntu system:</p>
+
+<p>正如我們先前知道的，“-l”選項導致 ls 的輸出結果以長格式輸出。這種格式包含大量的有用資訊。下面的例子目錄來自
+於 Ubuntu 系統：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-rw-r--r-- 1 root root 3576296 2007-04-03 11:05 Experience ubuntu.ogg
+-rw-r--r-- 1 root root 1186219 2007-04-03 11:05 kubuntu-leaflet.png
+-rw-r--r-- 1 root root   47584 2007-04-03 11:05 logo-Edubuntu.png
+-rw-r--r-- 1 root root   44355 2007-04-03 11:05 logo-Kubuntu.png
+-rw-r--r-- 1 root root   34391 2007-04-03 11:05 logo-Ubuntu.png
+-rw-r--r-- 1 root root   32059 2007-04-03 11:05 oo-cd-cover.odf
+-rw-r--r-- 1 root root  159744 2007-04-03 11:05 oo-derivatives.doc
+-rw-r--r-- 1 root root   27837 2007-04-03 11:05 oo-maxwell.odt
+-rw-r--r-- 1 root root   98816 2007-04-03 11:05 oo-trig.xls
+-rw-r--r-- 1 root root  453764 2007-04-03 11:05 oo-welcome.odt
+-rw-r--r-- 1 root root  358374 2007-04-03 11:05 ubuntu Sax.ogg
+</code></pre></div></div>
+
+<p>Let's look at the different fields from one of the files and examine their meanings:</p>
+
+<p>選一個檔案，來看一下各個輸出欄位的含義：</p>
+
+<table class="multi">
+<caption class="cap">Table 4-2: ls Long Listing Fields</caption>
+<tr>
+<th class="title">Field</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top" width="20%">-rw-r--r--</td>
+<td valign="top">Access rights to the file. The first character indicates the
+type of file. Among the different types, a leading dash means a regular file,
+while a “d” indicates a directory.  The next three characters are the access
+rights for the file's owner, the next three are for members of the file's
+group, and the final three are for everyone else. The full meaning of this
+is discussed in Chapter 10 – Permissions.  </td>
+</tr>
+<tr>
+<td valign="top">1</td>
+<td valign="top">File's number of hard links. See the discussion of links
+later in this chapter.  </td>
+</tr>
+<tr>
+<td valign="top">root</td>
+<td valign="top">The user name of the file's owner.  </td>
+</tr>
+<tr>
+<td valign="top">root</td>
+<td valign="top">The name of the group which owns the file.  </td>
+</tr>
+<tr>
+<td valign="top">32059</td>
+<td valign="top">Size of the file in bytes.  </td>
+</tr>
+<tr>
+<td valign="top">2007-04-03 11:05 </td>
+<td valign="top">Date and time of the file's last modification.  </td>
+</tr>
+<tr>
+<td valign="top">oo-cd-cover.odf </td>
+<td valign="top">Name of the file.  </td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 4-2: ls 長格式列表的欄位</caption>
+<tr>
+<th class="title">欄位</th>
+<th class="title">含義</th>
+</tr>
+<tr>
+<td valign="top" width="20%">-rw-r--r--</td>
+<td valign="top">對於檔案的訪問許可權。第一個字元指明檔案型別。在不同型別之間，
+開頭的“－”說明是一個普通檔案，“d”表明是一個目錄。其後三個字元是檔案所有者的
+訪問許可權，再其後的三個字元是檔案所屬組中成員的訪問許可權，最後三個字元是其他所
+有人的訪問許可權。這個欄位的完整含義將在第十章討論。 </td>
+</tr>
+<tr>
+<td>1</td>
+<td>檔案的硬連結數目。參考隨後討論的關於連結的內容。 </td>
+</tr>
+<tr>
+<td>root</td>
+<td>檔案所有者的使用者名稱。</td>
+</tr>
+<tr>
+<td>root</td>
+<td>檔案所屬使用者組的名字。</td>
+</tr>
+<tr>
+<td>32059</td>
+<td>以位元組數表示的檔案大小。</td>
+</tr>
+<tr>
+<td>2007-04-03 11:05 </td>
+<td>上次修改檔案的時間和日期。</td>
+</tr>
+<tr>
+<td>oo-cd-cover.odf </td>
+<td>檔名。</td>
+</tr>
+</table>
+
+<h3 id="確定檔案型別">確定檔案型別</h3>
+
+<p>As we explore the system it will be useful to know what files contain. To do
+this we will use the file command to determine a file’s type. As we discussed earlier,
+filenames in Linux are not required to reflect a file’s contents. While a filename like
+“picture.jpg” would normally be expected to contain a JPEG compressed image, it is not
+required to in Linux. We can invoke the file command this way:</p>
+
+<p>隨著探究作業系統的進行，知道檔案包含的內容是很有用的。我們將用 file 命令來確定檔案的型別。我們之前討論過，
+在 Linux 系統中，並不要求檔名來反映檔案的內容。然而，一個類似 “picture.jpg” 的檔名，我們會期望它包含
+JPEG 壓縮影象，但 Linux 卻不這樣要求它。可以這樣呼叫 file 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>file filename
+</code></pre></div></div>
+
+<p>When invoked, the file command will print a brief description of the file’s
+contents. For example:</p>
+
+<p>當呼叫 file 命令後，file 命令會打印出檔案內容的簡單描述。例如：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ file picture.jpg
+picture.jpg: JPEG image data, JFIF standard 1.01
+</code></pre></div></div>
+
+<p>There are many kinds of files. In fact, one of the common ideas in Unix-like operating
+systems such as Linux is that “everything is a file.” As we proceed with our lessons, we
+will see just how true that statement is.</p>
+
+<p>有許多種型別的檔案。事實上，在類別 Unix 作業系統中比如說 Linux 中，有個普遍的觀念就是“一切皆檔案”。
+隨著課程的進行，我們將會明白這句話是多麼的正確。</p>
+
+<p>While many of the files on your system are familiar, for example MP3 and JPEG, there
+are many kinds that are a little less obvious and a few that are quite strange.</p>
+
+<p>雖然系統中許多檔案格式是熟悉的，例如 MP3和 JPEG 檔案，但也有一些檔案格式不太常見，極少數檔案相當陌生。</p>
+
+<h3 id="用-less-瀏覽檔案內容">用 less 瀏覽檔案內容</h3>
+
+<p>The less command is a program to view text files. Throughout our Linux system, there
+are many files that contain human-readable text. The less program provides a
+convenient way to examine them.</p>
+
+<p>less 命令是一個用來瀏覽文字檔案的程式。縱觀 Linux 系統，有許多人類可讀的文字檔案。less 程式為我們檢查文字檔案 提供了方便。</p>
+
+<blockquote>
+  <p>What Is “Text”</p>
+
+  <p>什麼是“文字”</p>
+
+  <p>There are many ways to represent information on a computer. All methods
+involve defining a relationship between the information and some numbers that
+will be used to represent it. Computers, after all, only understand numbers and all
+data is converted to numeric representation.</p>
+
+  <p>在計算機中，有許多方法可以表達資訊。所有的方法都涉及到，在資訊與一些數字之間確立一種關係，而這些數字可以
+用來代表資訊。畢竟，計算機只能理解數字，這樣所有的資料都被轉換成數值來表示。</p>
+
+  <p>Some of these representation systems are very complex (such as compressed
+video files), while others are rather simple. One of the earliest and simplest is
+called ASCII text. ASCII (pronounced “As-Key”) is short for American Standard
+Code for Information Interchange. This is a simple encoding scheme that was first
+used on Teletype machines to map keyboard characters to numbers.</p>
+
+  <p>有些數值表達法非常複雜（例如壓縮的視訊檔案），而其它的就相當簡單。最早也是最簡單的一種表達法，叫做
+ASCII 文字。ASCII（發音是”As-Key”）是美國資訊交換標準碼的簡稱。這是一個簡單的編碼方法，它首先
+被用在電傳打字機上，用來實現鍵盤字元到數字的對映。</p>
+
+  <p>Text is a simple one-to-one mapping of characters to numbers. It is very
+compact.  Fifty characters of text translates to fifty bytes of data. It is
+important to understand that text only contains a simple mapping of characters
+to numbers. It is not the same as a word processor document such as one
+created by Microsoft Word or OpenOffice.org Writer. Those files, in contrast
+to simple ASCII text, contain many non-text elements that are used to describe
+its structure and formatting. Plain ASCII text files contain only the
+characters themselves and a few rudimentary control codes like tabs, carriage
+returns and line feeds.  Throughout a Linux system, many files are stored in
+text format and there are many Linux tools that work with text files. Even
+Windows recognizes the importance of this format. The well-known NOTEPAD.EXE
+program is an editor for plain ASCII text files.</p>
+
+  <p>文字是簡單的字元與數字之間的一對一對映。它非常緊湊。五十個字元的文字翻譯成五十個位元組的資料。文字只是包含
+簡單的字元到數字的對映，理解這點很重要。它和一些文書處理器文件不一樣，比如說由微軟或
+OpenOffice.org 文件 編輯器建立的檔案。這些檔案，和簡單的 ASCII
+檔案形成鮮明對比，它們包含許多非文字元素，來描述它的結構和格式。 純 ASCII
+檔案只包含字元本身，和一些基本的控制符，像製表符、回車符及換行符。縱觀 Linux
+系統，許多檔案以文字格式儲存，也有許多 Linux 工具來處理文字檔案。甚至 Windows
+也承認這種檔案格式的重要性。著名的 NOTEPAD.EXE 程式就是一個純 ASCII
+文字檔案編輯器。</p>
+</blockquote>
+
+<p>Why would we want to examine text files? Because many of the files that contain system
+settings (called configuration files) are stored in this format, and being able to read them
+gives us insight about how the system works. In addition, many of the actual programs
+that the system uses (called scripts) are stored in this format. In later chapters, we will
+learn how to edit text files in order to modify systems settings and write our own scripts,
+but for now we will just look at their contents.</p>
+
+<p>為什麼我們要檢視文字檔案呢？ 因為許多包含系統設定的檔案（叫做配置檔案），是以文字格式儲存的，閱讀它們
+可以更深入的瞭解系統是如何工作的。另外，許多系統所用到的實際程式（叫做指令碼）也是以這種格式儲存的。
+在隨後的章節裡，我們將要學習怎樣編輯文字檔案以修改系統設定，還要學習編寫自己的指令碼檔案，但現在我們只是看看它們的內容而已。</p>
+
+<p>The less command is used like this:</p>
+
+<p>less 命令是這樣使用的：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>less filename
+</code></pre></div></div>
+
+<p>Once started, the less program allows you to scroll forward and backward through a
+text file. For example, to examine the file that defines all the system’s user accounts,
+enter the following command:</p>
+
+<p>一旦執行起來，less 程式允許你前後滾動檔案。例如，要檢視一個定義了系統中全部使用者身份的檔案，輸入以下命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ less /etc/passwd
+</code></pre></div></div>
+
+<p>Once the less program starts, we may view the contents of the file. If the file is longer
+than one page, we can scroll up and down. To exit less, press the “q” key.
+The table below lists the most common keyboard commands used by less.</p>
+
+<p>一旦 less 程式執行起來，我們就能瀏覽檔案內容了。如果檔案內容多於一頁，那麼我們可以上下滾動檔案。按下“q”鍵，
+退出 less 程式。</p>
+
+<p>下表列出了 less 程式最常使用的鍵盤命令。</p>
+
+<table class="multi">
+<caption class="cap">Table 4-3: less Commands</caption>
+<tr>
+<th class="title" width="30%">Command</th>
+<th class="title">Action</th>
+</tr>
+<tr>
+<td valign="top">Page UP or b</td>
+<td valign="top">Scroll back one page</td>
+</tr>
+<tr>
+<td valign="top">Page Down or space</td>
+<td valign="top">Scroll forward one page</td>
+</tr>
+<tr>
+<td valign="top">UP Arrow</td>
+<td valign="top">Scroll Up one line</td>
+</tr>
+<tr>
+<td valign="top">Down Arrow</td>
+<td valign="top">Scrow Down one line</td>
+</tr>
+<tr>
+<td valign="top">G</td>
+<td valign="top">Move to the end of the text file</td>
+</tr>
+<tr>
+<td valign="top">1G or g</td>
+<td valign="top">Move to the beginning of the text file</td>
+</tr>
+<tr>
+<td valign="top">/charaters</td>
+<td valign="top">Search forward for the next occurrence of characters</td>
+</tr>
+<tr>
+<td valign="top">n</td>
+<td valign="top">Search forward for the next occurrence of the previous search</td>
+</tr>
+<tr>
+<td valign="top">h</td>
+<td valign="top">Display help screen</td>
+</tr>
+<tr>
+<td valign="top">q</td>
+<td valign="top">Quit less</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 4-3: less 命令</caption>
+<tr>
+<th class="title" width="30%">命令</th>
+<th class="title">行為</th>
+</tr>
+<tr>
+<td valign="top">Page UP or b</td>
+<td valign="top">向上翻滾一頁</td>
+</tr>
+<tr>
+<td valign="top">Page Down or space</td>
+<td valign="top">向下翻滾一頁</td>
+</tr>
+<tr>
+<td valign="top">UP Arrow</td>
+<td valign="top">向上翻滾一行</td>
+</tr>
+<tr>
+<td valign="top">Down Arrow</td>
+<td valign="top">向下翻滾一行</td>
+</tr>
+<tr>
+<td valign="top">G</td>
+<td valign="top">移動到最後一行</td>
+</tr>
+<tr>
+<td valign="top">1G or g</td>
+<td valign="top">移動到開頭一行</td>
+</tr>
+<tr>
+<td valign="top">/charaters</td>
+<td valign="top">向前查詢指定的字串</td>
+</tr>
+<tr>
+<td valign="top">n</td>
+<td valign="top">向前查詢下一個出現的字串，這個字串是之前所指定查詢的</td>
+</tr>
+<tr>
+<td valign="top">h</td>
+<td valign="top">顯示幫助螢幕</td>
+</tr>
+<tr>
+<td valign="top">q</td>
+<td valign="top">退出 less 程式</td>
+</tr>
+</table>
+
+<h3 id="less-就是-more禪語色即是空">less 就是 more（禪語：色即是空）</h3>
+
+<p>The less program was designed as an improved replacement of an earlier Unix
+program called more. The name “less” is a play on the phrase “less is more”—a
+motto of modernist architects and designers.</p>
+
+<p>less 程式是早期 Unix 程式 more 的改進版。“less” 這個名字，對習語 “less is more” 開了個玩笑，
+這個習語是現代主義建築師和設計者的座右銘。</p>
+
+<p>less falls into the class of programs called “pagers,” programs that allow the
+easy viewing of long text documents in a page by page manner. Whereas the
+more program could only page forward, the less program allows paging both
+forward and backward and has many other features as well.</p>
+
+<p>less 屬於”頁面排程器”類別程式，這些程式允許以逐頁方式輕鬆瀏覽長文字文件。 more
+程式只能向前翻頁，而 less 程式允許前後翻頁，此外還有很多其它的特性。</p>
+
+<h3 id="旅行指南">旅行指南</h3>
+
+<p>The file system layout on your Linux system is much like that found on other Unix-like
+systems. The design is actually specified in a published standard called the Linux
+Filesystem Hierarchy Standard. Not all Linux distributions conform to the standard
+exactly but most come pretty close.</p>
+
+<p>Linux 系統中，檔案系統佈局與類別 Unix 系統的檔案佈局很相似。實際上，一個已經發布的標準，
+叫做 Linux 檔案系統層次標準，詳細說明了這種設計模式。不是所有Linux發行版都根據這個標準，但
+大多數都是。</p>
+
+<p>Next, we are going to wander around the file system ourselves to see what makes our
+Linux system tick. This will give you a chance to practice your navigation skills. One of
+the things we will discover is that many of the interesting files are in plain human-
+readable text. As we go about our tour, try the following:</p>
+
+<p>下一步，我們將在檔案系統中漫遊，來了解 Linux 系統的工作原理。這會給你一個溫習跳轉命令的機會。
+我們會發現很多有趣的檔案都是純人類可讀文字。下面旅行開始，做做以下練習：</p>
+
+<ol>
+  <li>cd into a given directory</li>
+  <li>List the directory contents with ls -l</li>
+  <li>If you see an interesting file, determine its contents with file</li>
+  <li>
+    <p>If it looks like it might be text, try viewing it with less</p>
+  </li>
+</ol>
+<ol>
+  <li>cd 到給定目錄</li>
+  <li>列出目錄內容 ls -l</li>
+  <li>如果看到一個有趣的檔案，用 file 命令確定檔案內容</li>
+  <li>如果檔案看起來像文字，試著用 less 命令瀏覽它</li>
+</ol>
+
+<hr />
+
+<p>Remember the copy and paste trick! If you are using a mouse, you can double
+click on a filename to copy it and middle click to paste it into commands.</p>
+
+<p>記得複製和貼上技巧！如果你正在使用滑鼠，雙擊檔名，來複制它，然後按下滑鼠中鍵，貼上檔名到命令列中。</p>
+
+<hr />
+
+<p>As we wander around, don’t be afraid to look at stuff. Regular users are largely
+prohibited from messing things up. That’s the system administrators job! If a command
+complains about something, just move on to something else. Spend some time looking
+around. The system is ours to explore. Remember, in Linux, there are no secrets!
+Table 4-4 lists just a few of the directories we can explore. Feel free to try more!</p>
+
+<p>在系統中漫遊時，不要害怕四處看看。普通使用者是很難把東西弄亂的。那是系統管理員的工作！
+如果一個命令抱怨一些事情，不要管它，嘗試一下別的東西。花一些時間四處看看。
+系統是我們自己的，盡情地探究吧。記住在 Linux 中，沒有祕密存在！
+表4-4僅僅列出了一些我們可以瀏覽的目錄。隨意嘗試更多！</p>
+
+<table class="multi">
+<caption class="cap">Table 4-4: Directories Found On Linux Systems </caption>
+<tr>
+<th class="title">Drectory</th>
+<th class="title">Comments</th>
+</tr>
+<tr>
+<td valign="top">/</td>
+<td valign="top">The root directory.Where everything begins.</td>
+</tr>
+<tr>
+<td valign="top">/bin</td>
+<td valign="top">Contains binaries (programs) that must be present for
+the system to boot and run.</td>
+</tr>
+<tr>
+<td valign="top">/boot</td>
+<td valign="top">Contains the linux kernel, intial RAM disk image (for
+drivers needed at boot time), and the boot loader.
+<p>Interesting files:</p>
+<ul>
+<li>/boot/grub/grub.conf or menu.lst, which are used to configure the boot
+loader.</li>
+<li>/boot/vmlinuz,the linux kernel.</li>
+</ul></td>
+</tr>
+<tr>
+<td valign="top">/dev</td>
+<td valign="top">This is a special directory which contains device nodes.
+"Everything is a file" also applies to devices. Here is where the kernel
+maintains a list of all the devices it understands. </td>
+</tr>
+<tr>
+<td valign="top">/etc</td>
+<td valign="top">The /etc directory contains all of the system-wide
+configuration files. It also contains a collection of shell scripts which start
+each of the system services at boot time. Everything in this directory should
+be readable text.
+<p>Interesting files:While everything in /etc is interesting, here are some of my
+all-time favorites:</p>
+<ul>
+<li>/etc/crontab, a file that defines when automated jobs will run.</li>
+<li>/etc/fstab, a table of storage devices and their associated mount
+points.</li>
+<li>/etc/passwd, a list of the user accounts. </li>
+</ul></td>
+</tr>
+<tr>
+<td valign="top">/home</td>
+<td valign="top">In normal configurations, each user is given a directory in
+/home. Ordinary users can only write files in their home
+directories. This limitation protects the system from errant
+user activity.
+</td>
+</tr>
+<tr>
+<td valign="top">/lib </td>
+<td valign="top">Contains shared library files used by the core system
+programs. These are similar to DLLs in Windows. </td>
+</tr>
+<tr>
+<td valign="top">/lost+found </td>
+<td valign="top">Each formatted partition or device using a Linux file system,
+such as ext3, will have this directory. It is used in the case
+of a partial recovery from a file system corruption event.
+Unless something really bad has happened to your system,
+this directory will remain empty.  </td>
+</tr>
+<tr>
+<td valign="top">/media </td>
+<td valign="top">On modern Linux systems the /media directory will
+contain the mount points for removable media such USB drives, CD-ROMs, etc.
+that are mounted automatically at insertion.  </td>
+</tr>
+<tr>
+<td valign="top">/mnt</td>
+<td valign="top">On older Linux systems, the /mnt directory contains mount
+points for removable devices that have been mounted manually. </td>
+</tr>
+<tr>
+<td valign="top">/opt</td>
+<td valign="top">The /opt directory is used to install “optional” software.
+This is mainly used to hold commercial software products
+that may be installed on your system.  </td>
+</tr>
+<tr>
+<td valign="top">/proc</td>
+<td valign="top">The /proc directory is special. It's not a real file system in
+the sense of files stored on your hard drive. Rather, it is a virtual file
+system maintained by the Linux kernel. The “files” it contains are peepholes
+into the kernel itself. The files are readable and will give you a picture of how the
+kernel sees your computer.  </td>
+</tr>
+<tr>
+<td valign="top">/root</td>
+<td valign="top">This is the home directory for the root account.  </td>
+</tr>
+<tr>
+<td valign="top">/sbin</td>
+<td valign="top">This directory contains “system” binaries. These are programs
+that perform vital system tasks that are generally reserved for the superuser.  </td>
+</tr>
+<tr>
+<td valign="top">/tmp</td>
+<td valign="top">The /tmp directory is intended for storage of temporary,
+transient files created by various programs. Some configurations cause this
+directory to be emptied each time the system is rebooted.  </td>
+</tr>
+<tr>
+<td valign="top">/usr</td>
+<td valign="top">The /usr directory tree is likely the largest one on a Linux
+system. It contains all the programs and support files used by regular users. </td>
+</tr>
+<tr>
+<td valign="top">/usr/bin</td>
+<td valign="top">/usr/bin contains the executable programs installed by your
+Linux distribution. It is not uncommon for this directory to hold thousands of
+programs.</td>
+</tr>
+<tr>
+<td valign="top">/usr/lib</td>
+<td valign="top">The shared libraries for the programs in /usr/bin.  </td>
+</tr>
+<tr>
+<td valign="top">/usr/local</td>
+<td valign="top">The /usr/local tree is where programs that are not
+included with your distribution but are intended for system-
+wide use are installed. Programs compiled from source code
+are normally installed in /usr/local/bin. On a newly
+installed Linux system, this tree exists, but it will be empty
+until the system administrator puts something in it.  </td>
+</tr>
+<tr>
+<td valign="top">/usr/sbin</td>
+<td valign="top">Contains more system administration programs.  </td>
+</tr>
+<tr>
+<td valign="top">/usr/share</td>
+<td valign="top">/usr/share contains all the shared data used by
+programs in /usr/bin. This includes things like default
+configuration files, icons, screen backgrounds, sound files, etc.  </td>
+</tr>
+<tr>
+<td valign="top">/usr/share/doc</td>
+<td valign="top">Most packages installed on the system will include some
+kind of documentation. In /usr/share/doc, we will
+find documentation files organized by package.  </td>
+</tr>
+<tr>
+<td valign="top">/var</td>
+<td valign="top">With the exception of /tmp and /home, the directories we
+have looked at so far remain relatively static, that is, their
+contents don't change. The /var directory tree is where
+data that is likely to change is stored. Various databases,
+spool files, user mail, etc. are located here.  </td>
+</tr>
+<tr>
+<td valign="top">/var/log</td>
+<td valign="top">/var/log contains log files, records of various system
+activity. These are very important and should be monitored
+from time to time. The most useful one is
+/var/log/messages. Note that for security reasons on
+some systems, you must be the superuser to view log files.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 4-4: Linux 系統中的目錄</caption>
+<tr>
+<th class="title">目錄</th>
+<th class="title">評論</th>
+</tr>
+<tr>
+<td valign="top">/</td>
+<td valign="top">根目錄，萬物起源。</td>
+</tr>
+<tr>
+<td valign="top">/bin</td>
+<td valign="top">包含系統啟動和執行所必須的二進位制程式。</td>
+</tr>
+<tr>
+<td valign="top">/boot</td>
+<td valign="top"><p>包含 Linux 核心、初始 RAM 磁碟映像（用於啟動時所需的驅動）和
+啟動載入程式。</p>
+<p>有趣的檔案：</p>
+<ul>
+<li>/boot/grub/grub.conf or menu.lst， 被用來配置啟動載入程式。</li>
+<li>/boot/vmlinuz，Linux 核心。</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td valign="top">/dev</td>
+<td valign="top">這是一個包含裝置結點的特殊目錄。“一切都是檔案”，也適用於裝置。
+在這個目錄裡，核心維護著所有裝置的列表。</td>
+</tr>
+<tr>
+<td valign="top">/etc</td>
+<td valign="top"><p>這個目錄包含所有系統層面的配置檔案。它也包含一系列的 shell 指令碼，
+在系統啟動時，這些指令碼會開啟每個系統服務。這個目錄中的任何檔案應該是可讀的文字檔案。</p>
+<p>有趣的檔案：雖然/etc 目錄中的任何檔案都有趣，但這裡只列出了一些我一直喜歡的檔案：</p>
+<ul>
+<li>/etc/crontab， 定義自動執行的任務。</li>
+<li>/etc/fstab，包含儲存裝置的列表，以及與他們相關的掛載點。</li>
+<li>/etc/passwd，包含使用者帳號列表。 </li>
+</ul>
+</td>
+</tr>
+<tr>
+<td valign="top">/home</td>
+<td valign="top">在通常的配置環境下，系統會在/home 下，給每個使用者分配一個目錄。普通使用者只能
+在自己的目錄下寫檔案。這個限制保護系統免受錯誤的使用者活動破壞。</td>
+</tr>
+<tr>
+<td valign="top">/lib </td>
+<td valign="top">包含核心系統程式所使用的共享函式庫檔案。這些檔案與 Windows 中的動態連結函式庫相似。</td>
+</tr>
+<tr>
+<td valign="top">/lost+found </td>
+<td valign="top">每個使用 Linux 檔案系統的格式化分割槽或裝置，例如 ext3檔案系統，
+都會有這個目錄。當部分恢復一個損壞的檔案系統時，會用到這個目錄。這個目錄應該是空的，除非檔案系統
+真正的損壞了。</td>
+</tr>
+<tr>
+<td>/media </td>
+<td>在現在的 Linux 系統中，/media 目錄會包含可移動介質的掛載點，
+例如 USB 驅動器，CD-ROMs 等等。這些介質連線到計算機之後，會自動地掛載到這個目錄結點下。
+</td>
+</tr>
+<tr>
+<td>/mnt</td>
+<td>在早些的 Linux 系統中，/mnt 目錄包含可移動介質的掛載點。</td>
+</tr>
+<tr>
+<td>/opt</td>
+<td>這個/opt 目錄被用來安裝“可選的”軟體。這個主要用來儲存可能
+安裝在系統中的商業軟體產品。</td>
+</tr>
+<tr>
+<td>/proc</td>
+<td>這個/proc 目錄很特殊。從儲存在硬碟上的檔案的意義上說，它不是真正的檔案系統。
+相反，它是一個由 Linux 核心維護的虛擬檔案系統。它所包含的檔案是核心的窺視孔。這些檔案是可讀的，
+它們會告訴你核心是怎樣監管計算機的。</td>
+</tr>
+<tr>
+<td>/root</td>
+<td>root 帳戶的家目錄。</td>
+</tr>
+<tr>
+<td>/sbin</td>
+<td>這個目錄包含“系統”二進位制檔案。它們是完成重大系統任務的程式，通常為超級使用者保留。</td>
+</tr>
+<tr>
+<td>/tmp</td>
+<td>這個/tmp 目錄，是用來儲存由各種程式建立的臨時檔案的地方。一些配置導致系統每次
+重新啟動時，都會清空這個目錄。</td>
+</tr>
+<tr>
+<td>/usr</td>
+<td>在 Linux 系統中，/usr 目錄可能是最大的一個。它包含普通使用者所需要的所有程式和檔案。</td>
+</tr>
+<tr>
+<td>/usr/bin</td>
+<td>/usr/bin 目錄包含系統安裝的可執行程式。通常，這個目錄會包含許多程式。</td>
+</tr>
+<tr>
+<td>/usr/lib</td>
+<td>包含由/usr/bin 目錄中的程式所用的共享函式庫。 </td>
+</tr>
+<tr>
+<td>/usr/local</td>
+<td>這個/usr/local 目錄，是非系統發行版自帶程式的安裝目錄。
+通常，由原始碼編譯的程式會安裝在/usr/local/bin 目錄下。新安裝的 Linux 系統中會存在這個目錄，
+並且在管理員安裝程式之前，這個目錄是空的。</td>
+</tr>
+<tr>
+<td>/usr/sbin</td>
+<td>包含許多系統管理程式。 </td>
+</tr>
+<tr>
+<td>/usr/share</td>
+<td>/usr/share 目錄包含許多由/usr/bin 目錄中的程式使用的共享資料。
+其中包括像預設的配置檔案、圖示、桌面背景、音訊檔案等等。</td>
+</tr>
+<tr>
+<td>/usr/share/doc</td>
+<td>大多數安裝在系統中的軟體包會包含一些文件。在/usr/share/doc 目錄下，
+我們可以找到按照軟體包分類的文件。</td>
+</tr>
+<tr>
+<td>/var</td>
+<td>除了/tmp 和/home 目錄之外，相對來說，目前我們看到的目錄是靜態的，這是說，
+它們的內容不會改變。/var 目錄存放的是動態檔案。各種資料庫，假離線檔案，
+使用者郵件等等，都位於在這裡。</td>
+</tr>
+<tr>
+<td>/var/log</td>
+<td>這個/var/log 目錄包含日誌檔案、各種系統活動的記錄。這些檔案非常重要，並且
+應該時時監測它們。其中最重要的一個檔案是/var/log/messages。注意，為了系統安全，在一些系統中，
+你必須是超級使用者才能檢視這些日誌檔案。</td></tr>
+</table>
+
+<h3 id="符號連結">符號連結</h3>
+
+<p>As we look around, we are likely to see a directory listing with an entry like this:</p>
+
+<p>在我們到處檢視時，我們可能會看到一個目錄，列出像這樣的一條資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lrwxrwxrwx 1 root root 11 2007-08-11 07:34 libc.so.6 -&gt; libc-2.6.so
+</code></pre></div></div>
+
+<p>Notice how the first letter of the listing is “l” and the entry seems to have two filenames?
+This is a special kind of a file called a symbolic link (also known as a soft link or
+symlink.) In most Unix-like systems it is possible to have a file referenced by multiple
+names. While the value of this may not be obvious, it is really a useful feature.</p>
+
+<p>注意看，為何這條資訊第一個字元是“l”，並且有兩個檔名呢？
+這是一個特殊檔案，叫做符號連結（也稱為軟連結或者 symlink ）。 在大多數“類別 Unix” 系統中，
+有可能一個檔案被多個檔名所指向。雖然這種特性的意義並不明顯，但它真的很有用。</p>
+
+<p>Picture this scenario: a program requires the use of a shared resource of some kind
+contained in a file named “foo,” but “foo” has frequent version changes. It would be
+good to include the version number in the filename so the administrator or other
+interested party could see what version of “foo” is installed. This presents a problem. If
+we change the name of the shared resource, we have to track down every program that
+might use it and change it to look for a new resource name every time a new version of
+the resource is installed. That doesn’t sound like fun at all.</p>
+
+<p>描繪一下這樣的情景：一個程式要求使用某個包含在名為“foo”檔案中的共享資源，但是“foo”經常改變版本號。
+這樣，在檔名中包含版本號，會是一個好主意，因此管理員或者其它相關方，會知道安裝了哪個“foo”版本。
+這會導致另一個問題。如果我們更改了共享資源的名字，那麼我們必須追蹤每個可能使用了
+這個共享資源的程式，當每次這個資源的新版本被安裝後，都要讓使用了它的程式去尋找新的資源名。
+這聽起來很沒趣。</p>
+
+<p>Here is where symbolic links save the day. Let's say we install version 2.6 of “foo,”
+which has the filename “foo-2.6” and then create a symbolic link simply called “foo” that
+points to “foo-2.6.” This means that when a program opens the file “foo”, it is actually
+opening the file “foo-2.6”. Now everybody is happy. The programs that rely on “foo”
+can find it and we can still see what actual version is installed. When it is time to
+upgrade to “foo-2.7,” we just add the file to our system, delete the symbolic link “foo”
+and create a new one that points to the new version. Not only does this solve the problem
+of the version upgrade, but it also allows us to keep both versions on our machine.
+Imagine that “foo-2.7” has a bug (damn those developers!) and we need to revert to the
+old version. Again, we just delete the symbolic link pointing to the new version and
+create a new symbolic link pointing to the old version.</p>
+
+<p>這就是符號連結存在至今的原因。比方說，我們安裝了檔案 “foo” 的 2.6 版本，它的
+檔名是 “foo-2.6”，然後建立了叫做 “foo” 的符號連結，這個符號連結指向 “foo-2.6”。
+這意味著，當一個程式開啟檔案 “foo” 時，它實際上是開啟檔案 “foo-2.6”。
+現在，每個人都很高興。依賴於 “foo” 檔案的程式能找到這個檔案，並且我們能知道安裝了哪個檔案版本。
+當升級到 “foo-2.7” 版本的時候，僅新增這個檔案到檔案系統中，刪除符號連結 “foo”，
+建立一個指向新版本的符號連結。這不僅解決了版本升級問題，而且還允許在系統中儲存兩個不同的檔案版本。
+假想 “foo-2.7” 有個錯誤（該死的開發者！），那我們得回到原來的版本。
+一樣的操作，我們只需要刪除指向新版本的符號連結，然後建立指向舊版本的符號連結就可以了。</p>
+
+<p>The directory listing above (from the /lib directory of a Fedora system) shows a
+symbolic link called “libc.so.6” that points to a shared library file called “libc-2.6.so.”
+This means that programs looking for “libc.so.6” will actually get the file “libc-2.6.so.”
+We will learn how to create symbolic links in the next chapter.</p>
+
+<p>在上面列出的目錄（來自於 Fedora 的 /lib 目錄）展示了一個叫做 “libc.so.6” 的符號連結，這個符號連結指向一個
+叫做 “libc-2.6.so” 的共享函式庫檔案。這意味著，尋找檔案 “libc.so.6” 的程式，實際上得到是檔案 “libc-2.6.so”。
+在下一章節，我們將學習如何建立符號連結。</p>
+
+<h3 id="硬連結">硬連結</h3>
+
+<p>While we are on the subject of links, we need to mention that there is a second type of
+link called a hard link. Hard links also allow files to have multiple names, but they do it
+in a different way. We’ll talk more about the differences between symbolic and hard
+links in the next chapter.</p>
+
+<p>討論到連結問題，我們需要提一下，還有一種連結型別，叫做硬連結。硬連結同樣允許檔案有多個名字，
+但是硬連結以不同的方法來建立多個檔名。在下一章中，我們會談到更多符號連結與硬連結之間的差異問題。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The full version of the Linux Filesystem Hierarchy Standard can be found here:</p>
+  </li>
+  <li>
+    <p>完整的 Linux 檔案系統層次體系標準可透過以下連結找到：</p>
+
+    <p><a href="http://www.pathname.com/fhs/">http://www.pathname.com/fhs/</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">重新導向</h1><br>
+<p>In this lesson we are going to unleash what may be the coolest feature of the command
+line. It’s called I/O redirection. The “I/O” stands for input/output and with this facility
+you can redirect the input and output of commands to and from files, as well as connect
+multiple commands together into powerful command pipelines. To show off this facility,
+we will introduce the following commands:</p>
+
+<p>這堂課，我們來介紹可能是命令列最酷的特性。它叫做 I/O 重新導向。”I/O”代表輸入/輸出，
+透過這個工具，你可以重新導向命令的輸入輸出，命令的輸入來自檔案，而輸出也存到檔案。
+也可以把多個命令連線起來組成一個強大的命令管道。為了展示這個工具，我們將敘述
+以下命令：</p>
+
+<ul>
+  <li>
+    <p>cat - Concatenate files</p>
+  </li>
+  <li>
+    <p>sort - Sort lines of text</p>
+  </li>
+  <li>
+    <p>uniq - Report or omit repeated lines</p>
+  </li>
+  <li>
+    <p>grep - Print lines matching a pattern</p>
+  </li>
+  <li>
+    <p>wc - Print newline, word, and byte counts for each file</p>
+  </li>
+  <li>
+    <p>head - Output the first part of a file</p>
+  </li>
+  <li>
+    <p>tail - Output the last part of a file</p>
+  </li>
+  <li>
+    <p>tee - Read from standard input and write to standard output and files</p>
+  </li>
+  <li>
+    <p>cat － 連線檔案</p>
+  </li>
+  <li>
+    <p>sort － 排序文字行</p>
+  </li>
+  <li>
+    <p>uniq － 報道或省略重複行</p>
+  </li>
+  <li>
+    <p>grep － 列印匹配行</p>
+  </li>
+  <li>
+    <p>wc － 列印檔案中換行符，字，和位元組個數</p>
+  </li>
+  <li>
+    <p>head － 輸出檔案第一部分</p>
+  </li>
+  <li>tail - 輸出檔案最後一部分</li>
+  <li>tee - 從標準輸入讀取資料，並同時寫到標準輸出和檔案</li>
+</ul>
+
+<h3 id="標準輸入輸出和錯誤">標準輸入、輸出和錯誤</h3>
+
+<p>Many of the programs that we have used so far produce output of some kind. This output
+often consists of two types. First, we have the program’s results; that is, the data the
+program is designed to produce, and second, we have status and error messages that tell
+us how the program is getting along. If we look at a command like ls, we can see that it
+displays its results and its error messages on the screen.</p>
+
+<p>到目前為止，我們用到的許多程式都會產生某種輸出。這種輸出，經常由兩種型別組成。
+第一，程式執行結果；這是說，程式要完成的功能。第二，我們得到狀態和錯誤資訊，
+這些告訴我們程式進展。如果我們觀察一個命令，像 ls，會看到它的執行結果和錯誤資訊
+顯示在螢幕上。</p>
+
+<p>Keeping with the Unix theme of “everything is a file,” programs such as ls actually send
+their results to a special file called standard output (often expressed as stdout) and their
+status messages to another file called standard error (stderr). By default, both standard
+output and standard error are linked to the screen and not saved into a disk file.
+In addition, many programs take input from a facility called standard input (stdin) which
+is, by default, attached to the keyboard.</p>
+
+<p>與 Unix 主題“任何東西都是一個檔案”保持一致，程式，比方說 ls，實際上把他們的執行結果
+輸送到一個叫做標準輸出的特殊檔案（經常用 stdout 表示），而它們的狀態資訊則送到另一個
+叫做標準錯誤的檔案（stderr）。預設情況下，標準輸出和標準錯誤都連線到螢幕，而不是
+儲存到磁碟檔案。除此之外，許多程式從一個叫做標準輸入（stdin）的裝置得到輸入，預設情況下，
+標準輸入連線到鍵盤。</p>
+
+<p>I/O redirection allows us to change where output goes and where input comes from.
+Normally, output goes to the screen and input comes from the keyboard, but with I/O
+redirection, we can change that.</p>
+
+<p>I/O 重新導向允許我們更改輸出地點和輸入來源。一般地，輸出送到螢幕，輸入來自鍵盤，
+但是透過 I/O 重新導向，我們可以做出改變。</p>
+
+<h3 id="標準輸出重新導向">標準輸出重新導向</h3>
+
+<p>I/O redirection allows us to redefine where standard output goes. To redirect standard
+output to another file besides the screen, we use the “&gt;” redirection operator followed by
+the name of the file. Why would we want to do this? It’s often useful to store the output
+of a command in a file. For example, we could tell the shell to send the output of the ls
+command to the file ls-output.txt instead of the screen:</p>
+
+<p>I/O 重新導向允許我們來重定義標準輸出的地點。我們使用 “&gt;” 重新導向符後接檔名將標準輸出重新導向到除螢幕
+以外的另一個檔案。為什麼我們要這樣做呢？因為有時候把一個命令的執行結果儲存到
+一個檔案很有用處。例如，我們可以告訴 shell 把 ls 命令的執行結果輸送到檔案 ls-output.txt 中去，
+由檔案代替螢幕。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /usr/bin &gt; ls-output.txt
+</code></pre></div></div>
+
+<p>Here, we created a long listing of the /usr/bin directory and sent the results to the file
+ls-output.txt. Let's examine the redirected output of the command:</p>
+
+<p>這裡，我們建立了一個長長的目錄/usr/bin 列表，並且輸送程式執行結果到檔案 ls-output.txt 中。
+我們檢查一下重新導向的命令輸出結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l ls-output.txt
+-rw-rw-r-- 1   me   me    167878 2008-02-01 15:07 ls-output.txt
+</code></pre></div></div>
+
+<p>Good; a nice, large, text file. If we look at the file with less, we will see that the file
+ls-output.txt does indeed contain the results from our ls command:</p>
+
+<p>好；一個不錯的大型文字檔案。如果我們用 less 閱讀器來檢視這個檔案，我們會看到檔案
+ls-output.txt 的確包含 ls 命令的執行結果。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ less ls-output.txt
+</code></pre></div></div>
+
+<p>Now, Let's repeat our redirection test, but this time with a twist. We’ll change the name of
+the directory to one that does not exist:</p>
+
+<p>現在，重複我們的重新導向測試，但這次有改動。我們把目錄換成一個不存在的目錄。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /bin/usr &gt; ls-output.txt
+ls: cannot access /bin/usr: No such file or directory
+</code></pre></div></div>
+
+<p>We received an error message. This makes sense since we specified the non-existent
+directory /bin/usr, but why was the error message displayed on the screen rather than
+being redirected to the file ls-output.txt? The answer is that the ls program does
+not send its error messages to standard output. Instead, like most well-written Unix
+programs, it sends its error messages to standard error. Since we only redirected standard
+output and not standard error, the error message was still sent to the screen. We’ll see
+how to redirect standard error in just a minute, but first, Let's look at what happened to our
+output file:</p>
+
+<p>我們收到一個錯誤資訊。這講得通，因為我們指定了一個不存在的目錄/bin/usr,
+但是為什麼這條錯誤資訊顯示在螢幕上而不是被重新導向到檔案 ls-output.txt？答案是，
+ls 程式不把它的錯誤資訊輸送到標準輸出。反而，像許多寫得不錯的 Unix 程式，ls 把
+錯誤資訊送到標準錯誤。因為我們只是重新導向了標準輸出，而沒有重新導向標準錯誤，
+所以錯誤資訊被送到螢幕。馬上，我們將知道怎樣重新導向標準錯誤，但是首先看一下
+我們的輸出檔案發生了什麼事情。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>me@linuxbox ~]$ ls -l ls-output.txt
+-rw-rw-r-- 1 me   me    0 2008-02-01 15:08 ls-output.txt
+</code></pre></div></div>
+
+<p>The file now has zero length! This is because, when we redirect output with the “&gt;”
+redirection operator, the destination file is always rewritten from the beginning. Since
+our ls command generated no results and only an error message, the redirection
+operation started to rewrite the file and then stopped because of the error, resulting in its
+truncation. In fact, if we ever need to actually truncate a file (or create a new, empty file)
+we can use a trick like this:</p>
+
+<p>檔案長度為零！這是因為，當我們使用 “&gt;” 重新導向符來重新導向輸出結果時，目標檔案總是從開頭被重寫。
+因為我們 ls 命令沒有產生執行結果，只有錯誤資訊，重新導向操作開始重寫檔案，然後
+由於錯誤而停止，導致檔案內容清空。事實上，如果我們需要清空一個檔案內容（或者建立一個
+新的空檔案），可以使用這樣的技巧：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ &gt; ls-output.txt
+</code></pre></div></div>
+
+<p>Simply using the redirection operator with no command preceding it will truncate an
+existing file or create a new, empty file.</p>
+
+<p>簡單地使用重新導向符，沒有命令在它之前，這會清空一個已存在檔案的內容或是
+建立一個新的空檔案。</p>
+
+<p>So, how can we append redirected output to a file instead of overwriting the file from the
+beginning? For that, we use the “&gt;&gt;” redirection operator, like so:</p>
+
+<p>所以，怎樣才能把重新導向結果追加到檔案內容後面，而不是從開頭重寫檔案？為了這個目的，
+我們使用”&gt;&gt;“重新導向符，像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /usr/bin &gt;&gt; ls-output.txt
+</code></pre></div></div>
+
+<p>Using the “&gt;&gt;” operator will result in the output being appended to the file. If the file
+does not already exist, it is created just as though the “&gt;” operator had been used. Let's
+put it to the test:</p>
+
+<p>使用”&gt;&gt;“運算子，將導致輸出結果新增到檔案內容之後。如果檔案不存在，檔案會
+被建立，就如使用了”&gt;”運算子。把它放到測試中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /usr/bin &gt;&gt; ls-output.txt
+[me@linuxbox ~]$ ls -l /usr/bin &gt;&gt; ls-output.txt
+[me@linuxbox ~]$ ls -l /usr/bin &gt;&gt; ls-output.txt
+[me@linuxbox ~]$ ls -l ls-output.txt
+-rw-rw-r-- 1 me   me    503634 2008-02-01 15:45 ls-output.txt
+</code></pre></div></div>
+
+<p>We repeated the command three times resulting in an output file three times as large.</p>
+
+<p>我們重複執行命令三次，導致輸出檔案大小是原來的三倍。</p>
+
+<h3 id="標準錯誤重新導向">標準錯誤重新導向</h3>
+
+<p>Redirecting standard error lacks the ease of a dedicated redirection operator. To redirect
+standard error we must refer to its file descriptor. A program can produce output on any
+of several numbered file streams. While we have referred to the first three of these file
+streams as standard input, output and error, the shell references them internally as file
+descriptors zero, one and two, respectively. The shell provides a notation for redirecting
+files using the file descriptor number. Since standard error is the same as file descriptor
+number two, we can redirect standard error with this notation:</p>
+
+<p>標準錯誤重新導向沒有專用的重新導向運算子。為了重新導向標準錯誤，我們必須參考其檔案描述符。
+一個程式可以在幾個編號的檔案流中的任一個上產生輸出。雖然我們已經將這些檔案流的前
+三個稱作標準輸入、輸出和錯誤，shell 內部分別將其稱為檔案描述符0、1和2。shell 使用檔案描述符提供
+了一種表示法來重新導向檔案。因為標準錯誤和檔案描述符2一樣，我們用這種
+表示法來重新導向標準錯誤：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /bin/usr 2&gt; ls-error.txt
+</code></pre></div></div>
+
+<p>The file descriptor “2” is placed immediately before the redirection operator to perform
+the redirection of standard error to the file ls-error.txt.</p>
+
+<p>檔案描述符”2”，緊挨著放在重新導向運算子之前，來執行重新導向標準錯誤到檔案 ls-error.txt 任務。</p>
+
+<h3 id="重新導向標準輸出和錯誤到同一個檔案">重新導向標準輸出和錯誤到同一個檔案</h3>
+
+<p>There are cases in which we may wish to capture all of the output of a command to a
+single file. To do this, we must redirect both standard output and standard error at the
+same time. There are two ways to do this. First, the traditional way, which works with
+old versions of the shell:</p>
+
+<p>可能有這種情況，我們希望捕捉一個命令的所有輸出到一個檔案。為了完成這個，我們
+必須同時重新導向標準輸出和標準錯誤。有兩種方法來完成任務。第一個，傳統的方法，
+在舊版本 shell 中也有效：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /bin/usr &gt; ls-output.txt 2&gt;&amp;1
+</code></pre></div></div>
+
+<p>Using this method, we perform two redirections. First we redirect standard output to the
+file ls-output.txt and then we redirect file descriptor two (standard error) to file
+descriptor one (standard output) using the notation 2&gt;&amp;1.</p>
+
+<p>使用這種方法，我們完成兩個重新導向。首先重新導向標準輸出到檔案 ls-output.txt，然後
+重新導向檔案描述符2（標準錯誤）到檔案描述符1（標準輸出）使用表示法2&gt;&amp;1。</p>
+
+<hr />
+
+<p>Notice that the order of the redirections is significant. The redirection of
+standard error must always occur after redirecting standard output or it doesn’t
+work. In the example above,</p>
+
+<p>注意重新導向的順序安排非常重要。標準錯誤的重新導向必須總是出現在標準輸出
+重新導向之後，要不然它不起作用。上面的例子，</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;ls-output.txt 2&gt;&amp;1
+</code></pre></div></div>
+
+<p>redirects standard error to the file ls-output.txt, but if the order is changed to</p>
+
+<p>重新導向標準錯誤到檔案 ls-output.txt，但是如果命令順序改為：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2&gt;&amp;1 &gt;ls-output.txt
+</code></pre></div></div>
+
+<p>standard error is directed to the screen.</p>
+
+<p>則標準錯誤定向到螢幕。</p>
+
+<hr />
+
+<p>Recent versions of bash provide a second, more streamlined method for performing this
+combined redirection:</p>
+
+<p>現在的 bash 版本提供了第二種方法，更精簡合理的方法來執行這種聯合的重新導向。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /bin/usr &amp;&gt; ls-output.txt
+</code></pre></div></div>
+
+<p>In this example, we use the single notation &amp;&gt; to redirect both standard output and
+standard error to the file ls-output.txt.</p>
+
+<p>在這個例子裡面，我們使用單單一個表示法 &amp;&gt; 來重新導向標準輸出和錯誤到檔案 ls-output.txt。</p>
+
+<h3 id="處理不需要的輸出">處理不需要的輸出</h3>
+
+<p>Sometimes “silence is golden,” and we don’t want output from a command, we just want
+to throw it away. This applies particularly to error and status messages. The system
+provides a way to do this by redirecting output to a special file called “/dev/null”. This
+file is a system device called a bit bucket which accepts input and does nothing with it.
+To suppress error messages from a command, we do this:</p>
+
+<p>有時候“沉默是金”，我們不想要一個命令的輸出結果，只想把它們扔掉。這種情況
+尤其適用於錯誤和狀態資訊。系統透過重新導向輸出結果到一個叫做”/dev/null”的特殊檔案，
+為我們提供瞭解決問題的方法。這個檔案是系統裝置，叫做位儲存桶，它可以
+接受輸入，並且對輸入不做任何處理。為了隱瞞命令錯誤資訊，我們這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /bin/usr 2&gt; /dev/null
+</code></pre></div></div>
+
+<blockquote>
+  <p>/dev/null in Unix Culture</p>
+
+  <p>Unix 文化中的/dev/null</p>
+
+  <p>The bit bucket is an ancient Unix concept and due to its universality, has appeared
+in many parts of Unix culture. When someone says he/she is sending your
+comments to /dev/null, now you know what it means. For more examples,
+see the Wikipedia article on “/dev/null”.</p>
+
+  <p>位儲存桶是個古老的 Unix 概念，由於它的普遍性，它的身影出現在 Unix 文化的
+許多部分。當有人說他/她正在傳送你的評論到/dev/null，現在你應該知道那是
+什麼意思了。更多的例子，可以閱讀 Wikipedia 關於”/dev/null”的文章。</p>
+</blockquote>
+
+<h3 id="標準輸入重新導向">標準輸入重新導向</h3>
+
+<p>Up to now, we haven’t encountered any commands that make use of standard input
+(actually we have, but we’ll reveal that surprise a little bit later), so we need to introduce
+one.</p>
+
+<p>到目前為止，我們還沒有遇到一個命令是利用標準輸入的（實際上我們遇到過了，但是
+一會再揭曉謎底），所以我們需要介紹一個。</p>
+
+<h3 id="cat--連線檔案">cat － 連線檔案</h3>
+
+<p>The cat command reads one or more files and copies them to standard output like so:</p>
+
+<p>cat 命令讀取一個或多個檔案，然後複製它們到標準輸出，就像這樣:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat [file]
+</code></pre></div></div>
+
+<p>In most cases, you can think of cat as being analogous to the TYPE command in DOS.
+You can use it to display files without paging, for example:</p>
+
+<p>在大多數情況下，你可以認為 cat 命令相似於 DOS 中的 TYPE 命令。你可以使用 cat 來顯示
+檔案而沒有分頁，例如：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat ls-output.txt
+</code></pre></div></div>
+
+<p>will display the contents of the file ls-output.txt. cat is often used to display
+short text files. Since cat can accept more than one file as an argument, it can also be
+used to join files together. Say we have downloaded a large file that has been split into
+multiple parts (multimedia files are often split this way on USENET), and we want to
+join them back together. If the files were named:</p>
+
+<p>將會顯示檔案 ls-output.txt 的內容。cat 經常被用來顯示簡短的文字檔案。因為 cat 可以
+接受不只一個檔案作為引數，所以它也可以用來把檔案連線在一起。比方說我們下載了一個
+大型檔案，這個檔案被分離成多個部分（USENET 中的多媒體檔案經常以這種方式分離），
+我們想把它們連起來。如果檔案命名為：</p>
+
+<p>movie.mpeg.001 movie.mpeg.002 … movie.mpeg.099</p>
+
+<p>we could join them back together with this command:</p>
+
+<p>我們能用這個命令把它們連線起來：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat movie.mpeg.0* &gt; movie.mpeg
+</code></pre></div></div>
+
+<p>Since wildcards always expand in sorted order, the arguments will be arranged in the
+correct order.</p>
+
+<p>因為萬用字元總是以有序的方式展開，所以這些引數會以正確順序安排。</p>
+
+<p>This is all well and good, but what does this have to do with standard input? Nothing yet,
+but Let's try something else. What happens if we type “cat” with no arguments:</p>
+
+<p>這很好，但是這和標準輸入有什麼關係呢？沒有任何關係，讓我們試著做些其他的工作。
+如果我們輸入不帶引數的”cat”命令，會發生什麼呢：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat
+</code></pre></div></div>
+
+<p>Nothing happens, it just sits there like it’s hung. It may seem that way, but it’s really
+doing exactly what it’s supposed to.</p>
+
+<p>沒有發生任何事情，它只是坐在那裡，好像掛掉了一樣。看起來是那樣，但是它正在做它該做的事情：</p>
+
+<p>If cat is not given any arguments, it reads from standard input and since standard input
+is, by default, attached to the keyboard, it’s waiting for us to type something! Try this:</p>
+
+<p>如果 cat 沒有給出任何引數，它會從標準輸入讀入資料，又因為標準輸入預設情況下連線到鍵盤，
+它正在等待我們輸入資料！試試這個：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat
+The quick brown fox jumped over the lazy dog.
+</code></pre></div></div>
+
+<p>Next, type a Ctrl-d (i.e., hold down the Ctrl key and press “d”) to tell cat that it has
+reached end of file (EOF) on standard input:</p>
+
+<p>下一步，輸入 Ctrl-d（按住 Ctrl 鍵同時按下”d”），來告訴 cat，在標準輸入中，
+它已經到達檔案末尾（EOF）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat
+The quick brown fox jumped over the lazy dog.
+The quick brown fox jumped over the lazy dog.
+</code></pre></div></div>
+
+<p>In the absence of filename arguments, cat copies standard input to standard output, so
+we see our line of text repeated. We can use this behavior to create short text files. Let's
+say that we wanted to create a file called “lazy_dog.txt” containing the text in our
+example. We would do this:</p>
+
+<p>由於沒有檔名引數，cat 複製標準輸入到標準輸出，所以我們看到文字行重複出現。
+我們可以使用這種行為來建立簡短的文字檔案。比方說，我們想建立一個叫做”lazy_dog.txt”
+的檔案，這個檔案包含例子中的文字。我們這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat &gt; lazy_dog.txt
+The quick brown fox jumped over the lazy dog.
+</code></pre></div></div>
+
+<p>Type the command followed by the text we want in to place in the file. Remember to
+type Ctrl-d at the end. Using the command line, we have implemented the world’s
+dumbest word processor! To see our results, we can use cat to copy the file to stdout
+again:</p>
+
+<p>輸入命令，其後輸入要放入檔案中的文字。記住，最後輸入 Ctrl-d。透過使用這個命令，我們
+實現了世界上最低能的文書處理器！看一下執行結果，我們使用 cat 來複制檔案內容到
+標準輸出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat lazy_dog.txt
+The quick brown fox jumped over the lazy dog.
+</code></pre></div></div>
+
+<p>Now that we know how cat accepts standard input, in addition to filename arguments,
+Let's try redirecting standard input:</p>
+
+<p>現在我們知道 cat 怎樣接受標準輸入，除了檔名引數，讓我們試著重新導向標準輸入：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cat &lt; lazy_dog.txt
+The quick brown fox jumped over the lazy dog.
+</code></pre></div></div>
+
+<p>Using the “&lt;” redirection operator, we change the source of standard input from the
+keyboard to the file lazy_dog.txt. We see that the result is the same as passing a
+single filename argument. This is not particularly useful compared to passing a filename
+argument, but it serves to demonstrate using a file as a source of standard input. Other
+commands make better use of standard input, as we shall soon see.</p>
+
+<p>使用“&lt;”重新導向運算子，我們把標準輸入源從鍵盤改到檔案 lazy_dog.tx。我們看到結果
+和傳遞單個檔名作為引數的執行結果一樣。把這和傳遞一個檔名引數作比較，不是特別有意義，
+但它是用來說明把一個檔案作為標準輸入源。有其他的命令更好地利用了標準輸入，我們不久將會看到。</p>
+
+<p>Before we move on, check out the man page for cat, as it has several interesting options.</p>
+
+<p>在我們繼續之前，檢視 cat 的手冊頁，因為它有幾個有趣的選項。</p>
+
+<h3 id="管道線">管道線</h3>
+
+<p>The ability of commands to read data from standard input and send to standard output is
+utilized by a shell feature called pipelines. Using the pipe operator “|” (vertical bar), the
+standard output of one command can be piped into the standard input of another:</p>
+
+<p>命令從標準輸入讀取資料並輸送到標準輸出的能力被一個稱為管道線的 shell 特性所利用。
+使用管道運算子”|”（豎槓），一個命令的標準輸出可以透過管道送至另一個命令的標準輸入：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>command1 | command2
+</code></pre></div></div>
+
+<p>To fully demonstrate this, we are going to need some commands. Remember how we
+said there was one we already knew that accepts standard input? It’s less. We can use
+less to display, page-by-page, the output of any command that sends its results to
+standard output:</p>
+
+<p>為了全面地說明這個命令，我們需要一些命令。是否記得我們說過，我們已經知道有一個
+命令接受標準輸入？它是 less 命令。我們用 less 來一頁一頁地顯示任何命令的輸出，命令把
+它的執行結果輸送到標準輸出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /usr/bin | less
+</code></pre></div></div>
+
+<p>This is extremely handy! Using this technique, we can conveniently examine the output
+of any command that produces standard output.</p>
+
+<p>這極其方便！使用這項技術，我們可以方便地檢測會產生標準輸出的任一命令的執行結果。</p>
+
+<h3 id="過濾器">過濾器</h3>
+
+<p>Pipelines are often used to perform complex operations on data. It is possible to put
+several commands together into a pipeline. Frequently, the commands used this way are
+referred to as filters. Filters take input, change it somehow and then output it. The first
+one we will try is sort. Imagine we wanted to make a combined list of all of the
+executable programs in /bin and /usr/bin, put them in sorted order and view it:</p>
+
+<p>管道線經常用來對資料完成複雜的操作。有可能會把幾個命令放在一起組成一個管道線。
+通常，以這種方式使用的命令被稱為過濾器。過濾器接受輸入，以某種方式改變它，然後
+輸出它。第一個我們想試驗的過濾器是 sort。想象一下，我們想把目錄/bin 和/usr/bin 中
+的可執行程式都聯合在一起，再把它們排序，然後瀏覽執行結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls /bin /usr/bin | sort | less
+</code></pre></div></div>
+
+<p>Since we specified two directories (/bin and /usr/bin), the output of ls would have
+consisted of two sorted lists, one for each directory. By including sort in our pipeline,
+we changed the data to produce a single, sorted list.</p>
+
+<p>因為我們指定了兩個目錄（/bin 和/usr/bin），ls 命令的輸出結果由有序列表組成，
+各自針對一個目錄。透過在管道線中包含 sort，我們改變輸出資料，從而產生一個
+有序列表。</p>
+
+<h3 id="uniq---報道或忽略重複行">uniq - 報道或忽略重複行</h3>
+
+<p>The uniq command is often used in conjunction with sort. uniq accepts a sorted list
+of data from either standard input or a single filename argument (see the uniq man page
+for details) and, by default, removes any duplicates from the list. So, to make sure our
+list has no duplicates (that is, any programs of the same name that appear in both the
+/bin and /usr/bin directories) we will add uniq to our pipeline:</p>
+
+<p>uniq 命令經常和 sort 命令結合在一起使用。uniq 從標準輸入或單個檔名引數接受資料有序
+列表（詳情檢視 uniq 手冊頁），預設情況下，從資料列表中刪除任何重複行。所以，為了確信
+我們的列表中不包含重複句子（這是說，出現在目錄/bin 和/usr/bin 中重名的程式），我們新增
+uniq 到我們的管道線中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls /bin /usr/bin | sort | uniq | less
+</code></pre></div></div>
+
+<p>In this example, we use uniq to remove any duplicates from the output of the sort
+command. If we want to see the list of duplicates instead, we add the “-d” option to
+uniq like so:</p>
+
+<p>在這個例子中，我們使用 uniq 從 sort 命令的輸出結果中，來刪除任何重複行。如果我們想看到
+重複的資料列表，讓 uniq 命令帶上”-d”選項，就像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls /bin /usr/bin | sort | uniq -d | less
+</code></pre></div></div>
+
+<h3 id="wc--列印行數字數和位元組數">wc － 列印行數、字數和位元組數</h3>
+
+<p>The wc (word count) command is used to display the number of lines, words, and bytes
+contained in files. For example:</p>
+
+<p>wc（字計數）命令是用來顯示檔案所包含的行數、字數和位元組數。例如：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ wc ls-output.txt
+7902 64566 503634 ls-output.txt
+</code></pre></div></div>
+
+<p>In this case it prints out three numbers: lines, words, and bytes contained in ls-
+output.txt. Like our previous commands, if executed without command line
+arguments, wc accepts standard input. The “-l” option limits its output to only report
+lines. Adding it to a pipeline is a handy way to count things. To see the number of
+programs we have in our sorted list, we can do this:</p>
+
+<p>在這個例子中，wc 打印出來三個數字：包含在檔案 ls-output.txt 中的行數，單詞數和位元組數，
+正如我們先前的命令，如果 wc 不帶命令列引數，它接受標準輸入。”-l”選項限制命令輸出只能
+報道行數。新增 wc 到管道線來統計資料，是個很便利的方法。檢視我們的有序列表中程式個數，
+我們可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls /bin /usr/bin | sort | uniq | wc -l
+2728
+</code></pre></div></div>
+
+<h3 id="grep--列印匹配行">grep － 列印匹配行</h3>
+
+<p>grep is a powerful program used to find text patterns within files. It’s used like this:</p>
+
+<p>grep 是個很強大的程式，用來找到檔案中的匹配文字。這樣使用 grep 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>grep pattern [file...]
+</code></pre></div></div>
+
+<p>When grep encounters a “pattern” in the file, it prints out the lines containing it. The
+patterns that grep can match can be very complex, but for now we will concentrate on
+simple text matches. We’ll cover the advanced patterns, called regular expressions in a
+later chapter.</p>
+
+<p>當 grep 遇到一個檔案中的匹配”模式”，它會打印出包含這個型別的行。grep 能夠匹配的模式可以
+很複雜，但是現在我們把注意力集中在簡單文字匹配上面。在後面的章節中，我們將會研究
+高階模式，叫做正則表示式。</p>
+
+<p>Let's say we want to find all the files in our list of programs that had the word “zip”
+embedded in the name. Such a search might give us an idea of some of the programs on
+our system that had something to do with file compression. We would do this:</p>
+
+<p>比如說，我們想在我們的程式列表中，找到檔名中包含單詞”zip”的所有檔案。這樣一個搜尋，
+可能讓我們瞭解系統中的一些程式與檔案壓縮有關係。這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls /bin /usr/bin | sort | uniq | grep zip
+bunzip2
+bzip2
+gunzip
+...
+</code></pre></div></div>
+
+<p>There are a couple of handy options for grep: “-i” which causes grep to ignore case
+when performing the search (normally searches are case sensitive) and “-v” which tells
+grep to only print lines that do not match the pattern.</p>
+
+<p>grep 有一些方便的選項：”-i”使得 grep 在執行搜尋時忽略大小寫（通常，搜尋是大小寫
+敏感的），”-v”選項會告訴 grep 只打印不匹配的行。</p>
+
+<h3 id="head--tail--列印檔案開頭部分結尾部分">head / tail － 列印檔案開頭部分/結尾部分</h3>
+
+<p>Sometimes you don’t want all of the output from a command. You may only want the
+first few lines or the last few lines. The head command prints the first ten lines of a file
+and the tail command prints the last ten lines. By default, both commands print ten
+lines of text, but this can be adjusted with the “-n” option:</p>
+
+<p>有時候你不需要一個命令的所有輸出。可能你只想要前幾行或者後幾行的輸出內容。
+head 命令列印檔案的前十行，而 tail 命令列印檔案的後十行。預設情況下，兩個命令
+都列印十行文字，但是可以透過”-n”選項來調整命令列印的行數。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ head -n 5 ls-output.txt
+total 343496
+...
+[me@linuxbox ~]$ tail -n 5 ls-output.txt
+...
+</code></pre></div></div>
+
+<p>These can be used in pipelines as well:</p>
+
+<p>它們也能用在管道線中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls /usr/bin | tail -n 5
+znew
+...
+</code></pre></div></div>
+
+<p>tail has an option which allows you to view files in real-time. This is useful for
+watching the progress of log files as they are being written. In the following example, we
+will look at the messages file in /var/log. Superuser privileges are required to do
+this on some Linux distributions, since the /var/log/messages file may contain
+security information:</p>
+
+<p>tail 有一個選項允許你實時地瀏覽檔案。當觀察日誌檔案的進展時，這很有用，因為
+它們同時在被寫入。在以下的例子裡，我們要檢視目錄/var/log 裡面的資訊檔案。在
+一些 Linux 發行版中，要求有超級使用者許可權才能閱讀這些檔案，因為檔案/var/log/messages
+可能包含安全資訊。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ tail -f /var/log/messages
+Feb 8 13:40:05 twin4 dhclient: DHCPACK from 192.168.1.1
+....
+</code></pre></div></div>
+
+<p>Using the “-f” option, tail continues to monitor the file and when new lines are
+appended, they immediately appear on the display. This continues until you type Ctrl-c.</p>
+
+<p>使用”-f”選項，tail 命令繼續監測這個檔案，當新的內容新增到檔案後，它們會立即
+出現在螢幕上。這會一直繼續下去直到你輸入 Ctrl-c。</p>
+
+<h3 id="tee--從-stdin-讀取資料並同時輸出到-stdout-和檔案">tee － 從 Stdin 讀取資料，並同時輸出到 Stdout 和檔案</h3>
+
+<p>In keeping with our plumbing metaphor, Linux provides a command called tee which
+creates a “tee” fitting on our pipe. The tee program reads standard input and copies it to
+both standard output (allowing the data to continue down the pipeline) and to one or more
+files. This is useful for capturing a pipeline’s contents at an intermediate stage of
+processing. Here we repeat one of our earlier examples, this time including tee to
+capture the entire directory listing to the file ls.txt before grep filters the pipeline’s
+contents:</p>
+
+<p>為了和我們的管道隱喻保持一致，Linux 提供了一個叫做 tee 的命令，這個命令製造了
+一個”tee”，安裝到我們的管道上。tee 程式從標準輸入讀入資料，並且同時複製資料
+到標準輸出（允許資料繼續隨著管道線流動）和一個或多個檔案。當在某個中間處理
+階段來捕捉一個管道線的內容時，這很有幫助。這裡，我們重複執行一個先前的例子，
+這次包含 tee 命令，在 grep 過濾管道線的內容之前，來捕捉整個目錄列表到檔案 ls.txt：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls /usr/bin | tee ls.txt | grep zip
+bunzip2
+bzip2
+....
+</code></pre></div></div>
+
+<h3 id="總結歸納">總結歸納</h3>
+
+<p>As always, check out the documentation of each of the commands we have covered in
+this chapter. We have only seen their most basic usage. They all have a number of
+interesting options. As we gain Linux experience, we will see that the redirection feature
+of the command line is extremely useful for solving specialized problems. There are
+many commands that make use of standard input and output, and almost all command
+line programs use standard error to display their informative messages.</p>
+
+<p>一如既往，檢視這章學到的每一個命令的文件。我們已經知道了他們最基本的用法。
+它們還有很多有趣的選項。隨著我們 Linux 經驗的積累，我們會了解命令列重新導向特性
+在解決特殊問題時非常有用處。有許多命令利用標準輸入和輸出，而幾乎所有的命令列
+程式都使用標準錯誤來顯示它們的詳細資訊。</p>
+
+<blockquote>
+  <p>Linux Is About Imagination</p>
+
+  <p>Linux 可以激發我們的想象</p>
+
+  <p>When I am asked to explain the difference between Windows and Linux, I often
+use a toy analogy.</p>
+
+  <p>當我被要求解釋 Windows 與 Linux 之間的差異時，我經常拿玩具來作比喻。</p>
+
+  <p>Windows is like a Game Boy. You go to the store and buy one all shiny new in
+the box. You take it home, turn it on and play with it. Pretty graphics, cute
+sounds. After a while though, you get tired of the game that came with it so you
+go back to the store and buy another one. This cycle repeats over and over.
+Finally, you go back to the store and say to the person behind the counter, “I want
+a game that does this!” only to be told that no such game exists because there is
+no “market demand” for it. Then you say, “But I only need to change this one
+thing!” The person behind the counter says you can’t change it. The games are
+all sealed up in their cartridges. You discover that your toy is limited to the games
+that others have decided that you need and no more.</p>
+
+  <p>Windows 就像一個遊戲機。你去商店，買了一個包裝在盒子裡面的全新的遊戲機。
+你把它帶回家，開啟盒子，開始玩遊戲。精美的畫面，動人的聲音。玩了一段時間之後，
+你厭倦了它自帶的遊戲，所以你返回商店，又買了另一個遊戲機。這個過程反覆重複。
+最後，你玩膩了遊戲機自帶的遊戲，你回到商店，告訴售貨員，“我想要一個這樣的遊戲！”
+但售貨員告訴你沒有這樣的遊戲存在，因為它沒有“市場需求”。然後你說，“但是我只
+需要修改一下這個遊戲！“，售貨員又告訴你不能修改它。所有遊戲都被封裝在它們的
+儲存器中。到頭來，你發現你的玩具只侷限於別人為你規定好的遊戲。</p>
+
+  <p>Linux, on the other hand, is like the world’s largest Erector Set. You open it up
+and it’s just a huge collection of parts. A lot of steel struts, screws, nuts, gears,
+pulleys, motors, and a few suggestions on what to build. So you start to play with
+it. You build one of the suggestions and then another. After a while you discover
+that you have your own ideas of what to make. You don’t ever have to go back to
+the store, as you already have everything you need. The Erector Set takes on the
+shape of your imagination. It does what you want.</p>
+
+  <p>另一方面，Linux 就像一個全世界上最大的建造模型。你開啟它，發現它只是一個巨大的
+部件集合。有許多鋼支柱、螺釘、螺母、齒輪、滑輪、發動機和一些怎樣來建造它的說明書。
+然後你開始擺弄它。你建造了一個又一個樣板模型。過了一會，你發現你要建造自己的模型。
+你不必返回商店，因為你已經擁有了你需要的一切。建造模型以你構想的形狀為範本，搭建
+你想要的模型。</p>
+
+  <p>Your choice of toys is, of course, a personal thing, so which toy would you find
+more satisfying?</p>
+
+  <p>當然，選擇哪一個玩具，是你的事情，那麼你覺得哪個玩具更令人滿意呢？</p>
+</blockquote>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

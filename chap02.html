@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">什麼是 shell</h1><br>
+<p>When we speak of the command line, we are really referring to the shell. The
+shell is a program that takes keyboard commands and passes them to the
+operating system to carry out. Almost all Linux distributions supply a shell
+program from the GNU Project called bash. The name “bash” is an acronym for
+“Bourne Again SHell”, a reference to the fact bash is an enhanced replacement
+for sh, the original Unix shell program written by Steve Bourne.</p>
+
+<p>一說到命令列，我們真正指的是 shell。shell 就是一個程式，它接受從鍵盤輸入的命令，
+然後把命令傳遞給作業系統去執行。幾乎所有的 Linux 發行版都提供一個名為 bash 的
+來自 GNU 專案的 shell 程式。“bash” 是 “Bourne Again SHell” 的首字母縮寫，
+所指的是這樣一個事實，bash 是最初 Unix 上由 Steve Bourne 寫成 shell 程式 sh 的增強版。</p>
+
+<h3 id="終端模擬器">終端模擬器</h3>
+
+<p>When using a graphical user interface, we need another program called a
+terminal emulator to interact with the shell. If we look through our desktop
+menus, we will probably find one. KDE uses konsole and GNOME uses
+gnome-terminal, though it’s likely called simply “terminal” on our menu. There
+are a number of other terminal emulators available for Linux, but they all
+basically do the same thing; give us access to the shell. You will probably
+develop a preference for one or another based on the number of bells and
+whistles it has.</p>
+
+<p>當使用圖形使用者介面時，我們需要另一個和 shell 互動的叫做終端模擬器的程式。
+如果我們瀏覽一下桌面選單，可能會找到一個。雖然在選單裡它可能都
+被簡單地稱為 “terminal”，但是 KDE 用的是 konsole , 而 GNOME 則使用 gnome-terminal。
+還有其他一些終端模擬器可供 Linux 使用，但基本上，它們都完成同樣的事情，
+讓我們能訪問 shell。也許，你可能會因為附加的一系列花俏功能而喜歡上某個終端。</p>
+
+<h3 id="第一次按鍵">第一次按鍵</h3>
+
+<p>So Let's get started. Launch the terminal emulator! Once it comes up, we should see somehing like this:</p>
+
+<p>好，開始吧。啟動終端模擬器！一旦它執行起來，我們應該看到一行像這樣的文字：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>This is called a shell prompt and it will appear whenever the shell is ready
+to accept input. While it may vary in appearance somewhat depending on the
+distribution, it will usually include your username@machinename, followed by
+the current working directory (more about that in a little bit) and a dollar
+sign.</p>
+
+<p>這叫做 shell 提示符，無論何時當 shell 準備好了去接受輸入時，它就會出現。然而，
+它可能會以各種各樣的面孔顯示，這則取決於不同的 Linux 發行版，
+它通常包括你的使用者名稱@主機名，緊接著當前工作目錄（稍後會有更多介紹）和一個美元符號。</p>
+
+<p>If the last character of the prompt is a pound sign (“#”) rather than a dollar
+sign, the terminal session has superuser privileges. This means either we are
+logged in as the root user or we selected a terminal emulator that provides
+superuser (administrative) privileges.</p>
+
+<p>如果提示符的最後一個字元是“#”, 而不是“$”, 那麼這個終端會話就有超級使用者許可權。
+這意味著，我們或者是以 root 使用者的身份登入，或者是我們選擇的終端模擬器提供超級使用者（管理員）許可權。</p>
+
+<p>Assuming that things are good so far, Let's try some typing. Type some
+gibberish at the prompt like so:</p>
+
+<p>假定到目前為止，所有事情都進行順利，那我們試著鍵入字元吧。在提示符下敲入
+一些像下面一樣的亂七八糟的字元：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ kaekfjaeifj
+</code></pre></div></div>
+
+<p>Since this command makes no sense, the shell will tell us so and give us
+another chance:</p>
+
+<p>因為這個命令沒有任何意義，所以 shell 會提示錯誤資訊，並讓我們再試一下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bash: kaekfjaeifj: command not found
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<h3 id="命令歷史">命令歷史</h3>
+
+<p>If we press the up-arrow key, we will see that the previous command “kaekfjaeifj”
+reappears after the prompt. This is called command history. Most Linux distributions
+remember the last five hundred commands by default. Press the down-arrow key and the
+previous command disappears.</p>
+
+<p>如果按下上箭頭按鍵，我們會看到剛才輸入的命令“kaekfjaeifj”重新出現在提示符之後。
+這就叫做命令歷史。許多 Linux 發行版預設儲存最後輸入的500個命令。
+按下下箭頭按鍵，先前輸入的命令就消失了。</p>
+
+<h3 id="移動游標">移動游標</h3>
+
+<p>Recall the previous command with the up-arrow key again. Now try the left and right-arrow keys.
+See how we can position the cursor anywhere on the command line? This makes editing commands easy.</p>
+
+<p>可藉助上箭頭按鍵，來獲得上次輸入的命令。現在試著使用左右箭頭按鍵。
+看一下怎樣把游標定位到命令列的任意位置？透過使用箭頭按鍵，使編輯命令變得輕鬆些。</p>
+
+<h3 id="關於滑鼠和游標">關於滑鼠和游標</h3>
+
+<p>While the shell is all about the keyboard, you can also use a mouse with your
+terminal emulator. There is a mechanism built into the X Window System (the
+underlying engine that makes the GUI go) that supports a quick copy and paste
+technique. If you highlight some text by holding down the left mouse button and
+dragging the mouse over it (or double clicking on a word), it is copied into a
+buffer maintained by X. Pressing the middle mouse button will cause the text to
+be pasted at the cursor location. Try it.</p>
+
+<p>雖然，shell 是和鍵盤打交道的，但你也可以在終端模擬器裡使用滑鼠。X 視窗系統
+（使 GUI 工作的底層引擎）內建了一種機制，支援快速拷貝和貼上技巧。
+如果你按下滑鼠左鍵，沿著文字拖動滑鼠（或者雙擊一個單詞）高亮了一些文字，
+那麼這些高亮的文字就被拷貝到了一個由 X 管理的緩衝區裡面。然後按下滑鼠中鍵，
+這些文字就被貼上到游標所在的位置。試試看。</p>
+
+<p>Note: Don’t be tempted to use Ctrl-c and Ctrl-v to perform copy and paste
+inside a terminal window. They don’t work. These control codes have different
+meanings to the shell and were assigned many years before Microsoft Windows.</p>
+
+<p>注意： 不要在一個終端窗口裡使用 Ctrl-c 和 Ctrl-v 快捷鍵來執行拷貝和貼上操作。
+它們不起作用。對於 shell 來說，這兩個控制程式碼有著不同的含義，它們在早於
+Microsoft Windows （定義複製貼上的含義）許多年之前就賦予了不同的意義。</p>
+
+<p>Your graphical desktop environment (most likely KDE or GNOME), in an effort
+to behave like Windows, probably has its focus policy set to “click to focus.”
+This means for a window to get focus (become active) you need to click on it.
+This is contrary to the traditional X behavior of “focus follows mouse” which
+means that a window gets focus by just passing the mouse over it. The window
+will not come to the foreground until you click on it but it will be able to receive
+input. Setting the focus policy to “focus follows mouse” will make the copy and
+paste technique even more useful. Give it a try. I think if you give it a chance
+you will prefer it. You will find this setting in the configuration program for your
+window manager.</p>
+
+<p>你的圖形桌面環境（像 KDE 或 GNOME），努力想和 Windows 一樣，可能會把它的聚焦策略
+設定成“單擊聚焦”。這意味著，為了讓視窗聚焦（變成活動視窗）你需要單擊它。
+這與“聚焦跟隨著滑鼠”的傳統 X 行為不同，傳統 X 行為是指只要把滑鼠移動到一個視窗的上方。
+它能接受輸入， 但是直到你單擊視窗之前它都不會成為前端視窗。
+設定聚焦策略為“聚焦跟隨著滑鼠”，可以使拷貝和貼上更方便易用。嘗試一下。
+我想如果你試了一下你會喜歡上它的。你能在視窗管理器的配置程式中找到這個設定。</p>
+
+<h3 id="試試執行一些簡單命令">試試執行一些簡單命令</h3>
+
+<p>Now that we have learned to type, Let's try a few simple commands. The first one is
+date. This command displays the current time and date.</p>
+
+<p>現在，我們學習了怎樣輸入命令，那我們執行一些簡單的命令吧。第一個命令是 date。
+這個命令顯示系統當前時間和日期。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ date
+Thu Oct 25 13:51:54 EDT 2007
+</code></pre></div></div>
+
+<p>A related command is cal which, by default, displays a calendar of the current month.</p>
+
+<p>一個相關聯的命令，cal，它預設顯示當前月份的日曆。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cal
+October 2007
+Su Mo Tu We Th Fr Sa
+1 2 3 4 5 6
+7 8 9 10 11 12 13
+14 15 16 17 18 19 20
+21 22 23 24 25 26 27
+28 29 30 31
+</code></pre></div></div>
+
+<p>To see the current amount of free space on your disk drives, type df:</p>
+
+<p>檢視磁碟剩餘空間的數量，輸入 df:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ df
+Filesystem           1K-blocks      Used Available Use% Mounted on
+/dev/sda2             15115452   5012392   9949716  34% /
+/dev/sda5             59631908  26545424  30008432  47% /home
+/dev/sda1               147764     17370   122765   13% /boot
+tmpfs                   256856         0   256856    0% /dev/shm
+</code></pre></div></div>
+
+<p>Likewise, to display the amount of free memory, type the free command.</p>
+
+<p>同樣地，顯示空閒記憶體的數量，輸入命令 free。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ free
+total       used       free     shared    buffers     cached
+Mem:       2059676     846456    1213220          0
+44028      360568
+-/+ buffers/cache:     441860    1617816
+Swap:      1042428          0    1042428
+</code></pre></div></div>
+
+<h3 id="結束終端會話">結束終端會話</h3>
+
+<p>We can end a terminal session by either closing the terminal emulator window, or by
+entering the exit command at the shell prompt:</p>
+
+<p>我們可以透過關閉終端模擬器視窗，或者是在 shell 提示符下輸入 exit 命令來終止一個終端會話：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ exit
+</code></pre></div></div>
+
+<h3 id="幕後控制檯">幕後控制檯</h3>
+
+<p>Even if we have no terminal emulator running, several terminal sessions
+continue to run behind the graphical desktop. Called virtual terminals or
+virtual consoles, these sessions can be accessed on most Linux distributions
+by pressing Ctrl- Alt-F1 through Ctrl-Alt-F6 on most systems. When a session
+is accessed, it presents a login prompt into which we can enter our user name
+and password.  To switch from one virtual console to another, press Alt and
+F1-F6. To return to the graphical desktop, press Alt-F7.</p>
+
+<p>即使終端模擬器沒有執行，在後臺仍然有幾個終端會話執行著。它們叫做虛擬終端
+或者是虛擬控制檯。在大多數 Linux 發行版中，這些終端會話都可以透過按下
+Ctrl-Alt-F1 到 Ctrl-Alt-F6 訪問。當一個會話被訪問的時候，
+它會顯示登入提示框，我們需要輸入使用者名稱和密碼。要從一個虛擬控制檯轉換到另一個，
+按下 Alt 和 F1-F6(中的一個)。返回圖形桌面，按下 Alt-F7。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<p>To learn more about Steve Bourne, father of the Bourne Shell, see this
+Wikipedia article:</p>
+
+<ul>
+  <li>
+    <p>想了解更多關於 Steve Bourne 的故事，Bourne Shell 之父，讀一下這篇文章：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Steve_Bourne">http://en.wikipedia.org/wiki/Steve_Bourne</a></p>
+  </li>
+</ul>
+
+<p>Here is an article about the concept of shells in computing:</p>
+
+<ul>
+  <li>
+    <p>這是一篇關於在計算機領域裡，shells 概念的文章：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Shell_(computing)">http://en.wikipedia.org/wiki/Shell_(computing)</a></p>
+  </li>
+</ul>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

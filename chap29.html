@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">讀取鍵盤輸入</h1><br>
+<p>The scripts we have written so far lack a feature common in most computer programs —
+interactivity. That is, the ability of the program to interact with the user. While many
+programs don’t need to be interactive, some programs benefit from being able to accept
+input directly from the user. Take, for example, this script from the previous chapter:</p>
+
+<p>到目前為止我們編寫的指令碼都缺乏一項在大多數計算機程式中都很常見的功能－互動性。也就是，
+程式與使用者進行互動的能力。雖然許多程式不必是可互動的，但一些程式卻得到益處，能夠直接
+接受使用者的輸入。以這個前面章節中的指令碼為例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># test-integer2: evaluate the value of an integer.</span>
+<span class="nv">INT</span><span class="o">=</span><span class="nt">-5</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$INT</span><span class="s2">"</span> <span class="o">=</span>~ ^-?[0-9]+<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+    if</span> <span class="o">[</span> <span class="nv">$INT</span> <span class="nt">-eq</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"INT is zero."</span>
+    <span class="k">else
+        if</span> <span class="o">[</span> <span class="nv">$INT</span> <span class="nt">-lt</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"INT is negative."</span>
+        <span class="k">else
+            </span><span class="nb">echo</span> <span class="s2">"INT is positive."</span>
+        <span class="k">fi
+        if</span> <span class="o">[</span> <span class="k">$((</span>INT <span class="o">%</span> <span class="m">2</span><span class="k">))</span> <span class="nt">-eq</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"INT is even."</span>
+        <span class="k">else
+        </span><span class="nb">echo</span> <span class="s2">"INT is odd."</span>
+        <span class="k">fi
+    fi
+else
+    </span><span class="nb">echo</span> <span class="s2">"INT is not an integer."</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>Each time we want to change the value of <code class="highlighter-rouge">INT</code>, we have to edit the script. It would be
+much more useful if the script could ask the user for a value. In this chapter, we will
+begin to look at how we can add interactivity to our programs.</p>
+
+<p>每次我們想要改變 INT 數值的時候，我們必須編輯這個指令碼。如果指令碼能請求使用者輸入數值，那
+麼它會更加有用處。在這個指令碼中，我們將看一下我們怎樣給程式增加互動性功能。</p>
+
+<h3 id="read---從標準輸入讀取數值">read - 從標準輸入讀取數值</h3>
+
+<p>The read builtin command is used to read a single line of standard input. This
+command can be used to read keyboard input or, when redirection is employed, a line of
+data from a file. The command has the following syntax:</p>
+
+<p>這個 read 內部命令被用來從標準輸入讀取單行資料。這個命令可以用來讀取鍵盤輸入，當使用
+重新導向的時候，讀取檔案中的一行資料。這個命令有以下語法形式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>read [-options] [variable...]
+</code></pre></div></div>
+
+<p>where options is one or more of the available options listed below and variable is the
+name of one or more variables used to hold the input value. If no variable name is
+supplied, the shell variable REPLY contains the line of data.</p>
+
+<p>這裡的 options 是下面列出的可用選項中的一個或多個，且 variable 是用來儲存輸入數值的一個或多個變數名。
+如果沒有提供變數名，shell 變數 REPLY 會包含資料行。</p>
+
+<p>Basically, <code class="highlighter-rouge">read</code> assigns fields from standard input to the specified variables. If we
+modify our integer evaluation script to use <code class="highlighter-rouge">read</code>, it might look like this:</p>
+
+<p>基本上，read 會把來自標準輸入的欄位賦值給具體的變數。如果我們修改我們的整數求值指令碼，讓其使用
+ read ，它可能看起來像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># read-integer: evaluate the value of an integer.</span>
+<span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"Please enter an integer -&gt; "</span>
+<span class="nb">read </span>int
+<span class="k">if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$int</span><span class="s2">"</span> <span class="o">=</span>~ ^-?[0-9]+<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+    if</span> <span class="o">[</span> <span class="nv">$int</span> <span class="nt">-eq</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$int</span><span class="s2"> is zero."</span>
+    <span class="k">else
+        if</span> <span class="o">[</span> <span class="nv">$int</span> <span class="nt">-lt</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$int</span><span class="s2"> is negative."</span>
+        <span class="k">else
+            </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$int</span><span class="s2"> is positive."</span>
+        <span class="k">fi
+        if</span> <span class="o">[</span> <span class="k">$((</span>int <span class="o">%</span> <span class="m">2</span><span class="k">))</span> <span class="nt">-eq</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$int</span><span class="s2"> is even."</span>
+        <span class="k">else
+            </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$int</span><span class="s2"> is odd."</span>
+        <span class="k">fi
+    fi
+else
+    </span><span class="nb">echo</span> <span class="s2">"Input value is not an integer."</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>We use <code class="highlighter-rouge">echo</code> with the <code class="highlighter-rouge">-n</code> option (which suppresses the trailing newline on output) to
+display a prompt, then use <code class="highlighter-rouge">read</code> to input a value for the variable int. Running this
+script results in this:</p>
+
+<p>我們使用帶有 -n 選項（其會刪除輸出結果末尾的換行符）的 echo 命令，來顯示提示資訊，
+然後使用 read 來讀入變數 int 的數值。執行這個指令碼得到以下輸出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ read-integer
+Please enter an integer -&gt; 5
+5 is positive.
+5 is odd.
+</code></pre></div></div>
+
+<p>read can assign input to multiple variables, as shown in this script:</p>
+
+<p>read 可以給多個變數賦值，正如下面指令碼中所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># read-multiple: read multiple values from keyboard</span>
+<span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"Enter one or more values &gt; "</span>
+<span class="nb">read </span>var1 var2 var3 var4 var5
+<span class="nb">echo</span> <span class="s2">"var1 = '</span><span class="nv">$var1</span><span class="s2">'"</span>
+<span class="nb">echo</span> <span class="s2">"var2 = '</span><span class="nv">$var2</span><span class="s2">'"</span>
+<span class="nb">echo</span> <span class="s2">"var3 = '</span><span class="nv">$var3</span><span class="s2">'"</span>
+<span class="nb">echo</span> <span class="s2">"var4 = '</span><span class="nv">$var4</span><span class="s2">'"</span>
+<span class="nb">echo</span> <span class="s2">"var5 = '</span><span class="nv">$var5</span><span class="s2">'"</span>
+</code></pre></div></div>
+
+<p>In this script, we assign and display up to five values. Notice how <code class="highlighter-rouge">read</code> behaves when
+given different numbers of values:</p>
+
+<p>在這個指令碼中，我們給五個變數賦值並顯示其結果。注意當給定不同個數的數值後，read 怎樣操作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ read-multiple
+Enter one or more values &gt; a b c d e
+var1 = 'a'
+var2 = 'b'
+var3 = 'c'
+var4 = 'd'
+var5 = 'e'
+[me@linuxbox ~]$ read-multiple
+Enter one or more values &gt; a
+var1 = 'a'
+var2 = ''
+var3 = ''
+var4 = ''
+var5 = ''
+[me@linuxbox ~]$ read-multiple
+Enter one or more values &gt; a b c d e f g
+var1 = 'a'
+var2 = 'b'
+var3 = 'c'
+var4 = 'd'
+var5 = 'e f g'
+</code></pre></div></div>
+
+<p>If <code class="highlighter-rouge">read</code> receives fewer than the expected number, the extra variables are empty, while an
+excessive amount of input results in the final variable containing all of the extra input.
+If no variables are listed after the read command, a shell variable, <code class="highlighter-rouge">REPLY</code>, will be
+assigned all the input:</p>
+
+<p>如果 read 命令接受到變數值數目少於期望的數字，那麼額外的變數值為空，而多餘的輸入資料則會
+被包含到最後一個變數中。如果 read 命令之後沒有列出變數名，則一個 shell 變數，REPLY，將會包含
+所有的輸入：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># read-single: read multiple values into default variable</span>
+<span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"Enter one or more values &gt; "</span>
+<span class="nb">read
+echo</span> <span class="s2">"REPLY = '</span><span class="nv">$REPLY</span><span class="s2">'"</span>
+</code></pre></div></div>
+
+<p>Running this script results in this:</p>
+
+<p>這個指令碼的輸出結果是：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ read-single
+Enter one or more values &gt; a b c d
+REPLY = 'a b c d'
+</code></pre></div></div>
+
+<h4 id="選項">選項</h4>
+
+<p><code class="highlighter-rouge">read</code> supports the following options:</p>
+
+<p>read 支援以下選項：</p>
+
+<table class="multi">
+<caption class="cap">Table 29-1: read Options</caption>
+<thead>
+<tr>
+<th class="title">Option</th>
+<th class="title">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top" width="25%">-a array </td>
+<td valign="top">Assign the input to array, starting with index zero. We
+will cover arrays in Chapter 36.</td>
+</tr>
+<tr>
+<td valign="top">-d delimiter </td>
+<td valign="top">The first character in the string delimiter is used to
+indicate end of input, rather than a newline character.</td>
+</tr>
+<tr>
+<td valign="top">-e</td>
+<td valign="top">Use Readline to handle input. This permits input editing
+in the same manner as the command line.</td>
+</tr>
+<tr>
+<td valign="top">-n num</td>
+<td valign="top">Read num characters of input, rather than an entire line.</td>
+</tr>
+<tr>
+<td valign="top">-p prompt </td>
+<td valign="top">Display a prompt for input using the string prompt.</td>
+</tr>
+<tr>
+<td valign="top">-r</td>
+<td valign="top">Raw mode. Do not interpret backslash characters as
+escapes.</td>
+</tr>
+<tr>
+<td valign="top">-s</td>
+<td valign="top">Silent mode. Do not echo characters to the display as
+they are typed. This is useful when inputting passwords and other confidential information.</td>
+</tr>
+<tr>
+<td valign="top">-t seconds</td>
+<td valign="top">Timeout. Terminate input after seconds. read returns a
+non-zero exit status if an input times out.</td>
+</tr>
+<tr>
+<td valign="top">-u fd</td>
+<td valign="top">Use input from file descriptor fd, rather than standard
+input.</td>
+</tr>
+</tbody>
+</table>
+
+<table class="multi">
+<caption class="cap">表29-1: read 選項</caption>
+<thead>
+<tr>
+<th class="title">選項</th>
+<th class="title">說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top" width="25%">-a array </td>
+<td valign="top">把輸入賦值到陣列 array 中，從索引號零開始。我們
+將在第36章中討論陣列問題。</td>
+</tr>
+<tr>
+<td valign="top">-d delimiter </td>
+<td valign="top">用字串 delimiter 中的第一個字元指示輸入結束，而不是一個換行符。</td>
+</tr>
+<tr>
+<td valign="top">-e</td>
+<td valign="top">使用 Readline 來處理輸入。這使得與命令列相同的方式編輯輸入。</td>
+</tr>
+<tr>
+<td valign="top">-n num</td>
+<td valign="top">讀取 num 個輸入字元，而不是整行。</td>
+</tr>
+<tr>
+<td valign="top">-p prompt </td>
+<td valign="top">為輸入顯示提示資訊，使用字串 prompt。</td>
+</tr>
+<tr>
+<td valign="top">-r</td>
+<td valign="top">Raw mode. 不把反斜槓字元解釋為轉義字元。</td>
+</tr>
+<tr>
+<td valign="top">-s</td>
+<td valign="top">Silent mode.
+不會在螢幕上顯示輸入的字元。當輸入密碼和其它確認資訊的時候，這會很有幫助。</td>
+</tr>
+<tr>
+<td valign="top">-t seconds</td>
+<td valign="top">超時. 幾秒鐘後終止輸入。若輸入超時，read 會返回一個非零退出狀態。 </td>
+</tr>
+<tr>
+<td valign="top">-u fd</td>
+<td valign="top">使用檔案描述符 fd 中的輸入，而不是標準輸入。</td>
+</tr>
+</tbody>
+</table>
+
+<p>Using the various options, we can do interesting things with read. For example, with
+the -p option, we can provide a prompt string:</p>
+
+<p>使用各種各樣的選項，我們能用 read 完成有趣的事情。例如，透過-p 選項，我們能夠提供提示資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># read-single: read multiple values into default variable</span>
+<span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Enter one or more values &gt; "</span>
+<span class="nb">echo</span> <span class="s2">"REPLY = '</span><span class="nv">$REPLY</span><span class="s2">'"</span>
+</code></pre></div></div>
+
+<p>With the -t and -s options we can write a script that reads “secret” input and times out
+if the input is not completed in a specified time:</p>
+
+<p>透過 -t 和 -s 選項，我們可以編寫一個這樣的指令碼，讀取“祕密”輸入，並且如果在特定的時間內
+輸入沒有完成，就終止輸入。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># read-secret: input a secret pass phrase</span>
+<span class="k">if </span><span class="nb">read</span> <span class="nt">-t</span> 10 <span class="nt">-sp</span> <span class="s2">"Enter secret pass phrase &gt; "</span> secret_pass<span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Secret pass phrase = '</span><span class="nv">$secret_pass</span><span class="s2">'"</span>
+<span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">Input timed out"</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>The script prompts the user for a secret pass phrase and waits ten seconds for input. If
+the entry is not completed within the specified time, the script exits with an error. Since
+the -s option is included, the characters of the pass phrase are not echoed to the display
+as they are typed.</p>
+
+<p>這個指令碼提示使用者輸入一個密碼，並等待輸入10秒鐘。如果在特定的時間內沒有完成輸入，
+則指令碼會退出並返回一個錯誤。因為包含了一個 -s 選項，所以輸入的密碼不會出現在螢幕上。</p>
+
+<h3 id="ifs">IFS</h3>
+
+<p>Normally, the shell performs word splitting on the input provided to <code class="highlighter-rouge">read</code>. As we have
+seen, this means that multiple words separated by one or more spaces become separate
+items on the input line, and are assigned to separate variables by read. This behavior is
+configured by a shell variable named <em>IFS</em> (for Internal Field Separator). The default
+value of <strong>IFS</strong> contains a space, a tab, and a newline character, each of which will separate
+items from one another.</p>
+
+<p>通常，shell 對提供給 read 的輸入按照單詞進行分離。正如我們所見到的，這意味著多個由一個或幾個空格
+分離開的單詞在輸入行中變成獨立的個體，並被 read 賦值給單獨的變數。這種行為由 shell 變數__IFS__
+（內部字元分隔符）配置。<em>IFS</em> 的預設值包含一個空格，一個 tab，和一個換行符，每一個都會把
+欄位分割開。</p>
+
+<p>We can adjust the value of <em>IFS</em> to control the separation of fields input to <code class="highlighter-rouge">read</code>. For
+example, the /etc/passwd file contains lines of data that use the colon character as a
+field separator. By changing the value of <em>IFS</em> to a single colon, we can use read to
+input the contents of /etc/passwd and successfully separate fields into different
+variables. Here we have a script that does just that:</p>
+
+<p>我們可以調整 <em>IFS</em> 的值來控制輸入欄位的分離。例如，這個 /etc/passwd 檔案包含的資料行
+使用冒號作為欄位分隔符。透過把 <em>IFS</em> 的值更改為單個冒號，我們可以使用 read 讀取
+/etc/passwd 中的內容，併成功地把欄位分給不同的變數。這個就是做這樣的事情：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># read-ifs: read fields from a file</span>
+<span class="nv">FILE</span><span class="o">=</span>/etc/passwd
+<span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Enter a user name &gt; "</span> user_name
+<span class="nv">file_info</span><span class="o">=</span><span class="k">$(</span><span class="nb">grep</span> <span class="s2">"^</span><span class="nv">$user_name</span><span class="s2">:"</span> <span class="nv">$FILE</span><span class="k">)</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nt">-n</span> <span class="s2">"</span><span class="nv">$file_info</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nv">IFS</span><span class="o">=</span><span class="s2">":"</span> <span class="nb">read </span>user pw uid gid name home shell <span class="o">&lt;&lt;&lt;</span> <span class="s2">"</span><span class="nv">$file_info</span><span class="s2">"</span>
+    <span class="nb">echo</span> <span class="s2">"User = '</span><span class="nv">$user</span><span class="s2">'"</span>
+    <span class="nb">echo</span> <span class="s2">"UID = '</span><span class="nv">$uid</span><span class="s2">'"</span>
+    <span class="nb">echo</span> <span class="s2">"GID = '</span><span class="nv">$gid</span><span class="s2">'"</span>
+    <span class="nb">echo</span> <span class="s2">"Full Name = '</span><span class="nv">$name</span><span class="s2">'"</span>
+    <span class="nb">echo</span> <span class="s2">"Home Dir. = '</span><span class="nv">$home</span><span class="s2">'"</span>
+    <span class="nb">echo</span> <span class="s2">"Shell = '</span><span class="nv">$shell</span><span class="s2">'"</span>
+<span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"No such user '</span><span class="nv">$user_name</span><span class="s2">'"</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>This script prompts the user to enter the user name of an account on the system, then
+displays the different fields found in the user’s record in the /etc/passwd file. The
+script contains two interesting lines. The first is:</p>
+
+<p>這個指令碼提示使用者輸入系統中一個帳戶的使用者名稱，然後顯示在檔案 /etc/passwd/ 檔案中關於使用者記錄的
+不同欄位。這個指令碼包含有趣的兩行。 第一個是：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>file_info=$(grep "^$user_name:" $FILE)
+</code></pre></div></div>
+
+<p>This line assigns the results of a grep command to the variable file_info. The
+regular expression used by grep assures that the user name will only match a single line
+in the /etc/passwd file.</p>
+
+<p>這一行把 grep 命令的輸入結果賦值給變數 file_info。grep 命令使用的正則表示式
+確保使用者名稱只會在 /etc/passwd 檔案中匹配一行。</p>
+
+<p>The second interesting line is this one:</p>
+
+<p>第二個有意思的一行是：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IFS=":" read user pw uid gid name home shell &lt;&lt;&lt; "$file_info"
+</code></pre></div></div>
+
+<p>The line consists of three parts: a variable assignment, a <code class="highlighter-rouge">read</code> command with a list of
+variable names as arguments, and a strange new redirection operator. We’ll look at the
+variable assignment first.</p>
+
+<p>這一行由三部分組成：對一個變數的賦值操作，一個帶有一串引數的 read 命令，和一個奇怪的新的重新導向運算子。
+我們首先看一下變數賦值。</p>
+
+<p>The shell allows one or more variable assignments to take place immediately before a
+command. These assignments alter the environment for the command that follows. The
+effect of the assignment is temporary; only changing the environment for the duration of
+the command. In our case, the value of IFS is changed to a colon character. Alternately,
+we could have coded it this way:</p>
+
+<p>Shell 允許在一個命令之前給一個或多個變數賦值。這些賦值會暫時改變之後的命令的環境變數。
+在這種情況下，IFS 的值被改成一個冒號。等效的，我們也可以這樣寫：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>OLD_IFS="$IFS"
+IFS=":"
+read user pw uid gid name home shell &lt;&lt;&lt; "$file_info"
+IFS="$OLD_IFS"
+</code></pre></div></div>
+
+<p>where we store the value of IFS, assign a new value, perform the read command, then
+restore IFS to its original value. Clearly, placing the variable assignment in front of the
+command is a more concise way of doing the same thing.</p>
+
+<p>我們先儲存 IFS 的值，然後賦給一個新值，再執行 read 命令，最後把 IFS 恢復原值。顯然，完成相同的任務，
+在命令之前放置變數名賦值是一種更簡明的方式。</p>
+
+<p>The <code class="highlighter-rouge">&lt;&lt;&lt;</code> operator indicates a here string. A here string is like a here document, only
+shorter, consisting of a single string. In our example, the line of data from the
+/etc/passwd file is fed to the standard input of the read command. We might
+wonder why this rather oblique method was chosen rather than:</p>
+
+<p>這個 <code class="highlighter-rouge">&lt;&lt;&lt;</code> 運算子指示一個 here 字串。一個 here 字串就像一個 here 文件，只是比較簡短，由
+單個字串組成。在這個例子中，來自 /etc/passwd 檔案的資料傳送給 read 命令的標準輸入。
+我們可能想知道為什麼選擇這種相當晦澀的方法而不是：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo "$file_info" | IFS=":" read user pw uid gid name home shell
+</code></pre></div></div>
+
+<blockquote>
+  <p>You Can’t Pipe read</p>
+
+  <p>你不能把 管道用在 read 上</p>
+
+  <p>While the read command normally takes input from standard input, you cannot
+do this:</p>
+
+  <p>雖然通常 read 命令接受標準輸入，但是你不能這樣做：</p>
+
+  <p><em>echo “foo” | read</em></p>
+
+  <p>We would expect this to work, but it does not. The command will appear to
+succeed but the REPLY variable will always be empty. Why is this?</p>
+
+  <p>我們期望這個命令能生效，但是它不能。這個命令將顯示成功，但是 REPLY 變數
+總是為空。為什麼會這樣？</p>
+
+  <p>The explanation has to do with the way the shell handles pipelines. In bash (and
+other shells such as sh), pipelines create subshells. These are copies of the shell
+and its environment which are used to execute the command in the pipeline. In
+our example above, read is executed in a subshell.</p>
+
+  <p>答案與 shell 處理管道線的方式有關係。在 bash（和其它 shells，例如 sh）中，管道線
+會建立子 shell。這個子 shell 是為了執行執行管線中的命令而建立的shell和它的環境的副本。
+上面示例中，read 命令將在子 shell 中執行。</p>
+
+  <p>Subshells in Unix-like systems create copies of the environment for the processes
+to use while they execute. When the processes finishes the copy of the
+environment is destroyed. This means that a subshell can never alter the
+environment of its parent process. read assigns variables, which then become
+part of the environment. In the example above, read assigns the value “foo” to
+the variable REPLY in its subshell’s environment, but when the command exits,
+the subshell and its environment are destroyed, and the effect of the assignment is
+lost.</p>
+
+  <p>在類別 Unix 的系統中，子 shell 執行的時候，會為程序建立父環境的副本。當程序結束
+之後，該副本就會被破壞掉。這意味著一個子 shell 永遠不能改變父程序的環境。read 賦值變數，
+然後會變為環境的一部分。在上面的例子中，read 在它的子 shell 環境中，把 foo 賦值給變數 REPLY，
+但是當命令退出後，子 shell 和它的環境將被破壞掉，這樣賦值的影響就會消失。</p>
+
+  <p>Using here strings is one way to work around this behavior. Another method is
+discussed in Chapter 37.</p>
+
+  <p>使用 here 字串是解決此問題的一種方法。另一種方法將在37章中討論。</p>
+</blockquote>
+
+<h3 id="校正輸入">校正輸入</h3>
+
+<p>With our new ability to have keyboard input comes an additional programming challenge,
+validating input. Very often the difference between a well-written program and a poorly
+written one is in the program’s ability to deal with the unexpected. Frequently, the
+unexpected appears in the form of bad input. We’ve done a little of this with our
+evaluation programs in the previous chapter, where we checked the value of integers and
+screened out empty values and non-numeric characters. It is important to perform these
+kinds of programming checks every time a program receives input, to guard against
+invalid data. This is especially important for programs that are shared by multiple users.
+Omitting these safeguards in the interests of economy might be excused if a program is to
+be used once and only by the author to perform some special task. Even then, if the
+program performs dangerous tasks such as deleting files, it would be wise to include data
+validation, just in case.</p>
+
+<p>從鍵盤輸入這種新技能，帶來了額外的程式設計挑戰，校正輸入。很多時候，一個良好編寫的程式與
+一個拙劣程式之間的區別就是程式處理意外的能力。通常，意外會以錯誤輸入的形式出現。在前面
+章節中的計算程式，我們已經這樣做了一點，我們檢查整數值，甄別空值和非數字字元。每次
+程式接受輸入的時候，執行這類別的程式檢查非常重要，為的是避免無效資料。對於
+由多個使用者共享的程式，這個尤為重要。如果一個程式只使用一次且只被作者用來執行一些特殊任務，
+那麼為了經濟利益而忽略這些保護措施，可能會被原諒。即使這樣，如果程式執行危險任務，比如說
+刪除檔案，所以最好包含資料校正，以防萬一。</p>
+
+<p>Here we have an example program that validates various kinds of input:</p>
+
+<p>這裡我們有一個校正各種輸入的示例程式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># read-validate: validate input</span>
+invalid_input <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> <span class="s2">"Invalid input '</span><span class="nv">$REPLY</span><span class="s2">'"</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="o">}</span>
+<span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Enter a single item &gt; "</span>
+<span class="c"># input is empty (invalid)</span>
+<span class="o">[[</span> <span class="nt">-z</span> <span class="nv">$REPLY</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> invalid_input
+<span class="c"># input is multiple items (invalid)</span>
+<span class="o">((</span> <span class="k">$(</span><span class="nb">echo</span> <span class="nv">$REPLY</span> | wc <span class="nt">-w</span><span class="k">)</span> <span class="o">&gt;</span> 1 <span class="o">))</span> <span class="o">&amp;&amp;</span> invalid_input
+<span class="c"># is input a valid filename?</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">=</span>~ ^[-[:alnum:]<span class="se">\.</span>_]+<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is a valid filename."</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="nt">-e</span> <span class="nv">$REPLY</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"And file '</span><span class="nv">$REPLY</span><span class="s2">' exists."</span>
+    <span class="k">else
+        </span><span class="nb">echo</span> <span class="s2">"However, file '</span><span class="nv">$REPLY</span><span class="s2">' does not exist."</span>
+    <span class="k">fi</span>
+    <span class="c"># is input a floating point number?</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">=</span>~ ^-?[[:digit:]]<span class="k">*</span><span class="se">\.</span><span class="o">[[</span>:digit:]]+<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is a floating point number."</span>
+    <span class="k">else
+        </span><span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is not a floating point number."</span>
+    <span class="k">fi</span>
+    <span class="c"># is input an integer?</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">=</span>~ ^-?[[:digit:]]+<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is an integer."</span>
+    <span class="k">else
+        </span><span class="nb">echo</span> <span class="s2">"'</span><span class="nv">$REPLY</span><span class="s2">' is not an integer."</span>
+    <span class="k">fi
+else
+    </span><span class="nb">echo</span> <span class="s2">"The string '</span><span class="nv">$REPLY</span><span class="s2">' is not a valid filename."</span>
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>This script prompts the user to enter an item. The item is subsequently analyzed to
+determine its contents. As we can see, the script makes use of many of the concepts that
+we have covered thus far, including shell functions, <code class="highlighter-rouge">[[ ]]</code>, <code class="highlighter-rouge">(( ))</code>, the control operator
+<code class="highlighter-rouge">&amp;&amp;</code>, and if, as well as a healthy dose of regular expressions.</p>
+
+<p>這個指令碼提示使用者輸入一個數字。隨後，分析這個數字來決定它的內容。正如我們所看到的，這個指令碼
+使用了許多我們已經討論過的概念，包括 shell 函式，<code class="highlighter-rouge">[[ ]]</code>，<code class="highlighter-rouge">(( ))</code>，控制運算子 <code class="highlighter-rouge">&amp;&amp;</code>，以及 <code class="highlighter-rouge">if</code> 和
+一些正則表示式。</p>
+
+<h3 id="選單">選單</h3>
+
+<p>A common type of interactivity is called menu-driven. In menu-driven programs, the
+user is presented with a list of choices and is asked to choose one. For example, we could
+imagine a program that presented the following:</p>
+
+<p>一種常見的互動型別稱為選單驅動。在選單驅動程式中，呈現給使用者一系列選擇，並要求使用者選擇一項。
+例如，我們可以想象一個展示以下資訊的程式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Please Select:
+1.Display System Information
+2.Display Disk Space
+3.Display Home Space Utilization
+0.Quit
+Enter selection [0-3] &gt;
+</code></pre></div></div>
+
+<p>Using what we learned from writing our sys_info_page program, we can construct a
+menu-driven program to perform the tasks on the above menu:</p>
+
+<p>使用我們從編寫 sys_info_page 程式中所學到的知識，我們能夠建構一個選單驅動程式來執行
+上述選單中的任務：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># read-menu: a menu driven system information program</span>
+clear
+<span class="nb">echo</span> <span class="s2">"
+Please Select:
+
+    1. Display System Information
+    2. Display Disk Space
+    3. Display Home Space Utilization
+    0. Quit
+"</span>
+<span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Enter selection [0-3] &gt; "</span>
+
+<span class="k">if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">=</span>~ ^[0-3]<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+    if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"Program terminated."</span>
+        <span class="nb">exit
+    </span><span class="k">fi
+    if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 1 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"Hostname: </span><span class="nv">$HOSTNAME</span><span class="s2">"</span>
+        uptime
+        <span class="nb">exit
+    </span><span class="k">fi
+    if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 2 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span>df <span class="nt">-h</span>
+        <span class="nb">exit
+    </span><span class="k">fi
+    if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 3 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        if</span> <span class="o">[[</span> <span class="k">$(</span>id <span class="nt">-u</span><span class="k">)</span> <span class="nt">-eq</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"Home Space Utilization (All Users)"</span>
+            du <span class="nt">-sh</span> /home/<span class="k">*</span>
+        <span class="k">else
+            </span><span class="nb">echo</span> <span class="s2">"Home Space Utilization (</span><span class="nv">$USER</span><span class="s2">)"</span>
+            du <span class="nt">-sh</span> <span class="nv">$HOME</span>
+        <span class="k">fi
+        </span><span class="nb">exit
+    </span><span class="k">fi
+else
+    </span><span class="nb">echo</span> <span class="s2">"Invalid entry."</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>This script is logically divided into two parts. The first part displays the menu and inputs
+the response from the user. The second part identifies the response and carries out the
+selected action. Notice the use of the <code class="highlighter-rouge">exit</code> command in this script. It is used here to
+prevent the script from executing unnecessary code after an action has been carried out.
+The presence of multiple ｀exit｀ points in a program is generally a bad idea (it makes
+program logic harder to understand), but it works in this script.</p>
+
+<p>從邏輯上講，這個指令碼被分為兩部分。第一部分顯示選單和使用者輸入。第二部分確認使用者反饋，並執行
+選擇的行動。注意指令碼中使用的 exit 命令。在這裡，在一個行動執行之後， exit 被用來阻止指令碼執行不必要的程式碼。
+通常在程式中出現多個 exit 程式碼不是一個好主意（它使程式邏輯較難理解），但是它在這個指令碼中可以使用。</p>
+
+<h3 id="總結歸納">總結歸納</h3>
+
+<p>In this chapter, we took our first steps toward interactivity; allowing users to input data
+into our programs via the keyboard. Using the techniques presented thus far, it is
+possible to write many useful programs, such as specialized calculation programs and
+easy-to-use front ends for arcane command line tools. In the next chapter, we will build
+on the menu-driven program concept to make it even better.</p>
+
+<p>在這一章中，我們向著程式互動性邁出了第一步；允許使用者透過鍵盤向程式輸入資料。使用目前
+已經學過的技巧，有可能編寫許多有用的程式，比如說特定的計算程式和容易使用的命令列工具
+前端。在下一章中，我們將繼續建立選單驅動程式概念，讓它更完善。</p>
+
+<h4 id="友情提示">友情提示</h4>
+
+<p>It is important to study the programs in this chapter carefully and have a complete
+understanding of the way they are logically structured, as the programs to come will be
+increasingly complex. As an exercise, rewrite the programs in this chapter using the
+test command rather than the <code class="highlighter-rouge">[[ ]]</code> compound command. Hint: use <code class="highlighter-rouge">grep</code> to
+evaluate the regular expressions and evaluate its exit status. This will be good practice.</p>
+
+<p>仔細研究本章中的程式，並對程式的邏輯結構有一個完整的理解，這是非常重要的，因為即將到來的
+程式會日益複雜。作為練習，用 test 命令而不是<code class="highlighter-rouge">[[ ]]</code>複合命令來重新編寫本章中的程式。
+提示：使用 grep 命令來計算正則表示式及其退出狀態。這會是一個不錯的練習。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The Bash Reference Manual contains a chapter on builtins, which includes the
+read command:</p>
+  </li>
+  <li>
+    <p>Bash 參考手冊有一章關於內部命令的內容，其包括了<code class="highlighter-rouge">read</code>命令：</p>
+
+    <p><a href="http://www.gnu.org/software/bash/manual/bashref.html#Bash-Builtins">http://www.gnu.org/software/bash/manual/bashref.html#Bash-Builtins</a></p>
+  </li>
+</ul>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

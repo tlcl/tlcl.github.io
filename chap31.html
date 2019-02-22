@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">疑難排解</h1><br>
+<p>As our scripts become more complex, it’s time to take a look at what happens when
+things go wrong and they don’t do what we want. In this chapter, we’ll look at
+some of the common kinds of errors that occur in scripts, and describe a few useful
+techniques that can be used to track down and eradicate problems.</p>
+
+<p>隨著我們的指令碼變得越來越複雜，當指令碼執行錯誤，執行結果出人意料的時候, 我們就應該檢視一下原因了。
+在這一章中，我們將會看一些指令碼中出現地常見錯誤型別，同時還會介紹幾個可以追蹤和消除問題的有用技巧。</p>
+
+<h3 id="語法錯誤">語法錯誤</h3>
+
+<p>One general class of errors is syntactic. Syntactic errors involve mis-typing some
+element of shell syntax. In most cases, these kinds of errors will lead to the shell refusing
+to execute the script.</p>
+
+<p>一個普通的錯誤型別是語法。語法錯誤涉及到一些 shell 語法元素的拼寫錯誤。大多數情況下，這類別錯誤
+會導致 shell 拒絕執行此指令碼。</p>
+
+<p>In the following the discussions, we will use this script to demonstrate common types of
+errors:</p>
+
+<p>在以下討論中，我們將使用下面這個指令碼，來說明常見的錯誤型別：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># trouble: script to demonstrate common errors</span>
+<span class="nv">number</span><span class="o">=</span>1
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$number</span> <span class="o">=</span> 1 <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"Number is equal to 1."</span>
+<span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"Number is not equal to 1."</span>
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>As written, this script runs successfully:</p>
+
+<p>參看指令碼內容，我們知道這個指令碼執行成功了：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ trouble
+Number is equal to 1.
+</code></pre></div></div>
+
+<h4 id="丟失引號">丟失引號</h4>
+
+<p>If we edit our script and remove the trailing quote from the argument following the first
+echo command:</p>
+
+<p>如果我們編輯我們的指令碼，並從跟隨第一個 echo 命令的引數中，刪除其末尾的雙引號：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># trouble: script to demonstrate common errors</span>
+<span class="nv">number</span><span class="o">=</span>1
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$number</span> <span class="o">=</span> 1 <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"Number is equal to 1.
+else
+    echo "</span>Number is not equal to 1.<span class="s2">"
+fi
+</span></code></pre></div></div>
+
+<p>watch what happens:</p>
+
+<p>觀察發生了什麼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ trouble
+/home/me/bin/trouble: line 10: unexpected EOF while looking for
+matching `"'
+/home/me/bin/trouble: line 13: syntax error: unexpected end of file
+</code></pre></div></div>
+
+<p>It generates two errors. Interestingly, the line numbers reported are not where the missing
+quote was removed, but rather much later in the program. We can see why, if we follow
+the program after the missing quote. bash will continue looking for the closing quote
+until it finds one, which it does immediately after the second echo command. bash
+becomes very confused after that, and the syntax of the if command is broken because
+the fi statement is now inside a quoted (but open) string.</p>
+
+<p>這個指令碼產生了兩個錯誤。有趣地是，所報告的行號不是引號被刪除的地方，而是程式中後面的文字行。
+我們能知道為什麼，如果我們跟隨丟失引號文字行之後的程式。bash 會繼續尋找右引號，直到它找到一個，
+其就是這個緊隨第二個 echo 命令之後的引號。找到這個引號之後，bash 變得很困惑，並且 if 命令的語法
+被破壞了，因為現在這個 fi 語句在一個用引號引起來的（但是開放的）字串裡面。</p>
+
+<p>In long scripts, this kind of error can be quite hard to find. Using an editor with syntax
+highlighting will help. If a complete version of vim is installed, syntax highlighting can
+be enabled by entering the command:</p>
+
+<p>在冗長的指令碼中，此類別錯誤很難找到。使用帶有語法高亮的編輯器將會幫助查詢錯誤。如果安裝了 vim 的完整版，
+透過輸入下面的命令，可以使語法高亮生效：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>:syntax on
+</code></pre></div></div>
+
+<h4 id="丟失或意外的標記">丟失或意外的標記</h4>
+
+<p>Another common mistake is forgetting to complete a compound command, such as if or
+while. Let's look at what happens if we remove the semicolon after the test in the if
+command:</p>
+
+<p>另一個常見錯誤是忘記補全一個複合命令，比如說 if 或者是 while。讓我們看一下，如果
+我們刪除 if 命令中測試之後的分號，會出現什麼情況：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># trouble: script to demonstrate common errors</span>
+<span class="nv">number</span><span class="o">=</span>1
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$number</span> <span class="o">=</span> 1 <span class="o">]</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"Number is equal to 1."</span>
+<span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"Number is not equal to 1."</span>
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>The result is this:</p>
+
+<p>結果是這樣的：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ trouble
+/home/me/bin/trouble: line 9: syntax error near unexpected token
+`else'
+/home/me/bin/trouble: line 9: `else'
+</code></pre></div></div>
+
+<p>Again, the error message points to a error that occurs later than the actual problem. What
+happens is really pretty interesting. As we recall, if accepts a list of commands and
+evaluates the exit code of the last command in the list. In our program, we intend this list
+to consist of a single command, [, a synonym for test. The [ command takes what
+follows it as a list of arguments. In our case, three arguments: $number, =, and ]. With
+the semicolon removed, the word then is added to the list of arguments, which is
+syntactically legal. The following echo command is legal, too. It’s interpreted as
+another command in the list of commands that if will evaluate for an exit code. The
+else is encountered next, but it’s out of place, since the shell recognizes it as a reserved
+word (a word that has special meaning to the shell) and not the name of a command,
+hence the error message.</p>
+
+<p>再次，錯誤資訊指向一個錯誤，其出現的位置在實際問題所在的文字行的後面。所發生的事情真是相當有意思。我們記得，
+if 能夠接受一系列命令，並且會計算列表中最後一個命令的退出程式碼。在我們的程式中，我們打算這個列表由
+單個命令組成，即 [，測試的同義詞。這個 [ 命令把它後面的東西看作是一個引數列表。在我們這種情況下，
+有三個引數： $number，=，和 ]。由於刪除了分號，單詞 then 被新增到引數列表中，從語法上講，
+這是合法的。隨後的 echo 命令也是合法的。它被解釋為命令列表中的另一個命令，if
+將會計算命令的 退出程式碼。接下來遇到單詞 else，但是它出局了，因為 shell 把它認定為一個
+保留字（對於 shell 有特殊含義的單詞），而不是一個命令名，因此報告錯誤資訊。</p>
+
+<h4 id="預料不到的展開">預料不到的展開</h4>
+
+<p>It’s possible to have errors that only occur intermittently in a script. Sometimes the script
+will run fine and other times it will fail because of results of an expansion. If we return
+our missing semicolon and change the value of number to an empty variable, we can
+demonstrate:</p>
+
+<p>可能有這樣的錯誤，它們僅會間歇性地出現在一個指令碼中。有時候這個指令碼執行正常，其它時間會失敗，
+這是因為展開結果造成的。如果我們歸還我們丟掉的分號，並把 number 的數值更改為一個空變數，我們
+可以示範一下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># trouble: script to demonstrate common errors</span>
+<span class="nv">number</span><span class="o">=</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$number</span> <span class="o">=</span> 1 <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"Number is equal to 1."</span>
+<span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"Number is not equal to 1."</span>
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>Running the script with this change results in the output:</p>
+
+<p>執行這個做了修改的指令碼，得到以下輸出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ trouble
+/home/me/bin/trouble: line 7: [: =: unary operator expected
+Number is not equal to 1.
+</code></pre></div></div>
+
+<p>We get this rather cryptic error message, followed by the output of the second echo
+command. The problem is the expansion of the number variable within the test
+command. When the command:</p>
+
+<p>我們得到一個相當神祕的錯誤資訊，其後是第二個 echo 命令的輸出結果。這問題是由於 test 命令中
+ number 變數的展開結果造成的。當此命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[ $number = 1 ]
+</code></pre></div></div>
+
+<p>undergoes expansion with number being empty, the result is this:</p>
+
+<p>經過展開之後，number 變為空值，結果就是這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[  = 1 ]
+</code></pre></div></div>
+
+<p>which is invalid and the error is generated. The = operator is a binary operator (it
+requires a value on each side), but the first value is missing, so the test command
+expects a unary operator (such as -z) instead. Further, since the test failed (because of
+the error), the if command receives a non-zero exit code and acts accordingly, and the
+second echo command is executed.</p>
+
+<p>這是無效的，所以就產生了錯誤。這個 = 運算子是一個二元運算子（它要求每邊都有一個數值），但是第一個數值是缺失的，
+這樣 test 命令就期望用一個一元運算子（比如 -z）來代替。進一步說，因為 test 命令執行失敗了（由於錯誤），
+這個 if 命令接收到一個非零退出程式碼，因此執行第二個 echo 命令。</p>
+
+<p>This problem can be corrected by adding quotes around the first argument in the test
+command:</p>
+
+<p>透過為 test 命令中的第一個引數新增雙引號，可以更正這個問題：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[ "$number" = 1 ]
+</code></pre></div></div>
+
+<p>Then when expansion occurs, the result will be this:</p>
+
+<p>然後當展開操作發生地時候，執行結果將會是這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[ "" = 1 ]
+</code></pre></div></div>
+
+<p>which yields the correct number of arguments. In addition to empty strings, quotes
+should be used in cases where a value could expand into multi-word strings, as with
+filenames containing embedded spaces.</p>
+
+<p>其得到了正確的引數個數。除了代表空字串之外，引號應該被用於這樣的場合，一個要展開
+成多單詞字串的數值，及其包含嵌入式空格的檔名。</p>
+
+<h3 id="邏輯錯誤">邏輯錯誤</h3>
+
+<p>Unlike syntactic errors, logical errors do not prevent a script from running. The script
+will run, but it will not produce the desired result, due to a problem with its logic. There
+are countless numbers of possible logical errors, but here are a few of the most common
+kinds found in scripts:</p>
+
+<p>不同於語法錯誤，邏輯錯誤不會阻止指令碼執行。雖然指令碼會正常執行，但是它不會產生期望的結果，
+歸咎於指令碼的邏輯問題。雖然有不計其數的可能的邏輯錯誤，但下面是一些在指令碼中找到的最常見的
+邏輯錯誤型別：</p>
+
+<ol>
+  <li>
+    <p>Incorrect conditional expressions. It’s easy to incorrectly code an if/then/else
+and have the wrong logic carried out. Sometimes the logic will be reversed or it
+will be incomplete.</p>
+  </li>
+  <li>
+    <p>“Off by one” errors. When coding loops that employ counters, it is possible to
+overlook that the loop may require the counting start with zero, rather than one,
+for the count to conclude at the correct point. These kinds of errors result in either
+a loop “going off the end” by counting too far, or else missing the last iteration of
+the loop by terminating one iteration too soon.</p>
+  </li>
+  <li>
+    <p>Unanticipated situations. Most logic errors result from a program encountering
+data or situations that were unforeseen by the programmer. This can also include
+unanticipated expansions, such as a filename that contains embedded spaces that
+expands into multiple command arguments rather than a single filename.</p>
+  </li>
+</ol>
+<ol>
+  <li>
+    <p>不正確的條件表示式。很容易編寫一個錯誤的 if/then/else 語句，並且執行錯誤的邏輯。
+有時候邏輯會被顛倒，或者是邏輯結構不完整。</p>
+  </li>
+  <li>
+    <p>“超出一個值”錯誤。當編寫帶有計數器的迴圈語句的時候，為了計數在恰當的點結束，迴圈語句
+可能要求從 0 開始計數，而不是從 1 開始，這有可能會被忽視。這些型別的錯誤要不導致迴圈計數太多，而“超出範圍”，
+要不就是過早的結束了一次迭代，從而錯過了最後一次迭代迴圈。</p>
+  </li>
+  <li>
+    <p>意外情況。大多數邏輯錯誤來自於程式碰到了程式設計師沒有預見到的資料或者情況。這也
+可以包括出乎意料的展開，比如說一個包含嵌入式空格的檔名展開成多個命令引數而不是單個的檔名。</p>
+  </li>
+</ol>
+
+<h4 id="防錯程式設計">防錯程式設計</h4>
+
+<p>It is important to verify assumptions when programming. This means a careful
+evaluation of the exit status of programs and commands that are used by a script. Here is
+an example, based on a true story. An unfortunate system administrator wrote a script to
+perform a maintenance task on an important server. The script contained the following
+two lines of code:</p>
+
+<p>當程式設計的時候，驗證假設非常重要。這意味著要仔細地計算指令碼所使用的程式和命令的退出狀態。
+這裡有個基於一個真實的故事的範例。為了在一臺重要的伺服器中執行維護任務，一位不幸的系統管理員寫了一個指令碼。
+這個指令碼包含下面兩行程式碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd $dir_name
+rm *
+</code></pre></div></div>
+
+<p>There is nothing intrinsically wrong with these two lines, as long as the directory named
+in the variable, dir_name, exists. But what happens if it does not? In that case, the cd
+command fails, the script continues to the next line and deletes the files in the current
+working directory. Not the desired outcome at all! The hapless administrator destroyed
+an important part of the server because of this design decision.</p>
+
+<p>從本質上來說，這兩行程式碼沒有任何問題，只要是變數 dir_name
+中儲存的目錄名字存在就可以。但是如果不是這樣會發生什麼事情呢？在那種情況下，cd 命令會執行失敗，
+指令碼會繼續執行下一行程式碼，將會刪除當前工作目錄中的所有檔案。完成不是期望的結果！
+由於這種設計策略，這個倒黴的管理員銷燬了伺服器中的一個重要部分。</p>
+
+<p>Let's look at some ways this design could be improved. First, it might be wise to make
+the execution of rm contingent on the success of cd:</p>
+
+<p>讓我們看一些能夠提高這個設計的方法。首先，在 cd 命令執行成功之後，再執行 rm 命令，可能是明智的選擇。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd $dir_name &amp;&amp; rm *
+</code></pre></div></div>
+
+<p>This way, if the cd command fails, the rm command is not carried out. This is better, but
+still leaves open the possibility that the variable, dir_name, is unset or empty, which
+would result in the files in the user’s home directory being deleted. This could also be
+avoided by checking to see that dir_name actually contains the name of an existing
+directory:</p>
+
+<p>這樣，如果 cd 命令執行失敗後，rm 命令將不會執行。這樣比較好，但是仍然有可能未設定變數
+dir_name 或其變數值為空，從而導致刪除了使用者家目錄下面的所有檔案。這個問題也能夠避免，透過檢驗變數
+dir_name 中包含的目錄名是否真正地存在：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[[ -d $dir_name ]] &amp;&amp; cd $dir_name &amp;&amp; rm *
+</code></pre></div></div>
+
+<p>Often, it is best to terminate the script with an error when an situation such as the one
+above occurs:</p>
+
+<p>通常，當某種情況（比如上述問題）發生的時候，最好是終止指令碼執行，並對這種情況提示錯誤資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if [[ -d $dir_name ]]; then
+    if cd $dir_name; then
+        rm *
+    else
+        echo "cannot cd to '$dir_name'" &gt;&amp;2
+        exit 1
+    fi
+else
+    echo "no such directory: '$dir_name'" &gt;&amp;2
+    exit 1
+fi
+</code></pre></div></div>
+
+<p>Here, we check both the name, to see that it is that of an existing directory, and the
+success of the cd command. If either fails, a descriptive error message is sent to standard
+error and the script terminates with an exit status of one to indicate a failure.</p>
+
+<p>這裡，我們檢驗了兩種情況，一個名字，看看它是否為一個真正存在的目錄，另一個是 cd 命令是否執行成功。
+如果任一種情況失敗，就會發送一個錯誤說明資訊到標準錯誤，然後指令碼終止執行，並用退出狀態 1 表明指令碼執行失敗。</p>
+
+<h4 id="驗證輸入">驗證輸入</h4>
+
+<p>A general rule of good programming is that if a program accepts input, it must be able to
+deal with anything it receives. This usually means that input must be carefully screened,
+to ensure that only valid input is accepted for further processing. We saw an example of
+this in the previous chapter when we studied the read command. One script contained
+the following test to verify a menu selection:</p>
+
+<p>一個良好的程式設計習慣是如果一個程式可以接受輸入資料，那麼這個程式必須能夠應對它所接受的任意資料。這
+通常意味著必須非常仔細地篩選輸入資料，以確保只有有效的輸入資料才能被程式用來做進一步地處理。在前面章節
+中我們學習 read 命令的時候，我們遇到過一個這樣的例子。一個指令碼中包含了下面一條測試語句，
+用來驗證一個選擇選單：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[[ $REPLY =~ ^[0-3]$ ]]
+</code></pre></div></div>
+
+<p>This test is very specific. It will only return a zero exit status if the string returned by the
+user is a numeral in the range of zero to three. Nothing else will be accepted. Sometimes
+these sorts of tests can be very challenging to write, but the effort is necessary to produce
+a high quality script.</p>
+
+<p>這條測試語句非常明確。只有當用戶輸入是一個位於 0 到 3 範圍內（包括 0 和 3）的數字的時候，
+這條語句才返回一個 0 退出狀態。而其它任何輸入概不接受。有時候編寫這類別測試條件非常具有挑戰性，
+但是為了能產出一個高品質的指令碼，付出還是必要的。</p>
+
+<blockquote>
+  <p>Design Is A Function Of Time</p>
+
+  <p><em>設計是時間的函式</em></p>
+
+  <p>When I was a college student studying industrial design, a wise professor stated
+that the degree of design on a project was determined by the amount of time given
+to the designer. If you were given five minutes to design a device “that kills
+flies,” you designed a flyswatter. If you were given five months, you might come
+up with a laser-guided “anti-fly system” instead.</p>
+
+  <p>當我還是一名大學生，在學習工業設計的時候，一位明智的教授說過一個專案的設計程度是由
+給定設計師的時間量來決定的。如果給你五分鐘來設計一款能夠 “殺死蒼蠅”
+的產品，你會設計出一個蒼蠅拍。如果給你五個月的時間，你可能會製作出鐳射制導的
+“反蒼蠅系統”。</p>
+
+  <p>The same principle applies to programming. Sometimes a “quick and dirty”
+script will do if it’s only going to be used once and only used by the programmer.
+That kind of script is common and should be developed quickly to make the effort
+economical. Such scripts don’t need a lot of comments and defensive checks. On
+the other hand, if a script is intended for production use, that is, a script that will
+be used over and over for an important task or by multiple users, it needs much
+more careful development.</p>
+
+  <p>同樣的原理適用於程式設計。有時候一個「快速但粗糙」的指令碼就可以解決問題，
+但這個指令碼只能被其作者使用一次。這類別指令碼很常見，為了節省氣力也應該被快速地開發出來。
+所以這些指令碼不需要太多的註釋和防錯檢查。相反，如果一個指令碼打算用於生產使用，也就是說，
+某個重要任務或者多個客戶會不斷地用到它，此時這個指令碼就需要非常謹慎小心地開發了。</p>
+</blockquote>
+
+<h3 id="測試">測試</h3>
+
+<p>Testing is an important step in every kind of software development, including scripts.
+There is a saying in the open source world, “release early, release often,” which reflects
+this fact. By releasing early and often, software gets more exposure to use and testing.
+Experience has shown that bugs are much easier to find, and much less expensive to fix,
+if they are found early in the development cycle.</p>
+
+<p>在各類別軟體開發中（包括指令碼），測試是一個重要的環節。在開源世界中有一句諺語，“早釋出，常釋出”，這句諺語就反映出這個事實（測試的重要性）。
+透過提早和經常釋出，軟體能夠得到更多曝光去使用和測試。經驗表明如果在開發週期的早期發現 bug，那麼這些 bug 就越容易定位，而且越能低成本
+的修復。</p>
+
+<p>In a previous discussion, we saw how stubs can be used to verify program flow. From
+the earliest stages of script development, they are a valuable technique to check the
+progress of our work.</p>
+
+<p>在之前的討論中，我們知道了如何使用 stubs 來驗證程式流程。在指令碼開發的最初階段，它們是一項有價值的技術
+來檢測我們的工作進度。</p>
+
+<p>Let's look at the file deletion problem above and see how this could be coded for easy
+testing. Testing the original fragment of code would be dangerous, since its purpose is to
+delete files, but we could modify the code to make the test safe:</p>
+
+<p>讓我們看一下上面的檔案刪除問題，為了輕鬆測試，看看如何修改這些程式碼。測試原本那個程式碼片段將是危險的，因為它的目的是要刪除檔案，
+但是我們可以修改程式碼，讓測試安全：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if [[ -d $dir_name ]]; then
+    if cd $dir_name; then
+        echo rm * # TESTING
+    else
+        echo "cannot cd to '$dir_name'" &gt;&amp;2
+        exit 1
+    fi
+else
+    echo "no such directory: '$dir_name'" &gt;&amp;2
+    exit 1
+fi
+exit # TESTING
+</code></pre></div></div>
+
+<p>Since the error conditions already output useful messages, we don’t have to add any. The
+most important change is placing an echo command just before the rm command to
+allow the command and its expanded argument list to be displayed, rather than the
+command actually being executed. This change allows safe execution of the code. At the
+end of the code fragment, we place an exit command to conclude the test and prevent
+any other part of the script from being carried out. The need for this will vary according
+to the design of the script.</p>
+
+<p>因為在滿足出錯條件的情況下程式碼可以打印出有用資訊，所以我們沒有必要再新增任何額外資訊了。
+最重要的改動是僅在 rm 命令之前放置了一個 echo 命令，
+為的是把 rm 命令及其展開的引數列表打印出來，而不是執行實際的 rm 命令語句。這個改動可以安全的執行程式碼。
+在這段程式碼的末尾，我們放置了一個 exit 命令來結束測試，從而防止執行指令碼其它部分的程式碼。
+這個需求會因指令碼的設計不同而變化。</p>
+
+<p>We also include some comments that act as “markers” for our test-related changes. These
+can be used to help find and remove the changes when testing is complete.</p>
+
+<p>我們也在程式碼中添加了一些註釋，用來標記與測試相關的改動。當測試完成之後，這些註釋可以幫助我們找到並刪除所有的更改。</p>
+
+<h4 id="測試案例">測試案例</h4>
+
+<p>To perform useful testing, it’s important to develop and apply good test cases. This is
+done by carefully choosing input data or operating conditions that reflect edge and
+corner cases. In our code fragment (which is very simple), we want to know how the
+code performs under three specific conditions:</p>
+
+<p>為了執行有用的測試，開發和使用好的測試案例是很重要的。這個要求可以透過謹慎地選擇輸入資料或者執行邊緣案例和極端案例來完成。
+在我們的程式碼片段中（是非常簡單的程式碼），我們想要知道在下面的三種具體情況下這段程式碼是怎樣執行的：</p>
+
+<ol>
+  <li>
+    <p>dir_name contains the name of an existing directory</p>
+  </li>
+  <li>
+    <p>dir_name contains the name of a non-existent directory</p>
+  </li>
+  <li>
+    <p>dir_name is empty</p>
+  </li>
+</ol>
+<ol>
+  <li>
+    <p>dir_name 包含一個已經存在的目錄的名字</p>
+  </li>
+  <li>
+    <p>dir_name 包含一個不存在的目錄的名字</p>
+  </li>
+  <li>
+    <p>dir_name 為空</p>
+  </li>
+</ol>
+
+<p>By performing the test with each of these conditions, good test coverage is achieved.</p>
+
+<p>透過執行以上每一個測試條件，就達到了一個良好的測試覆蓋率。</p>
+
+<p>Just as with design, testing is a function of time, as well. Not every script feature needs
+to be extensively tested. It’s really a matter of determining what is most important. Since
+it could be so potentially destructive if it malfunctioned, our code fragment deserves
+careful consideration during both its design and testing.</p>
+
+<p>正如設計，測試也是一個時間的函式。不是每一個指令碼功能都需要做大量的測試。問題關鍵是確定什麼功能是最重要的。因為
+測試若發生故障會存在如此潛在的破壞性，所以我們的程式碼片在設計和測試段期間都應值得仔細推敲。</p>
+
+<h3 id="除錯">除錯</h3>
+
+<p>If testing reveals a problem with a script, the next step is debugging. “A problem”
+usually means that the script is, in some way, not performing to the programmers
+expectations. If this is the case, we need to carefully determine exactly what the script is
+actually doing and why. Finding bugs can sometimes involve a lot of detective work.
+A well designed script will try to help. It should be programmed defensively, to detect
+abnormal conditions and provide useful feedback to the user. Sometimes, however,
+problems are quite strange and unexpected and more involved techniques are required.</p>
+
+<p>如果測試暴露了指令碼中的一個問題，那下一步就是除錯了。“一個問題”通常意味著在某種情況下，這個指令碼的執行
+結果不是程式設計師所期望的結果。若是這種情況，我們需要仔細確認這個指令碼實際到底要完成什麼任務，和為什麼要這樣做。
+有時候查詢 bug 要牽涉到許多監測工作。一個設計良好的指令碼會對查詢錯誤有幫助。設計良好的指令碼應該具備防衛能力，
+能夠監測異常條件，並能為使用者提供有用的反饋資訊。
+然而有時候，出現的問題相當稀奇，出人意料，這時候就需要更多的除錯技巧了。</p>
+
+<h4 id="找到問題區域">找到問題區域</h4>
+
+<p>In some scripts, particularly long ones, it is sometimes useful to isolate the area of the
+script that is related to the problem. This won’t always be the actual error, but isolation
+will often provide insights into the actual cause. One technique that can be used to
+isolate code is “commenting out” sections a script. For example, our file deletion
+fragment could be modified to determine if the removed section was related to an error:</p>
+
+<p>在一些指令碼中，尤其是一些程式碼比較長的指令碼，有時候隔離指令碼中與出現的問題相關的程式碼區域對查詢問題很有幫助。
+隔離的程式碼區域並不總是真正的錯誤所在，但是隔離往往可以深入瞭解實際的錯誤原因。可以用來隔離程式碼的一項
+技巧是“添加註釋”。例如，我們的檔案刪除程式碼可以修改成這樣，從而決定註釋掉的這部分程式碼是否導致了一個錯誤：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if [[ -d $dir_name ]]; then
+    if cd $dir_name; then
+        rm *
+    else
+        echo "cannot cd to '$dir_name'" &gt;&amp;2
+        exit 1
+    fi
+# else
+# echo "no such directory: '$dir_name'" &gt;&amp;2
+# exit 1
+fi
+</code></pre></div></div>
+
+<p>By placing comment symbols at the beginning of each line in a logical section of a script,
+we prevent that section from being executed. Testing can then be performed again, to see
+if the removal of the code has any impact on the behavior of the bug.</p>
+
+<p>透過給指令碼中的一個邏輯區塊內的每條語句的開頭新增一個註釋符號，我們就阻止了這部分程式碼的執行。然後可以再次執行測試，
+來看看清除的程式碼是否影響了錯誤的行為。</p>
+
+<h4 id="追蹤">追蹤</h4>
+
+<p>Bugs are often cases of unexpected logical flow within a script. That is, portions of the
+script are either never being executed, or are being executed in the wrong order or at the
+wrong time. To view the actual flow of the program, we use a technique called tracing.</p>
+
+<p>在一個指令碼中，錯誤往往是由意想不到的邏輯流導致的。也就是說，指令碼中的一部分程式碼或者從未執行，或是以錯誤的順序，
+或在錯誤的時間給執行了。為了檢視真實的程式流，我們使用一項叫做追蹤（tracing）的技術。</p>
+
+<p>One tracing method involves placing informative messages in a script that display the
+location of execution. We can add messages to our code fragment:</p>
+
+<p>一種追蹤方法涉及到在指令碼中新增可以顯示程式執行位置的提示性資訊。我們可以新增提示資訊到我們的程式碼片段中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo "preparing to delete files" &gt;&amp;2
+if [[ -d $dir_name ]]; then
+    if cd $dir_name; then
+echo "deleting files" &gt;&amp;2
+        rm *
+    else
+        echo "cannot cd to '$dir_name'" &gt;&amp;2
+        exit 1
+    fi
+else
+    echo "no such directory: '$dir_name'" &gt;&amp;2
+    exit 1
+fi
+echo "file deletion complete" &gt;&amp;2
+</code></pre></div></div>
+
+<p>We send the messages to standard error to separate them from normal output. We also do
+not indent the lines containing the messages, so it is easier to find when
+it’s time to remove them.</p>
+
+<p>我們把提示資訊輸出到標準錯誤輸出，讓其從標準輸出中分離出來。我們也沒有縮排包含提示資訊的語句，這樣
+想要刪除它們的時候，能比較容易找到它們。</p>
+
+<p>Now when the script is executed, it’s possible to see that the file deletion
+has been performed:</p>
+
+<p>當這個指令碼執行的時候，就可能看到檔案刪除操作已經完成了：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ deletion-script
+preparing to delete files
+deleting files
+file deletion complete
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>bash also provides a method of tracing, implemented by the -x option and the set
+command with the -x option. Using our earlier trouble script, we can activate tracing
+for the entire script by adding the -x option to the first line:</p>
+
+<p>bash 還提供了一種名為追蹤的方法，這種方法可透過 -x 選項和 set 命令加上 -x 選項兩種途徑實現。
+拿我們之前的 trouble 指令碼為例，給該指令碼的第一行語句新增 -x 選項，我們就能追蹤整個指令碼。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash -x</span>
+<span class="c"># trouble: script to demonstrate common errors</span>
+<span class="nv">number</span><span class="o">=</span>1
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$number</span> <span class="o">=</span> 1 <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"Number is equal to 1."</span>
+<span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"Number is not equal to 1."</span>
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>When executed, the results look like this:</p>
+
+<p>當指令碼執行後，輸出結果看起來像這樣:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ trouble
++ number=1
++ '[' 1 = 1 ']'
++ echo 'Number is equal to 1.'
+Number is equal to 1.
+</code></pre></div></div>
+
+<p>With tracing enabled, we see the commands performed with expansions applied. The
+leading plus signs indicate the display of the trace to distinguish them from lines of
+regular output. The plus sign is the default character for trace output. It is contained in the
+PS4 (prompt string 4) shell variable. The contents of this variable can be adjusted to
+make the prompt more useful. Here, we modify the contents of the variable to include the
+current line number in the script where the trace is performed. Note that single quotes are
+required to prevent expansion until the prompt is actually used:</p>
+
+<p>追蹤生效後，我們看到指令碼命令展開後才執行。行首的加號表明追蹤的跡象，使其與常規輸出結果區分開來。
+加號是追蹤輸出的預設字元。它包含在 PS4（提示符4）shell 變數中。可以調整這個變數值讓提示資訊更有意義。
+這裡，我們修改該變數的內容，讓其包含指令碼中追蹤執行到的當前行的行號。注意這裡必須使用單引號是為了防止變數展開，直到
+提示符真正使用的時候，就不需要了。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ export PS4='$LINENO + '
+[me@linuxbox ~]$ trouble
+5 + number=1
+7 + '[' 1 = 1 ']'
+8 + echo 'Number is equal to 1.'
+Number is equal to 1.
+</code></pre></div></div>
+
+<p>To perform a trace on a selected portion of a script, rather than the entire script, we can
+use the set command with the -x option:</p>
+
+<p>我們可以使用 set 命令加上 -x 選項，為指令碼中的一塊選擇區域，而不是整個指令碼啟用追蹤。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># trouble: script to demonstrate common errors</span>
+<span class="nv">number</span><span class="o">=</span>1
+<span class="nb">set</span> <span class="nt">-x</span> <span class="c"># Turn on tracing</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$number</span> <span class="o">=</span> 1 <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"Number is equal to 1."</span>
+<span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"Number is not equal to 1."</span>
+<span class="k">fi
+</span><span class="nb">set</span> +x <span class="c"># Turn off tracing</span>
+</code></pre></div></div>
+
+<p>We use the set command with the -x option to activate tracing and the +x option to
+deactivate tracing. This technique can be used to examine multiple
+portions of a troublesome script.</p>
+
+<p>我們使用 set 命令加上 -x 選項來啟動追蹤，+x 選項關閉追蹤。這種技術可以用來檢查一個有錯誤的指令碼的多個部分。</p>
+
+<h4 id="執行時檢查數值">執行時檢查數值</h4>
+
+<p>It is often useful, along with tracing, to display the content of variables to see the internal
+workings of a script while it is being executed. Applying additional echo statements will
+usually do the trick:</p>
+
+<p>伴隨著追蹤，在指令碼執行的時候顯示變數的內容，以此知道指令碼內部的工作狀態，往往是很用的。
+使用額外的 echo 語句通常會奏效。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># trouble: script to demonstrate common errors</span>
+<span class="nv">number</span><span class="o">=</span>1
+<span class="nb">echo</span> <span class="s2">"number=</span><span class="nv">$number</span><span class="s2">"</span> <span class="c"># DEBUG</span>
+<span class="nb">set</span> <span class="nt">-x</span> <span class="c"># Turn on tracing</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$number</span> <span class="o">=</span> 1 <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"Number is equal to 1."</span>
+<span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"Number is not equal to 1."</span>
+<span class="k">fi
+</span><span class="nb">set</span> +x <span class="c"># Turn off tracing</span>
+</code></pre></div></div>
+
+<p>In this trivial example, we simply display the value of the variable number and mark the
+added line with a comment to facilitate its later identification and removal.
+This technique is particularly useful when watching the behavior of loops and arithmetic within
+scripts.</p>
+
+<p>在這個簡單的示例中，我們只是顯示變數 number 的數值，併為其添加註釋，隨後利於其識別和清除。
+當檢視指令碼中的迴圈和算術語句的時候，這種技術特別有用。</p>
+
+<h3 id="總結">總結</h3>
+
+<p>In this chapter, we looked at just a few of the problems that can crop up during script de-
+velopment. Of course, there are many more. The techniques described here will enable
+finding most common bugs. Debugging is a fine art that can be developed through
+experience, both in knowing how to avoid bugs (testing constantly throughout development)
+and in finding bugs (effective use of tracing).</p>
+
+<p>在這一章中，我們僅僅看了幾個在指令碼開發期間會出現的問題。當然，還有很多。這章中描述的技術對查詢
+大多數的常見錯誤是有效的。除錯是一種藝術，可以透過開發經驗，在知道如何避免錯誤(整個開發過程中不斷測試)
+以及在查詢 bug（有效利用追蹤）兩方面都會得到提升。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The Wikipedia has a couple of short articles on syntactic and logical errors:</p>
+  </li>
+  <li>
+    <p>Wikipedia 上面有兩篇關於語法和邏輯錯誤的短文：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Syntax_error">http://en.wikipedia.org/wiki/Syntax_error</a></p>
+
+    <p><a href="http://en.wikipedia.org/wiki/logic_error">http://en.wikipedia.org/wiki/logic_error</a></p>
+  </li>
+  <li>
+    <p>There are many online resources for the technical aspects of bash programming:</p>
+  </li>
+  <li>
+    <p>網上有很多關於技術層面的 bash 程式設計的資源：</p>
+
+    <p><a href="http://mywiki.wooledge.org/BashPitfalls">http://mywiki.wooledge.org/BashPitfalls</a></p>
+
+    <p><a href="http://tldp.org/LDP/abs/html/gotchas.html">http://tldp.org/LDP/abs/html/gotchas.html</a></p>
+
+    <p><a href="http://www.gnu.org/software/bash/manual/html_node/Reserved-Word-Index.html">http://www.gnu.org/software/bash/manual/html_node/Reserved-Word-Index.html</a></p>
+  </li>
+  <li>
+    <p>Eric Raymond’s <code class="highlighter-rouge">The Art of Unix Programming</code> is a great resource for learning the
+basic concepts found in well-written Unix programs. Many of these ideas apply to
+shell scripts:</p>
+  </li>
+  <li>
+    <p>想要學習從編寫良好的 Unix 程式中得知的基本概念，可以參考 Eric Raymond 的《Unix 程式設計的藝術》這本
+偉大的著作。書中的許多想法都能適用於 shell 指令碼：</p>
+
+    <p><a href="http://www.faqs.org/docs/artu/">http://www.faqs.org/docs/artu/</a></p>
+
+    <p><a href="http://www.faqs.org/docs/artu/ch01s06.html">http://www.faqs.org/docs/artu/ch01s06.html</a></p>
+  </li>
+  <li>
+    <p>For really heavy-duty debugging, there is the Bash Debugger:</p>
+  </li>
+  <li>
+    <p>對於真正的高強度的除錯，參考這個 Bash Debugger：</p>
+
+    <p><a href="http://bashdb.sourceforge.net/">http://bashdb.sourceforge.net/</a></p>
+  </li>
+</ul>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

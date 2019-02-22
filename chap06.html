@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">使用命令</h1><br>
+<p>Up to this point, we have seen a series of mysterious commands, each with its own
+mysterious options and arguments. In this chapter, we will attempt to remove some of
+that mystery and even create some of our own commands. The commands introduced in
+this chapter are:</p>
+
+<p>在這之前，我們已經知道了一系列神祕的命令，每個命令都有自己奇妙的
+選項和引數。在這一章中，我們將試圖去掉一些神祕性，甚至建立我們自己
+的命令。這一章將介紹以下命令：</p>
+
+<ul>
+  <li>
+    <p>type – Indicate how a command name is interpreted</p>
+  </li>
+  <li>
+    <p>type – 說明怎樣解釋一個命令名</p>
+  </li>
+  <li>
+    <p>which – Display which executable program will be executed</p>
+  </li>
+  <li>
+    <p>which – 顯示會執行哪個可執行程式</p>
+  </li>
+  <li>
+    <p>man – Display a command’s manual page</p>
+  </li>
+  <li>
+    <p>man – 顯示命令手冊頁</p>
+  </li>
+  <li>
+    <p>apropos – Display a list of appropriate commands</p>
+  </li>
+  <li>
+    <p>apropos – 顯示一系列適合的命令</p>
+  </li>
+  <li>
+    <p>info – Display a command’s info entry</p>
+  </li>
+  <li>
+    <p>info – 顯示命令 info</p>
+  </li>
+  <li>
+    <p>whatis – Display a very brief description of a command</p>
+  </li>
+  <li>
+    <p>whatis – 顯示一個命令的簡潔描述</p>
+  </li>
+  <li>
+    <p>alias – Create an alias for a command</p>
+  </li>
+  <li>
+    <p>alias – 建立命令別名</p>
+  </li>
+</ul>
+
+<h3 id="到底什麼是命令">到底什麼是命令？</h3>
+
+<p>A command can be one of four different things:</p>
+
+<p>命令可以是下面四種形式之一：</p>
+
+<ol>
+  <li>
+    <p>An executable program like all those files we saw in /usr/bin. Within this
+category, programs can be compiled binaries such as programs written in C and
+C++, or programs written in scripting languages such as the shell, perl, python,
+ruby, etc.</p>
+  </li>
+  <li>
+    <p>A command built into the shell itself. bash supports a number of commands
+internally called shell builtins. The cd command, for example, is a shell builtin.</p>
+  </li>
+  <li>
+    <p>A shell function. These are miniature shell scripts incorporated into
+the environment. We will cover configuring the environment and writing shell
+functions in later chapters, but for now, just be aware that they exist.</p>
+  </li>
+  <li>
+    <p>An alias. Commands that we can define ourselves, built from other commands.</p>
+  </li>
+</ol>
+<ol>
+  <li>
+    <p>是一個可執行程式，就像我們所看到的位於目錄/usr/bin 中的檔案一樣。
+這一類別程式可以是用諸如 C 和 C++語言寫成的程式編譯的二進位制檔案,
+也可以是由諸如shell，perl，python，ruby等等指令碼語言寫成的程式 。</p>
+  </li>
+  <li>
+    <p>是一個內建於 shell 自身的命令。bash 支援若干命令，內部叫做 shell 內部命令
+(builtins)。例如，cd 命令，就是一個 shell 內部命令。</p>
+  </li>
+  <li>
+    <p>是一個 shell 函式。這些是小規模的 shell 指令碼，它們混合到環境變數中。
+在後續的章節裡，我們將討論配置環境變數以及書寫 shell 函式。但是現在，
+僅僅意識到它們的存在就可以了。</p>
+  </li>
+  <li>
+    <p>是一個命令別名。我們可以定義自己的命令，建立在其它命令之上。</p>
+  </li>
+</ol>
+
+<h3 id="識別命令">識別命令</h3>
+
+<p>It is often useful to know exactly which of the four kinds of commands is being used and
+Linux provides a couple of ways to find out.</p>
+
+<p>這經常很有用，能確切地知道正在使用四類別命令中的哪一類別。Linux 提供了一對方法來
+弄明白命令型別。</p>
+
+<h3 id="type--顯示命令的型別">type － 顯示命令的型別</h3>
+
+<p>The type command is a shell builtin that displays the kind of command the shell will
+execute, given a particular command name. It works like this:</p>
+
+<p>type 命令是 shell 內部命令，它會顯示命令的類別，給出一個特定的命令名（做為引數）。
+它像這樣工作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type command
+</code></pre></div></div>
+
+<p>Where “command” is the name of the command you want to examine. Here are some
+examples:</p>
+
+<p>“command”是你要檢測的命令名。這裡有些例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ type type
+type is a shell builtins
+[me@linuxbox ~]$ type ls
+ls is aliased to `ls --color=tty`
+[me@linuxbox ~]$ type cp
+cp is /bin/cp
+</code></pre></div></div>
+
+<p>Here we see the results for three different commands. Notice that the one for ls (taken
+from a Fedora system) and how the ls command is actually an alias for the ls command
+with the “--color=tty” option added. Now we know why the output from ls is displayed
+in color!</p>
+
+<p>我們看到這三個不同命令的檢測結果。注意，ls 命令（在 Fedora 系統中）的檢查結果，ls 命令實際上
+是 ls 命令加上選項”--color=tty”的別名。現在我們知道為什麼 ls 的輸出結果是有顏色的！</p>
+
+<h3 id="which--顯示一個可執行程式的位置">which － 顯示一個可執行程式的位置</h3>
+
+<p>Sometimes there is more than one version of an executable program installed on a
+system. While this is not very common on desktop systems, it’s not unusual on large
+servers. To determine the exact location of a given executable, the which command is
+used:</p>
+
+<p>有時候在一個作業系統中，不只安裝了可執行程式的一個版本。雖然在桌面系統中這並不普遍，
+但在大型伺服器中卻很平常。為了確定所給定的執行程式的準確位置，使用 which 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ which ls
+/bin/ls
+</code></pre></div></div>
+
+<p>which only works for executable programs, not builtins nor aliases that are substitutes
+for actual executable programs. When we try to use which on a shell builtin, for
+example, cd, we either get no response or an error message:</p>
+
+<p>這個命令只對可執行程式有效，不包括內建命令和命令別名，別名是真正的可執行程式的替代物。
+當我們試著使用 shell 內建命令時，例如，cd 命令，我們或者得不到迴應，或者是個錯誤資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ which cd
+/usr/bin/which: no cd in
+(/opt/jre1.6.0_03/bin:/usr/lib/qt-3.3/bin:/usr/kerberos/bin:/opt/jre1
+.6.0_03/bin:/usr/lib/ccache:/usr/local/bin:/usr/bin:/bin:/home/me/bin)
+</code></pre></div></div>
+
+<p>which is a fancy way of saying “command not found.”</p>
+
+<p>說“命令沒有找到”，真是很奇特。</p>
+
+<h3 id="得到命令文件">得到命令文件</h3>
+
+<p>With this knowledge of what a command is, we can now search for the documentation
+available for each kind of command.</p>
+
+<p>知道了什麼是命令，現在我們來尋找每一類別命令的可得到的文件。</p>
+
+<h3 id="help--得到-shell-內建命令的幫助文件">help － 得到 shell 內建命令的幫助文件</h3>
+
+<p>bash has a built-in help facility available for each of the shell builtins. To use it, type
+“help” followed by the name of the shell builtin. For example:</p>
+
+<p>bash 有一個內建的幫助工具，可供每一個 shell 內建命令使用。輸入“help”，接著是 shell
+內部命令名。例如：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ help cd
+cd: cd [-L|-P] [dir]
+Change ...
+</code></pre></div></div>
+
+<p>A note on notation: When square brackets appear in the description of a command’s
+syntax, they indicate optional items. A vertical bar character indicates mutually exclusive
+items. In the case of the cd command above:</p>
+
+<p>注意表示法：出現在命令語法說明中的方括號，表示可選的專案。一個豎槓字元
+表示互斥選項。在上面 cd 命令的例子中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd [-L|-P] [dir]
+</code></pre></div></div>
+
+<p>This notation says that the command cd may be followed optionally by either a “-L” or a
+“-P” and further, optionally followed by the argument “dir”.</p>
+
+<p>這種表示法說明，cd 命令可能有一個“-L”選項或者“-P”選項，進一步，可能有引數“dir”。</p>
+
+<p>While the output of help for the cd commands is concise and accurate, it is by no
+means tutorial and as we can see, it also seems to mention a lot of things we haven’t
+talked about yet! Don’t worry. We’ll get there.</p>
+
+<p>雖然 cd 命令的幫助文件很簡潔準確，但它決不是課程。正如我們所看到的，它似乎提到了許多
+我們還沒有談論到的東西！不要擔心，我們會學到的。</p>
+
+<h3 id="--help---顯示用法資訊">--help - 顯示用法資訊</h3>
+
+<p>Many executable programs support a “--help” option that displays a description of the
+command’s supported syntax and options. For example:</p>
+
+<p>許多可執行程式支援一個 --help 選項，這個選項是顯示命令所支援的語法和選項說明。例如：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mkdir --help
+Usage: mkdir [OPTION] DIRECTORY...
+Create ...
+</code></pre></div></div>
+
+<p>Some programs don’t support the “--help” option, but try it anyway. Often it results in an
+error message that will reveal the same usage information.</p>
+
+<p>一些程式不支援 --help 選項，但不管怎樣試一下。這經常會導致輸出錯誤資訊，但同時能
+揭示一樣的命令用法資訊。</p>
+
+<h3 id="man--顯示程式手冊頁">man － 顯示程式手冊頁</h3>
+
+<p>Most executable programs intended for command line use provide a formal piece of
+documentation called a manual or man page. A special paging program called man is
+used to view them. It is used like this:</p>
+
+<p>許多希望被命令列使用的可執行程式，提供了一個正式的文件，叫做手冊或手冊頁(man
+page)。一個特殊的叫做 man 的分頁程式，可用來瀏覽他們。它是這樣使用的：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>man program
+</code></pre></div></div>
+
+<p>where “program” is the name of the command to view.</p>
+
+<p>“program”是要瀏覽的命令名。</p>
+
+<p>Man pages vary somewhat in format but generally contain a title, a synopsis of the
+command’s syntax, a description of the command’s purpose, and a listing and description
+of each of the command’s options. Man pages, however, do not usually include
+examples, and are intended as a reference, not a tutorial. As an example, Let's try viewing
+the man page for the ls command:</p>
+
+<p>手冊文件的格式有點不同，一般地包含一個標題、命令語法的綱要、命令用途的說明、
+以及每個命令選項的列表和說明。然而，手冊文件通常並不包含範例，它打算
+作為一本參考手冊，而不是課程。作為一個例子，瀏覽一下 ls 命令的手冊文件：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ man ls
+</code></pre></div></div>
+
+<p>On most Linux systems, man uses less to display the manual page, so all of the familiar
+less commands work while displaying the page.</p>
+
+<p>在大多數 Linux 系統中，man 使用 less 工具來顯示參考手冊，所以當瀏覽文件時，你所熟悉的 less
+命令都能有效。</p>
+
+<p>The “manual” that man displays is broken into sections and not only covers user
+commands but also system administration commands, programming interfaces, file
+formats and more. The table below describes the layout of the manual:</p>
+
+<p>man 所顯示的參考手冊，被分成幾個章節，它們不僅僅包括使用者命令，也包括系統管理員
+命令、程式介面、檔案格式等等。下表描繪了手冊的佈局：</p>
+
+<table class="multi">
+<caption class="cap">Table 6-1: Man Page Organization</caption>
+<thead>
+<tr>
+<th class="title">Section</th>
+<th class="title">Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>User commands</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Programming interfaces kernel system calls</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Programming interfaces to the C library</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Special files such as device nodes and drivers</td>
+</tr>
+<tr>
+<td>5</td>
+<td>File formats</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Games and amusements such as screen savers</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Miscellaneous</td>
+</tr>
+<tr>
+<td>8</td>
+<td>System administration commands</td>
+</tr>
+</tbody>
+</table>
+
+<table class="multi">
+<caption class="cap">表6-1: 手冊頁的組織形式</caption>
+<thead>
+<tr>
+<th class="title">章節</th>
+<th class="title">內容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>使用者命令</td>
+</tr>
+<tr>
+<td>2</td>
+<td>程式介面核心系統呼叫</td>
+</tr>
+<tr>
+<td>3</td>
+<td>C 函式庫函式程式介面</td>
+</tr>
+<tr>
+<td>4</td>
+<td>特殊檔案，比如說裝置結點和驅動程式</td>
+</tr>
+<tr>
+<td>5</td>
+<td>檔案格式</td>
+</tr>
+<tr>
+<td>6</td>
+<td>遊戲娛樂，如螢幕保護程式</td>
+</tr>
+<tr>
+<td>7</td>
+<td>其他方面</td>
+</tr>
+<tr>
+<td>8</td>
+<td>系統管理員命令</td>
+</tr>
+</tbody>
+</table>
+
+<p>Sometimes we need to look in a specific section of the manual to find what we are
+looking for. This is particularly true if we are looking for a file format that is also the
+name of a command. Without specifying a section number, we will always get the first
+instance of a match, probably in section 1. To specify a section number, we use man like
+this:</p>
+
+<p>有時候，我們需要檢視參考手冊的特定章節，從而找到我們需要的資訊。
+如果我們要查詢一種檔案格式，而同時它也是一個命令名時,這種情況尤其正確。
+沒有指定章節號，我們總是得到第一個匹配項，可能在第一章節。我們這樣使用 man 命令，
+來指定章節號：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>man section search_term
+</code></pre></div></div>
+
+<p>For example:</p>
+
+<p>例如：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ man 5 passwd
+</code></pre></div></div>
+
+<p>This will display the man page describing the file format of the /etc/passwd file.</p>
+
+<p>命令執行結果會顯示檔案 /etc/passwd 的檔案格式說明手冊。</p>
+
+<h3 id="apropos--顯示適當的命令">apropos － 顯示適當的命令</h3>
+
+<p>It is also possible to search the list of man pages for possible matches based on a search
+term. It’s very crude but sometimes helpful. Here is an example of a search for man
+pages using the search term “floppy”:</p>
+
+<p>也有可能搜尋參考手冊列表，基於某個關鍵字的匹配項。雖然很粗糙但有時很有用。
+下面是一個以”floppy”為關鍵詞來搜尋參考手冊的例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ apropos floppy
+create_floppy_devices (8)   - udev callout to create all possible
+...
+</code></pre></div></div>
+
+<p>The first field in each line of output is the name of the man page, the second field shows
+the section. Note that the man command with the “-k” option performs the exact same
+function as apropos.</p>
+
+<p>輸出結果每行的第一個欄位是手冊頁的名字，第二個欄位展示章節。注意，man 命令加上”-k”選項，
+和 apropos 完成一樣的功能。</p>
+
+<h3 id="whatis--顯示非常簡潔的命令說明">whatis － 顯示非常簡潔的命令說明</h3>
+
+<p>The whatis program displays the name and a one line description of a man page
+matching a specified keyword:</p>
+
+<p>whatis 程式顯示匹配特定關鍵字的手冊頁的名字和一行命令說明：</p>
+
+<blockquote>
+  <p>The Most Brutal Man Page Of Them All</p>
+
+  <p>最晦澀難懂的手冊頁</p>
+
+  <p>As we have seen, the manual pages supplied with Linux and other Unix-like
+systems are intended as reference documentation and not as tutorials. Many man
+pages are hard to read, but I think that the grand prize for difficulty has got to go
+to the man page for bash. As I was doing my research for this book, I gave it
+careful review to ensure that I was covering most of its topics. When printed, it’s
+over eighty pages long and extremely dense, and its structure makes absolutely no
+sense to a new user.</p>
+
+  <p>正如我們所看到的，Linux 和類別 Unix 的系統提供的手冊頁，只是打算作為參考手冊使用，
+而不是課程。許多手冊頁都很難閱讀，但是我認為由於閱讀難度而能拿到特等獎的手冊頁應該是 bash
+手冊頁。因為我正在為這本書做我的研究，所以我很仔細地瀏覽了整個 bash 手冊，為的是確保我講述了
+大部分的 bash 主題。當把 bash 參考手冊整個打印出來，其篇幅有八十多頁且內容極其緊密，
+但對於初學者來說，其結構安排毫無意義。</p>
+
+  <p>On the other hand, it is very accurate and concise, as well as being extremely
+complete. So check it out if you dare and look forward to the day when you can
+read it and it all makes sense.</p>
+
+  <p>另一方面，bash 參考手冊的內容非常簡明精確，同時也非常完善。所以，如果你有膽量就檢視一下，
+並且期望有一天你能讀懂它。</p>
+</blockquote>
+
+<h3 id="info--顯示程式-info-條目">info － 顯示程式 Info 條目</h3>
+
+<p>The GNU Project provides an alternative to man pages for their programs, called “info.”
+Info pages are displayed with a reader program named, appropriately enough, info.
+Info pages are hyperlinked much like web pages. Here is a sample:</p>
+
+<p>GNU 專案提供了一個命令程式手冊頁的替代物，稱為”info”。info 內容可透過 info 閱讀器
+程式讀取。info 頁是超級連結形式的，和網頁很相似。這有個例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>File: coreutils.info,    Node: ls invocation,    Next: dir invocation,
+ Up: Directory listing
+
+10.1 `ls': List directory contents
+==================================
+...
+</code></pre></div></div>
+
+<p>The info program reads info files, which are tree structured into individual nodes, each
+containing a single topic. Info files contain hyperlinks that can move you from node to
+node. A hyperlink can be identified by its leading asterisk, and is activated by placing the
+cursor upon it and pressing the enter key.</p>
+
+<p>info 程式讀取 info 檔案，info 檔案是樹型結構，分化為各個結點，每一個包含一個題目。
+info 檔案包含超級連結，它可以讓你從一個結點跳到另一個結點。一個超級連結可透過
+它開頭的星號來辨別出來，把游標放在它上面並按下 enter 鍵，就可以啟用它。</p>
+
+<p>To invoke info, type “info” followed optionally by the name of a program. Below is a
+table of commands used to control the reader while displaying an info page:</p>
+
+<p>輸入”info”，接著輸入程式名稱，啟動 info。下表中的命令，當顯示一個 info 頁面時，
+用來控制閱讀器。</p>
+
+<table class="multi">
+<caption class="cap">Tbale 6-2: info Commands</caption>
+<thead>
+<tr>
+<th class="title">Command</th>
+<th class="title">Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>?</td>
+<td>Display command help</td>
+</tr>
+<tr>
+<td>PgUp or Backspace</td>
+<td>Display privious page </td>
+</tr>
+<tr>
+<td>PgDn or Space</td>
+<td>Display next page </td>
+</tr>
+<tr>
+<td>n</td>
+<td>Next - Display the next node</td>
+</tr>
+<tr>
+<td>p</td>
+<td>Previous - Display the previous node</td>
+</tr>
+<tr>
+<td>u</td>
+<td>Up - Display the parent node of the currently displayed
+node, usually a menu.</td>
+</tr>
+<tr>
+<td>Enter</td>
+<td>Follow the hyperlink at the cursor location </td>
+</tr>
+<tr>
+<td>q</td>
+<td>Quit</td>
+</tr>
+</tbody>
+</table>
+
+<table class="multi">
+<caption class="cap">表 6-2: info 命令</caption>
+<thead>
+<tr>
+<th class="title">命令</th>
+<th class="title">行為</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top" width="25%">?</td>
+<td valign="top">顯示命令幫助</td>
+</tr>
+<tr>
+<td valign="top">PgUp or Backspace</td>
+<td valign="top">顯示上一頁 </td>
+</tr>
+<tr>
+<td valign="top">PgDn or Space</td>
+<td valign="top">顯示下一頁</td>
+</tr>
+<tr>
+<td valign="top">n</td>
+<td valign="top">下一個 - 顯示下一個結點</td>
+</tr>
+<tr>
+<td valign="top">p</td>
+<td valign="top">上一個 - 顯示上一個結點</td>
+</tr>
+<tr>
+<td valign="top">u</td>
+<td valign="top">Up - 顯示當前所顯示結點的父結點，通常是個選單</td>
+</tr>
+<tr>
+<td valign="top">Enter</td>
+<td valign="top">啟用游標位置下的超級連結</td>
+</tr>
+<tr>
+<td valign="top">q</td>
+<td valign="top">退出</td>
+</tr>
+</tbody>
+</table>
+
+<p>Most of the command line programs we have discussed so far are part of the GNU
+Project’s “coreutils” package, so typing:</p>
+
+<p>到目前為止，我們所討論的大多數命令列程式，屬於 GNU 專案”coreutils”包，所以輸入：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ info coreutils
+</code></pre></div></div>
+
+<p>will display a menu page with hyperlinks to each program contained in the coreutils
+package.</p>
+
+<p>將會顯示一個包含超級連結的手冊頁，這些超級連結指向包含在 coreutils 包中的各個程式。</p>
+
+<h3 id="readme-和其它程式文件">README 和其它程式文件</h3>
+
+<p>Many software packages installed on your system have documentation files residing in
+the /usr/share/doc directory. Most of these are stored in plain text format and can
+be viewed with less. Some of the files are in HTML format and can be viewed with a
+web browser. We may encounter some files ending with a “.gz” extension. This
+indicates that they have been compressed with the gzip compression program. The gzip
+package includes a special version of less called zless that will display the contents
+of gzip-compressed text files.</p>
+
+<p>許多安裝在你係統中的軟體，都有自己的文件檔案，這些檔案位於/usr/share/doc 目錄下。
+這些檔案大多數是以文字檔案的形式儲存的，可用 less 閱讀器來瀏覽。一些檔案是 HTML 格式，
+可用網頁瀏覽器來閱讀。我們可能遇到許多以”.gz”結尾的檔案。這表示 gzip 壓縮程式
+已經壓縮了這些檔案。gzip 軟體包包括一個特殊的 less 版本，叫做 zless，zless 可以顯示由
+gzip 壓縮的文字檔案的內容。</p>
+
+<h3 id="用別名alias建立你自己的命令">用別名（alias）建立你自己的命令</h3>
+
+<p>Now for our very first experience with programming! We will create a command of our
+own using the alias command. But before we start, we need to reveal a small
+command line trick. It’s possible to put more than one command on a line by separating
+each command with a semicolon character. It works like this:</p>
+
+<p>現在是時候，感受第一次程式設計經歷了！我們將用 alias 命令建立我們自己的命令。但在
+開始之前，我們需要展示一個命令列小技巧。可以把多個命令放在同一行上，命令之間
+用”;”分開。它像這樣工作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>command1; command2; command3...
+</code></pre></div></div>
+
+<p>Here’s the example we will use:</p>
+
+<p>我們會用到下面的例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ cd /usr; ls; cd -
+bin  games    kerberos  lib64    local  share  tmp
+...
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>As we can see, we have combined three commands on one line. First we change
+directory to /usr then list the directory and finally return to the original directory (by
+using ‘cd -‘) so we end up where we started. Now Let's turn this sequence into a new
+command using alias. The first thing we have to do is dream up a name for our new
+command. Let's try “test”. Before we do that, it would be a good idea to find out if the
+name “test” is already being used. To find out, we can use the type command again:</p>
+
+<p>正如我們看到的，我們在一行上聯合了三個命令。首先更改目錄到/usr，然後列出目錄
+內容，最後回到原始目錄（用命令”cd -“）,結束在開始的地方。現在，透過 alias 命令
+把這一串命令轉變為一個命令。我們要做的第一件事就是為我們的新命令構想一個名字。
+比方說”test”。在使用”test”之前，查明是否”test”命令名已經存在系統中，是個很不錯
+的主意。為了查清此事，可以使用 type 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ type test
+test is a shell builtin
+</code></pre></div></div>
+
+<p>Oops! The name “test” is already taken. Let's try “foo”:</p>
+
+<p>哦！”test”名字已經被使用了。試一下”foo”:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ type foo
+bash: type: foo: not found
+</code></pre></div></div>
+
+<p>Great! “foo” is not taken. So Let's create our alias:</p>
+
+<p>太棒了！”foo”還沒被佔用。建立命令別名：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ alias foo='cd /usr; ls; cd -'
+</code></pre></div></div>
+
+<p>Notice the structure of this command:</p>
+
+<p>注意命令結構：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alias name='string'
+</code></pre></div></div>
+
+<p>After the command “alias” we give alias a name followed immediately (no whitespace
+allowed) by an equals sign, followed immediately by a quoted string containing the
+meaning to be assigned to the name. After we define our alias, it can be used anywhere
+the shell would expect a command. Let's try it:</p>
+
+<p>在命令”alias”之後，輸入“name”，緊接著（沒有空格）是一個等號，等號之後是
+一串用引號引起的字串，字串的內容要賦值給 name。我們定義了別名之後，
+這個命令別名可以使用在任何地方。試一下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo
+bin   games   kerberos  lib64    local   share  tmp
+...
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>We can also use the type command again to see our alias:</p>
+
+<p>我們也可以使用 type 命令來檢視我們的別名：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ type foo
+foo is aliased to `cd /usr; ls ; cd -'
+</code></pre></div></div>
+
+<p>To remove an alias, the unalias command is used, like so:</p>
+
+<p>刪除別名，使用 unalias 命令，像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ unalias foo
+[me@linuxbox ~]$ type foo
+bash: type: foo: not found
+</code></pre></div></div>
+
+<p>While we purposefully avoided naming our alias with an existing command name, it is
+not uncommon to do so. This is often done to apply a commonly desired option to each
+invocation of a common command. For instance, we saw earlier how the ls command is
+often aliased to add color support:</p>
+
+<p>雖然我們有意避免使用已經存在的命令名來命名我們的別名，但這是常做的事情。通常，
+會把一個普遍用到的選項加到一個經常使用的命令後面。例如，之前見到的 ls 命令，會
+帶有色彩支援：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ type ls
+ls is aliased to 'ls --color=tty'
+</code></pre></div></div>
+
+<p>To see all the aliases defined in the environment, use the alias command without
+arguments. Here are some of the aliases defined by default on a Fedora system. Try and
+figure out what they all do:</p>
+
+<p>要檢視所有定義在系統環境中的別名，使用不帶引數的 alias 命令。下面在 Fedora 系統中
+預設定義的別名。試著弄明白，它們是做什麼的：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ alias
+alias l.='ls -d .* --color=tty'
+...
+</code></pre></div></div>
+
+<p>There is one tiny problem with defining aliases on the command line. They vanish when
+your shell session ends. In a later chapter, we will see how to add our own aliases to the
+files that establish the environment each time we log on, but for now, enjoy the fact that
+we have taken our first, albeit tiny, step into the world of shell programming!</p>
+
+<p>在命令列中定義別名有點小問題。當你的 shell 會話結束時，它們會消失。隨後的章節裡，
+我們會了解怎樣把自己的別名新增到檔案中去，每次我們登入系統，這些檔案會建立系統環境。
+現在，好好享受我們剛經歷過的，步入 shell 程式設計世界的第一步吧，雖然微小。</p>
+
+<h3 id="拜訪老朋友">拜訪老朋友</h3>
+
+<p>Now that we have learned how to find the documentation for commands, go and look up
+the documentation for all the commands we have encountered so far. Study what
+additional options are available and try them out!</p>
+
+<p>既然我們已經學習了怎樣找到命令的幫助文件，那就試著查閱，到目前為止，我們學到的所有
+命令的文件。學習命令其它可用的選項，練習一下！</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>There are many online sources of documentation for Linux and the command line. Here
+are some of the best:</p>
+  </li>
+  <li>
+    <p>在網上，有許多關於 Linux 和命令列的文件。以下是一些最好的文件：</p>
+  </li>
+  <li>
+    <p>The Bash Reference Manual is a reference guide to the bash shell. It’s still a
+reference work but contains examples and is easier to read than the bash man
+page.</p>
+  </li>
+  <li>
+    <p>Bash 參考手冊是一本 bash shell 的參考指南。它仍然是一本參考書，但是包含了很多
+範例，而且它比 bash 手冊頁容易閱讀。</p>
+
+    <p><a href="http://www.gnu.org/software/bash/manual/bashref.html">http://www.gnu.org/software/bash/manual/bashref.html</a></p>
+  </li>
+  <li>
+    <p>The Bash FAQ contains answers to frequently asked questions regarding bash.
+This list is aimed at intermediate to advanced users, but contains a lot of
+good information.</p>
+  </li>
+  <li>
+    <p>Bash FAQ 包含關於 bash，而經常提到的問題的答案。這個列表面向 bash 的中高階使用者，
+但它包含了許多有幫助的資訊。</p>
+
+    <p><a href="http://mywiki.wooledge.org/BashFAQ">http://mywiki.wooledge.org/BashFAQ</a></p>
+  </li>
+  <li>
+    <p>The GNU Project provides extensive documentation for its programs, which form
+the core of the Linux command line experience. You can see a complete list
+here:</p>
+  </li>
+  <li>
+    <p>GUN 專案為它的程式提供了大量的文件，這些文件組成了 Linux 命令列實驗的核心。
+這裡你可以看到一個完整的列表：</p>
+
+    <p><a href="http://www.gnu.org/manual/manual.html">http://www.gnu.org/manual/manual.html</a></p>
+  </li>
+  <li>
+    <p>Wikipedia has an interesting article on man pages:</p>
+  </li>
+  <li>
+    <p>Wikipedia 有一篇關於手冊頁的有趣文章：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Man_page">http://en.wikipedia.org/wiki/Man_page</a></p>
+  </li>
+</ul>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

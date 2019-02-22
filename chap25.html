@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">編寫第一個 Shell 指令碼</h1><br>
+<p>In the preceding chapters, we have assembled an arsenal of command line tools. While
+these tools can solve many kinds of computing problems, we are still limited to manually
+using them one by one on the command line. Wouldn’t it be great if we could get the
+shell to do more of the work? We can. By joining our tools together into programs of
+our own design, the shell can carry out complex sequences of tasks all by itself. We can
+enable it to do this by writing shell scripts.</p>
+
+<p>在前面的章節中，我們已經裝備了一個命令列工具的武器函式庫。雖然這些工具能夠解決許多種計算問題，
+但是我們仍然侷限於在命令列中手動地一個一個使用它們。如果我們能夠讓 shell 來完成更多的工作, 豈不是更好？
+我們可以的。透過把我們的工具一起放置到我們自己設計的程式中, shell 就會自己來執行這些複雜的任務序列。
+透過編寫 shell 指令碼，我們可以讓 shell 來做這些事情。</p>
+
+<h3 id="什麼是-shell-指令碼">什麼是 Shell 指令碼？</h3>
+
+<p>In the simplest terms, a shell script is a file containing a series of commands. The shell
+reads this file and carries out the commands as though they have been entered directly on
+the command line.</p>
+
+<p>最簡單的解釋，一個 shell 指令碼就是一個包含一系列命令的檔案。shell 讀取這個檔案，然後執行
+檔案中的所有命令，就好像這些命令已經直接被輸入到了命令列中一樣。</p>
+
+<p>The shell is somewhat unique, in that it is both a powerful command line interface to the
+system and a scripting language interpreter. As we will see, most of the things that can be
+done on the command line can be done in scripts, and most of the things that can be done
+in scripts can be done on the command line.</p>
+
+<p>Shell 有些獨特，因為它不僅是一個功能強大的命令列介面,也是一個指令碼語言直譯器。我們將會看到，
+大多數能夠在命令列中完成的任務也能夠用指令碼來實現，同樣地，大多數能用指令碼實現的操作也能夠
+在命令列中完成。</p>
+
+<p>We have covered many shell features, but we have focused on those features most often
+used directly on the command line. The shell also provides a set of features usually (but
+not always) used when writing programs.</p>
+
+<p>雖然我們已經介紹了許多 shell 功能，但只是集中於那些經常直接在命令列中使用的功能。
+Shell 也提供了一些通常（但不總是）在編寫程式時才使用的功能。</p>
+
+<h3 id="怎樣編寫一個-shell-指令碼">怎樣編寫一個 Shell 指令碼</h3>
+
+<p>To successfully create and run a shell script, we need to do three things:</p>
+
+<p>為了成功地建立和執行一個 shell 指令碼，我們需要做三件事情：</p>
+
+<ol>
+  <li>
+    <p><strong>Write a script.</strong> Shell scripts are ordinary text files. So we need a text editor to
+write them. The best text editors will provide syntax highlighting, allowing us to
+see a color-coded view of the elements of the script. Syntax highlighting will help
+us spot certain kinds of common errors. vim, gedit, kate, and many other
+editors are good candidates for writing scripts.</p>
+  </li>
+  <li>
+    <p><strong>Make the script executable.</strong> The system is rather fussy about not letting any old
+text file be treated as a program, and for good reason! We need to set the script
+file’s permissions to allow execution.</p>
+  </li>
+  <li>
+    <p><strong>Put the script somewhere the shell can find it.</strong> The shell automatically searches
+certain directories for executable files when no explicit pathname is specified.
+For maximum convenience, we will place our scripts in these directories.</p>
+  </li>
+</ol>
+<ol>
+  <li>
+    <p><em>編寫一個指令碼。</em> Shell 指令碼就是普通的文字檔案。所以我們需要一個文字編輯器來書寫它們。最好的文字
+編輯器都會支援語法高亮，這樣我們就能夠看到一個指令碼關鍵字的彩色編碼檢視。語法高亮會幫助我們檢視某種常見
+錯誤。為了編寫指令碼檔案，vim，gedit，kate，和許多其它編輯器都是不錯的候選者。</p>
+  </li>
+  <li>
+    <p><em>使指令碼檔案可執行。</em> 系統會相當挑剔不允許任何舊的文字檔案被看作是一個程式，並且有充分的理由!
+所以我們需要設定指令碼檔案的許可權來允許其可執行。</p>
+  </li>
+  <li>
+    <p><em>把指令碼放置到 shell 能夠找到的地方。</em> 當沒有指定可執行檔案明確的路徑名時，shell 會自動地搜尋某些目錄，
+來查詢此可執行檔案。為了最大程度的方便，我們會把指令碼放到這些目錄當中。</p>
+  </li>
+</ol>
+
+<h3 id="指令碼檔案格式">指令碼檔案格式</h3>
+
+<p>In keeping with programming tradition, we’ll create a “hello world” program to
+demonstrate an extremely simple script. So Let's fire up our text editors and enter the
+following script:</p>
+
+<p>為了保持程式設計傳統，我們將建立一個 “hello world” 程式來說明一個極端簡單的指令碼。所以讓我們啟動
+我們的文字編輯器，然後輸入以下指令碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># This is our first script.</span>
+<span class="nb">echo</span> <span class="s1">'Hello World!'</span>
+</code></pre></div></div>
+
+<p>The last line of our script is pretty familiar, just an echo command with a string
+argument. The second line is also familiar. It looks like a comment that we have seen
+used in many of the configuration files we have examined and edited. One thing about
+comments in shell scripts is that they may also appear at the end of lines, like so:</p>
+
+<p>對於指令碼中的最後一行，我們應該是相當的熟悉，僅僅是一個帶有一個字串引數的 echo 命令。
+對於第二行也很熟悉。它看起來像一個註釋，我們已經在許多我們檢查和編輯過的配置檔案中
+看到過。關於 shell 指令碼中的註釋，它們也可以出現在文字行的末尾，像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo 'Hello World!' # This is a comment too
+</code></pre></div></div>
+
+<p>Everything from the # symbol onward on the line is ignored.</p>
+
+<p>文字行中，# 符號之後的所有字元都會被忽略。</p>
+
+<p>Like many things, this works on the command line, too:</p>
+
+<p>類似於許多命令，這也在命令列中起作用：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo 'Hello World!' # This is a comment too
+Hello World!
+</code></pre></div></div>
+
+<p>Though comments are of little use on the command line, they will work.</p>
+
+<p>雖然很少在命令列中使用註釋，但它們也能起作用。</p>
+
+<p>The first line of our script is a little mysterious. It looks like it should be a comment,
+since it starts with #, but it looks too purposeful to be just that. The #! character
+sequence is, in fact, a special construct called a shebang. The shebang is used to tell the
+system the name of the interpreter that should be used to execute the script that follows.
+Every shell script should include this as its first line.</p>
+
+<p>我們指令碼中的第一行文字有點神祕。它看起來它應該是一條註釋，因為它起始於一個#符號，但是
+它看起來太有意義，以至於不僅僅是註釋。事實上，這個#!字元序列是一種特殊的結構叫做 shebang。
+這個 shebang 被用來告訴作業系統將執行此指令碼所用的直譯器的名字。每個 shell 指令碼都應該把這一文字行
+作為它的第一行。</p>
+
+<p>Let's save our script file as hello_world.</p>
+
+<p>讓我們把此指令碼檔案儲存為 hello_world。</p>
+
+<h3 id="可執行許可權">可執行許可權</h3>
+
+<p>The next thing we have to do is make our script executable. This is easily done using
+chmod:</p>
+
+<p>下一步我們要做的事情是讓我們的指令碼可執行。使用 chmod 命令，這很容易做到：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l hello_world
+-rw-r--r-- 1  me    me      63  2009-03-07 10:10 hello_world
+[me@linuxbox ~]$ chmod 755 hello_world
+[me@linuxbox ~]$ ls -l hello_world
+-rwxr-xr-x 1  me    me      63  2009-03-07 10:10 hello_world
+</code></pre></div></div>
+
+<p>There are two common permission settings for scripts; 755 for scripts that everyone can
+execute, and 700 for scripts that only the owner can execute. Note that scripts must be
+readable in order to be executed.</p>
+
+<p>對於指令碼檔案，有兩個常見的許可權設定；許可權為755的指令碼，則每個人都能執行，和許可權為700的
+指令碼，只有檔案所有者能夠執行。注意為了能夠執行指令碼，指令碼必須是可讀的。</p>
+
+<h3 id="指令碼檔案位置">指令碼檔案位置</h3>
+
+<p>With the permissions set, we can now execute our script:</p>
+
+<p>當設定了指令碼許可權之後，我們就能執行我們的指令碼了：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ./hello_world
+Hello World!
+</code></pre></div></div>
+
+<p>In order for the script to run, we must precede the script name with an explicit path. If
+we don’t, we get this:</p>
+
+<p>為了能夠執行此指令碼，我們必須指定指令碼檔案明確的路徑。如果我們沒有那樣做，我們會得到這樣的提示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ hello_world
+bash: hello_world: command not found
+</code></pre></div></div>
+
+<p>Why is this? What makes our script different from other programs? As it turns out,
+nothing. Our script is fine. Its location is the problem. Back in Chapter 12, we discussed
+the PATH environment variable and its effect on how the system searches for executable
+programs. To recap, the system searches a list of directories each time it needs to find an
+executable program, if no explicit path is specified. This is how the system knows to
+execute /bin/ls when we type ls at the command line. The /bin directory is one of
+the directories that the system automatically searches. The list of directories is held
+within an environment variable named PATH. The PATH variable contains a colon-
+separated list of directories to be searched. We can view the contents of PATH:</p>
+
+<p>為什麼會這樣呢？什麼使我們的指令碼不同於其它的程式？結果證明，什麼也沒有。我們的
+指令碼沒有問題。是指令碼儲存位置的問題。回到第12章，我們討論了 PATH 環境變數及其在系統
+查詢可執行程式方面的作用。回顧一下，如果沒有給出可執行程式的明確路徑名，那麼系統每次都會
+搜尋一系列的目錄，來查詢此可執行程式。這個/bin 目錄就是其中一個系統會自動搜尋的目錄。
+這個目錄列表被儲存在一個名為 PATH 的環境變數中。這個 PATH 變數包含一個由冒號分隔開的目錄列表。
+我們可以檢視 PATH 的內容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo $PATH
+/home/me/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:
+/bin:/usr/games
+</code></pre></div></div>
+
+<p>Here we see our list of directories. If our script were located in any of the directories in
+the list, our problem would be solved. Notice the first directory in the list,
+/home/me/bin. Most Linux distributions configure the PATH variable to contain a
+bin directory in the user’s home directory, to allow users to execute their own programs.
+So if we create the bin directory and place our script within it, it should start to work
+like other programs:</p>
+
+<p>這裡我們看到了我們的目錄列表。如果我們的指令碼位於此列表中任意目錄下，那麼我們的問題將
+會被解決。注意列表中的第一個目錄/home/me/bin。大多數的 Linux 發行版會配置 PATH 變數，讓其包含
+一個位於使用者家目錄下的 bin 目錄，從而允許使用者能夠執行他們自己的程式。所以如果我們建立了
+一個 bin 目錄，並把我們的指令碼放在這個目錄下，那麼這個指令碼就應該像其它程式一樣開始工作了：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mkdir bin
+[me@linuxbox ~]$ mv hello_world bin
+[me@linuxbox ~]$ hello_world
+Hello World!
+</code></pre></div></div>
+
+<p>And so it does.</p>
+
+<p>它的確工作了。</p>
+
+<p>If the PATH variable does not contain the directory, we can easily add it by including this
+line in our .bashrc file:</p>
+
+<p>如果這個 PATH 變數不包含這個目錄，我們能夠輕鬆地新增它，透過在我們的.bashrc 檔案中包含下面
+這一行文字：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export PATH=~/bin:"$PATH"
+</code></pre></div></div>
+
+<p>After this change is made, it will take effect in each new terminal session. To apply the
+change to the current terminal session, we must have the shell re-read the .bashrc file.
+This can be done by “sourcing” it:</p>
+
+<p>當做了這個修改之後，它會在每個新的終端會話中生效。為了把這個修改應用到當前的終端會話中，
+我們必須讓 shell 重新讀取這個 .bashrc 檔案。這可以透過 “sourcing”.bashrc 檔案來完成：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ . .bashrc
+</code></pre></div></div>
+
+<p>The dot (.) command is a synonym for the source command, a shell builtin which
+reads a specified file of shell commands and treats it like input from the keyboard.</p>
+
+<p>這個點（.）命令是 source 命令的同義詞，一個 shell 內建命令，用來讀取一個指定的 shell 命令檔案，
+並把它看作是從鍵盤中輸入的一樣。</p>
+
+<hr />
+
+<p>Note: Ubuntu automatically adds the ~/bin directory to the PATH variable if the
+~/bin directory exists when the user’s .bashrc file is executed. So, on Ubuntu
+systems, if we create the ~/bin directory and then log out and log in again,
+everything works.</p>
+
+<p>注意：在 Ubuntu 系統中，如果存在 ~/bin 目錄，當執行使用者的 .bashrc 檔案時，
+Ubuntu 會自動地新增這個 ~/bin 目錄到 PATH 變數中。所以在 Ubuntu 系統中，如果我們建立
+了這個 ~/bin 目錄，隨後退出，然後再登入，一切會正常執行。</p>
+
+<hr />
+
+<h4 id="指令碼檔案的好去處">指令碼檔案的好去處</h4>
+
+<p>The ~/bin directory is a good place to put scripts intended for personal use. If we write
+a script that everyone on a system is allowed to use, the traditional location is
+/usr/local/bin. Scripts intended for use by the system administrator are often
+located in /usr/local/sbin. In most cases, locally supplied software, whether
+scripts or compiled programs, should be placed in the /usr/local hierarchy and not in
+/bin or /usr/bin. These directories are specified by the Linux Filesystem Hierarchy
+Standard to contain only files supplied and maintained by the Linux distributor.</p>
+
+<p>這個 ~/bin 目錄是存放為個人所用指令碼的好地方。如果我們編寫了一個指令碼，系統中的每個使用者都可以使用它，
+那麼這個指令碼的傳統位置是 /usr/local/bin。系統管理員使用的指令碼經常放到 /usr/local/sbin 目錄下。
+大多數情況下，本地支援的軟體，不管是指令碼還是編譯過的程式，都應該放到 /usr/local 目錄下，
+而不是在 /bin 或 /usr/bin 目錄下。這些目錄都是由 Linux 檔案系統層次結構標準指定，只包含由 Linux 發行商
+所提供和維護的檔案。</p>
+
+<h3 id="更多的格式技巧">更多的格式技巧</h3>
+
+<p>One of the key goals of serious script writing is ease of maintenance; that is, the ease
+with which a script may be modified by its author or others to adapt it to changing needs.
+Making a script easy to read and understand is one way to facilitate easy maintenance.</p>
+
+<p>嚴肅認真的指令碼書寫的關鍵目標之一是為了易於維護；也就是說，一個指令碼可以輕鬆地被作者或其它
+使用者修改，使它適應變化的需求。使指令碼容易閱讀和理解是一種方便維護的方法。</p>
+
+<h4 id="長選項名稱">長選項名稱</h4>
+
+<p>Many of the commands we have studied feature both short and long option names. For
+instance, the ls command has many options that can be expressed in either short or long
+form. For example:</p>
+
+<p>我們學過的許多命令都以長短兩種選項名稱為特徵。例如，這個 ls 命令有許多選項既可以用短形式也
+可以用長形式來表示。例如：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -ad
+</code></pre></div></div>
+
+<p>and:</p>
+
+<p>和：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls --all --directory
+</code></pre></div></div>
+
+<p>are equivalent commands. In the interests of reduced typing, short options are preferred
+when entering options on the command line, but when writing scripts, long options can
+provide improved readability.</p>
+
+<p>是等價的命令。為了減少輸入，當在命令列中輸入選項的時候，短選項更受歡迎，但是當書寫指令碼的時候，
+長選項能提供可讀性。</p>
+
+<h4 id="縮排和行繼續符">縮排和行繼續符</h4>
+
+<p>When employing long commands, readability can be enhanced by spreading the
+command over several lines. In Chapter 18, we looked at a particularly long example of
+the find command:</p>
+
+<p>當使用長命令的時候，透過把命令在幾個文字行中展開，可以提高命令的可讀性。
+在第十八章中，我們看到了一個特別長的 find 命令範例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find playground \( -type f -not -perm 0600 -exec
+chmod 0600 ‘{}’ ‘;’ \) -or \( -type d -not -perm 0711 -exec chmod
+0711 ‘{}’ ‘;’ \)
+</code></pre></div></div>
+
+<p>Obviously, this command is a little hard to figure out at first glance. In a script, this
+command might be easier to understand if written this way:</p>
+
+<p>顯然，這個命令有點難理解，當第一眼看到它的時候。在指令碼中，這個命令可能會比較容易
+理解，如果這樣書寫它：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find playground \
+    \( \
+        -type f \
+        -not -perm 0600 \
+        -exec chmod 0600 ‘{}’ ‘;’ \
+    \) \
+    -or \
+    \( \
+        -type d \
+        -not -perm 0711 \
+        -exec chmod 0711 ‘{}’ ‘;’ \
+    \)
+</code></pre></div></div>
+
+<p>By using line continuations (backslash-linefeed sequences) and indentation, the logic of
+this complex command is more clearly described to the reader. This technique works on
+the command line, too, though it is seldom used, as it is very awkward to type and edit.
+One difference between a script and the command line is that the script may employ tab
+characters to achieve indentation, whereas the command line cannot, since tabs are used
+to activate completion.</p>
+
+<p>透過使用行繼續符（反斜槓-回車符序列）和縮排，這個複雜命令的邏輯會被更清楚地描述給讀者。
+這個技巧在命令列中同樣有效，雖然很少使用它，因為輸入和編輯這個命令非常麻煩。指令碼和
+命令列的一個區別是，指令碼可能使用 tab 字元來實現縮排，然而命令列卻不能，因為 tab 字元被用來
+啟用自動完成功能。</p>
+
+<blockquote>
+  <p>Configuring vim For Script Writing</p>
+
+  <p>為書寫指令碼配置 vim</p>
+
+  <p>The vim text editor has many, many configuration settings. There are several
+common options that can facilitate script writing:</p>
+
+  <p>這個 vim 文字編輯器有許多許多的配置設定。有幾個常見的選項能夠有助於指令碼書寫：</p>
+
+  <p><em>:syntax on</em></p>
+
+  <p>turns on syntax highlighting. With this setting, different elements of shell syntax
+will be displayed in different colors when viewing a script. This is helpful for
+identifying certain kinds of programming errors. It looks cool, too. Note that for
+this feature to work, you must have a complete version of vim installed, and the
+file you are editing must have a shebang indicating the file is a shell script. If you
+have difficulty with the command above, try <em>:set syntax=sh</em> instead.</p>
+
+  <p>開啟語法高亮。透過這個設定，當檢視指令碼的時候，不同的 shell 語法元素會以不同的顏色
+顯示。這對於識別某些程式設計錯誤很有幫助。並且它看起來也很酷。注意為了這個功能起作用，你
+必須安裝了一個完整的 vim 版本，並且你編輯的檔案必須有一個 shebang，來說明這個檔案是
+一個 shell 指令碼。如果對於上面的命令，你遇到了困難，試試 <em>:set syntax=sh</em>。</p>
+
+  <p><em>:set hlsearch</em></p>
+
+  <p>turns on the option to highlight search results. Say we search for the word
+“echo.” With this option on, each instance of the word will be highlighted.</p>
+
+  <p>開啟這個選項是為了高亮查詢結果。比如說我們查詢單詞“echo”。透過設定這個選項，這個
+單詞的每個範例會高亮顯示。</p>
+
+  <p><em>:set tabstop=4</em></p>
+
+  <p>sets the number of columns occupied by a tab character. The default is eight
+columns. Setting the value to four (which is a common practice) allows long
+lines to fit more easily on the screen.</p>
+  <blockquote>
+    <p>設定一個 tab 字元所佔據的列數。預設是8列。把這個值設定為4（一種常見做法），
+從而讓長文字行更容易適應螢幕。</p>
+  </blockquote>
+
+  <p><em>:set autoindent</em></p>
+
+  <p>turns on the “auto indent” feature. This causes vim to indent a new line the same
+amount as the line just typed. This speeds up typing on many kinds of
+programming constructs. To stop indentation, type Ctrl-d.</p>
+
+  <p>開啟 “auto indent” 功能。這導致 vim 能對新的文字行縮排與剛輸入的文字行相同的列數。
+對於許多程式設計結構來說，這就加速了輸入。停止縮排，輸入 Ctrl-d。</p>
+
+  <p>These changes can be made permanent by adding these commands (without the
+leading colon characters) to your ~/.vimrc file.</p>
+
+  <p>透過把這些命令（沒有開頭的冒號字元）新增到你的 ~/.vimrc 檔案中，這些改動會永久生效。</p>
+</blockquote>
+
+<h3 id="總結歸納">總結歸納</h3>
+
+<p>In this first chapter of scripting, we have looked at how scripts are written and made to
+easily execute on our system. We also saw how we may use various formatting
+techniques to improve the readability (and thus, the maintainability) of our scripts. In
+future chapters, ease of maintenance will come up again and again as a central principle
+in good script writing.</p>
+
+<p>在這指令碼編寫的第一章中，我們已經看過怎樣編寫指令碼，怎樣讓它們在我們的系統中輕鬆地執行。
+我們也知道了怎樣使用各種格式技巧來提高指令碼的可讀性（可維護性）。在以後的各章中，輕鬆維護
+會作為編寫好指令碼的中心法則一次又一次地出現。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>For “Hello World” programs and examples in various programming languages, see:</p>
+  </li>
+  <li>
+    <p>檢視各種各樣程式語言的“Hello World”程式和範例：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Hello_world">http://en.wikipedia.org/wiki/Hello_world</a></p>
+  </li>
+  <li>
+    <p>This Wikipedia article talks more about the shebang mechanism:</p>
+  </li>
+  <li>
+    <p>這篇 Wikipedia 文章討論了更多關於 shebang 機制的內容：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Shebang_(Unix)">http://en.wikipedia.org/wiki/Shebang_(Unix)</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

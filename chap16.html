@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">儲存媒介</h1><br>
+<p>In previous chapters we’ve looked at manipulating data at the file level. In this chapter,
+we will consider data at the device level. Linux has amazing capabilities for handling
+storage devices, whether physical storage, such as hard disks, or network storage, or
+virtual storage devices like RAID (Redundant Array of Independent Disks) and LVM
+(Logical Volume Manager).</p>
+
+<p>在前面章節中，我們已經在檔案級別上見識了資料的操作。在這章裡，我們將從裝置級別來考慮資料。
+Linux 有著令人驚奇的能力來處理儲存裝置，不管是物理裝置，比如說硬碟，還是網路裝置，或者是
+虛擬儲存裝置，像 RAID（獨立磁碟冗餘陣列)和 LVM（邏輯卷管理器）。</p>
+
+<p>However, since this is not a book about system administration, we will not try to cover
+this entire topic in depth. What we will try to do is introduce some of the concepts and
+key commands that are used to manage storage devices.</p>
+
+<p>然而，這不是一本關於系統管理的書籍，我們不會試圖深入地覆蓋整個主題。我們將努力做的就是
+介紹一些概念和用來管理儲存裝置的重要命令。</p>
+
+<p>To carry out the exercises in this chapter, we will use a USB flash drive, a CD-RW disk
+(for systems equipped with a CD-ROM burner) and a floppy disk (again, if the system is
+so equipped.)</p>
+
+<p>為了做這一章的練習，我們將會使用 USB 快閃記憶體，CD-RW 光碟（如果系統配備了 CD-ROM 燒錄器）
+和一張軟盤（如果系統有這樣配備的話）。</p>
+
+<p>We will look at the following commands:</p>
+
+<p>我們將看看以下命令：</p>
+
+<ul>
+  <li>
+    <p>mount – Mount a file system</p>
+  </li>
+  <li>
+    <p>mount – 掛載一個檔案系統</p>
+  </li>
+  <li>
+    <p>umount – Unmount a file system</p>
+  </li>
+  <li>
+    <p>umount – 解除安裝一個檔案系統</p>
+  </li>
+  <li>
+    <p>fsck – Check and repair a file system</p>
+  </li>
+  <li>
+    <p>fsck – 檢查和修復一個檔案系統</p>
+  </li>
+  <li>
+    <p>fdisk – Partition table manipulator</p>
+  </li>
+  <li>
+    <p>fdisk – 分割槽表控制器</p>
+  </li>
+  <li>
+    <p>mkfs – Create a file system</p>
+  </li>
+  <li>
+    <p>mkfs – 建立檔案系統</p>
+  </li>
+  <li>
+    <p>fdformat – Format a floppy disk</p>
+  </li>
+  <li>
+    <p>fdformat – 格式化一張軟盤</p>
+  </li>
+  <li>
+    <p>dd – Write block oriented data directly to a device</p>
+  </li>
+  <li>
+    <p>dd — 把面向塊的資料直接寫入裝置</p>
+  </li>
+  <li>
+    <p>genisoimage (mkisofs) – Create an ISO 9660 image file</p>
+  </li>
+  <li>
+    <p>genisoimage (mkisofs) – 建立一個 ISO 9660的映像檔案</p>
+  </li>
+  <li>
+    <p>wodim (cdrecord) – Write data to optical storage media</p>
+  </li>
+  <li>
+    <p>wodim (cdrecord) – 把資料寫入光儲存媒介</p>
+  </li>
+  <li>
+    <p>md5sum – Calculate an MD5 checksum</p>
+  </li>
+  <li>
+    <p>md5sum – 計算 MD5檢驗碼</p>
+  </li>
+</ul>
+
+<h3 id="掛載和解除安裝儲存裝置">掛載和解除安裝儲存裝置</h3>
+
+<p>Recent advances in the Linux desktop have made storage device management extremely
+easy for desktop users. For the most part, we attach a device to our system and it “just
+works.” Back in the old days (say, 2004), this stuff had to be done manually. On non-
+desktop systems (i.e., servers) this is still a largely manual procedure since servers often
+have extreme storage needs and complex configuration requirements.</p>
+
+<p>Linux 桌面系統的最新進展已經使儲存裝置管理對於桌面使用者來說極其容易。大多數情況下，我們
+只要把裝置連線到系統中，它就能工作。在過去（比如說，2004年），這個工作必須手動完成。
+在非桌面系統中（例如，伺服器中），這仍然是一個主要地手動過程，因為伺服器經常有極端的儲存需求
+和複雜的配置要求。</p>
+
+<p>The first step in managing a storage device is attaching the device to the file system tree.
+This process, called mounting, allows the device to participate with the operating system.
+As we recall from Chapter 3, Unix-like operating systems, like Linux, maintain a single
+file system tree with devices attached at various points. This contrasts with other
+operating systems such as MS-DOS and Windows that maintain separate trees for each
+device (for example C:\, D:\, etc.).</p>
+
+<p>管理儲存裝置的第一步是把裝置連線到檔案系統樹中。這個叫做”掛載”的過程允許裝置連線到作業系統中。
+回想一下第三章，類別 Unix 的作業系統，比如Linux在單一檔案系統樹中維護連線在各個節點的各種裝置。
+這與其它作業系統形成對照，比如說 MS-DOS 和 Windows 系統中，每個裝置（例如 C:\，D:\，等）
+保持著單獨的檔案系統樹。</p>
+
+<p>There is a file named /etc/fstab that lists the devices (typically hard disk partitions)
+that are to be mounted at boot time. Here is an example /etc/fstab file from a
+Fedora 7 system:</p>
+
+<p>有一個叫做/etc/fstab 的檔案可以列出系統啟動時要掛載的裝置（典型地，硬碟分割槽）。下面是
+來自於 Fedora 7系統的/etc/fstab 檔案範例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LABEL=/12               /               ext3        defaults        1   1
+LABEL=/home             /home           ext3        defaults        1   2
+LABEL=/boot             /boot           ext3        defaults        1   2
+tmpfs                   /dev/shm        tmpfs       defaults        0   0
+devpts                  /dev/pts        devpts      gid=5,mode=620  0   0
+sysfs                   /sys            sysfs       defaults        0   0
+proc                    /proc           proc        defaults        0   0
+LABEL=SWAP-sda3         /swap           swap        defaults        0   0
+</code></pre></div></div>
+
+<p>Most of the file systems listed in this example file are virtual and are not applicable to our
+discussion. For our purposes, the interesting ones are the first three:</p>
+
+<p>在這個範例中所列出的大多數檔案系統是虛擬的，並不適用於我們的討論。就我們的目的而言，
+前三個是我們感興趣的：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LABEL=/12               /               ext3        defaults        1   1
+LABEL=/home             /home           ext3        defaults        1   2
+LABEL=/boot             /boot           ext3        defaults        1   2
+</code></pre></div></div>
+
+<p>These are the hard disk partitions. Each line of the file consists of six fields, as follows:</p>
+
+<p>這些是硬碟分割槽。每行由六個欄位組成，如下所示：</p>
+
+<table class="multi">
+<caption class="cap">Table 16-1: /etc/fstab Fields</caption>
+<tr>
+<th class="title">Field</th>
+<th class="title">Contents</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="8%">1</td>
+<td valign="top" width="12%">Device</td>
+<td valign="top">Traditionally, this field contains the actual name of a
+device file associated with the physical device, such as
+/dev/hda1 (the first partition of the master device
+on the first IDE channel). But with today's computers,
+which have many devices that are hot pluggable (like
+USB drives), many modern Linux distributions
+associate a device with a text label instead. This label
+(which is added to the storage media when it is
+formatted) is read by the operating system when the
+device is attached to the system. That way, no matter
+which device file is assigned to the actual physical
+device, it can still be correctly identified.
+</td>
+</tr>
+<tr>
+<td valign="top">2</td>
+<td valign="top">Mount Point</td>
+<td valign="top">The directory where the device is attached to the file
+system tree.
+</td>
+</tr>
+<tr>
+<td valign="top">3</td>
+<td valign="top">File System Type</td>
+<td valign="top">Linux allows many file system types to be mounted.
+Most native Linux file systems are ext3, but many
+others are supported, such as FAT16 (msdos), FAT32
+(vfat), NTFS (ntfs), CD-ROM (iso9660), etc.
+</td>
+</tr>
+<tr>
+<td valign="top">4</td>
+<td valign="top">Options</td>
+<td valign="top">File systems can be mounted with various options. It
+is possible, for example, to mount file systems as
+read-only, or prevent any programs from being
+executed from them (a useful security feature for removable media.)
+</td>
+</tr>
+<tr>
+<td valign="top">5</td>
+<td valign="top">Frequency</td>
+<td valign="top">A single number that specifies if and when a file
+system is to be backed up with the dump command.</td>
+</tr>
+<tr>
+<td valign="top">6</td>
+<td valign="top">Order</td>
+<td valign="top">A single number that specifies in what order file
+systems should be checked with the fsck command.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表16-1: /etc/fstab 欄位</caption>
+<tr>
+<th class="title">欄位</th>
+<th class="title">內容</th>
+<th class="title">說明</th>
+</tr>
+<tr>
+<td valign="top" width="8%">1</td>
+<td valign="top" width="12%">裝置名</td>
+<td valign="top">
+傳統上，這個欄位包含與物理裝置相關聯的裝置檔案的實際名字，比如說/dev/hda1（第一個 IDE
+通道上第一個主裝置分割槽）。然而今天的計算機，有很多熱插拔裝置（像 USB 驅動裝置），許多
+現代的 Linux 發行版用一個文字標籤和裝置相關聯。當這個裝置連線到系統中時，
+這個標籤（當儲存媒介格式化時，這個標籤會被新增到儲存媒介中）會被作業系統讀取。
+那樣的話，不管賦給實際物理裝置哪個裝置檔案，這個裝置仍然能被系統正確地識別。
+</td>
+</tr>
+<tr>
+<td valign="top">2</td>
+<td valign="top">掛載點</td>
+<td valign="top">裝置所連線到的檔案系統樹的目錄。
+</td>
+</tr>
+<tr>
+<td valign="top">3</td>
+<td valign="top">檔案系統型別</td>
+<td valign="top">Linux 允許掛載許多檔案系統型別。大多數本地的 Linux 檔案系統是 ext3，
+但是也支援很多其它的，比方說 FAT16 (msdos), FAT32
+(vfat)，NTFS (ntfs)，CD-ROM (iso9660)，等等。
+</td>
+</tr>
+<tr>
+<td valign="top">4</td>
+<td valign="top">選項</td>
+<td valign="top">檔案系統可以透過各種各樣的選項來掛載。有可能，例如，掛載只讀的檔案系統，
+或者掛載阻止執行任何程式的檔案系統（一個有用的安全特性，避免刪除媒介。）</td>
+</tr>
+<tr>
+<td valign="top">5</td>
+<td valign="top">頻率</td>
+<td valign="top">一位數字，指定是否和在什麼時間用 dump 命令來備份一個檔案系統。</td>
+</tr>
+<tr>
+<td valign="top">6</td>
+<td valign="top">次序</td>
+<td valign="top">一位數字，指定 fsck 命令按照什麼次序來檢查檔案系統。</td>
+</tr>
+</table>
+
+<h3 id="檢視掛載的檔案系統列表">檢視掛載的檔案系統列表</h3>
+
+<p>The mount command is used to mount file systems. Entering the command without
+arguments will display a list of the file systems currently mounted:</p>
+
+<p>這個 mount 命令被用來掛載檔案系統。執行這個不帶引數的命令，將會顯示
+一系列當前掛載的檔案系統：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mount
+/dev/sda2 on / type ext3 (rw)
+proc on /proc type proc (rw)
+sysfs on /sys type sysfs (rw)
+devpts on /dev/pts type devpts (rw,gid=5,mode=620)
+/dev/sda5 on /home type ext3 (rw)
+/dev/sda1 on /boot type ext3 (rw)
+tmpfs on /dev/shm type tmpfs (rw)
+none on /proc/sys/fs/binfmt_misc type binfmt_misc (rw)
+sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw)
+fusectl on /sys/fs/fuse/connections type fusectl (rw)
+/dev/sdd1 on /media/disk type vfat (rw,nosuid,nodev,noatime,
+uhelper=hal,uid=500,utf8,shortname=lower)
+twin4:/musicbox on /misc/musicbox type nfs4 (rw,addr=192.168.1.4)
+</code></pre></div></div>
+
+<p>The format of the listing is: device on mount_point type file_system_type (options). For
+example, the first line shows that device /dev/sda2 is mounted as the root file system
+and it is of type ext3 and is both readable and writable (the option “rw”). This listing also
+has two interesting entries at the bottom of the list. The next to last entry shows a 2
+gigabyte SD memory card in a card reader mounted at /media/disk, and the last entry
+is a network drive mounted at /misc/musicbox.</p>
+
+<p>這個列表的格式是：裝置 on 掛載點 type 檔案系統型別（選項）。例如，第一行所示裝置/dev/sda2
+作為根檔案系統被掛載，檔案系統型別是 ext3，並且可讀可寫（這個“rw”選項）。在這個列表的底部有
+兩個有趣的條目。倒數第二行顯示了在讀卡器中的一張2G 的 SD 記憶體卡，掛載到了/media/disk 上。最後一行
+是一個網路裝置，掛載到了/misc/musicbox 上。</p>
+
+<p>For our first experiment, we will work with a CD-ROM. First, Let's look at a system
+before a CD-ROM is inserted:</p>
+
+<p>第一次實驗，我們將使用一張 CD-ROM。首先，在插入 CD-ROM 之前，我們將看一下系統：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mount
+/dev/mapper/VolGroup00-LogVol00 on / type ext3 (rw)
+proc on /proc type proc (rw)
+sysfs on /sys type sysfs (rw)
+devpts on /dev/pts type devpts (rw,gid=5,mode=620)
+/dev/hda1 on /boot type ext3 (rw)
+tmpfs on /dev/shm type tmpfs (rw)
+none on /proc/sys/fs/binfmt_misc type binfmt_misc (rw)
+sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw)
+</code></pre></div></div>
+
+<p>This listing is from a CentOS 5 system, which is using LVM (Logical Volume Manager)
+to create its root file system. Like many modern Linux distributions, this system will
+attempt to automatically mount the CD-ROM after insertion. After we insert the disk, we
+see the following:</p>
+
+<p>這個列表來自於 CentOS 5系統，使用 LVM（邏輯卷管理器）來建立它的根檔案系統。正如許多現在的 Linux 發行版一樣，這個
+系統試圖自動掛載插入的 CD-ROM。當我們插入光碟後，我們看看下面的輸出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mount
+/dev/mapper/VolGroup00-LogVol00 on / type ext3 (rw)
+proc on /proc type proc (rw)
+sysfs on /sys type sysfs (rw)
+devpts on /dev/pts type devpts (rw,gid=5,mode=620)
+/dev/hda1 on /boot type ext3 (rw)
+tmpfs on /dev/shm type tmpfs (rw)
+none on /proc/sys/fs/binfmt_misc type binfmt_misc (rw)
+sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw)
+/dev/hdc on /media/live-1.0.10-8 type iso9660 (ro,noexec,nosuid,
+nodev,uid=500)
+</code></pre></div></div>
+
+<p>After we insert the disk, we see the same listing as before with one additional entry. At
+the end of the listing we see that the CD-ROM (which is device /dev/hdc on this
+system) has been mounted on /media/live-1.0.10-8, and is type iso9660 (a CD-
+ROM). For purposes of our experiment, we’re interested in the name of the device.
+When you conduct this experiment yourself, the device name will most likely be
+different.</p>
+
+<p>當我們插入光碟後，除了額外的一行之外，我們看到和原來一樣的列表。在列表的末尾，我們
+看到 CD-ROM 已經掛載到了/media/live-1.0.10-8上，它的檔案型別是 iso9660（CD-ROM）。
+就我們的實驗目的而言，我們對這個裝置的名字感興趣。當你自己進行這個實驗時，這個
+裝置名字是最有可能不同的。</p>
+
+<p>Warning: In the examples that follow, it is vitally important that you pay close
+attention to the actual device names in use on your system and do not use the
+names used in this text!</p>
+
+<p>警告：在隨後的範例中，至關重要的是你要密切注意用在你係統中的實際裝置名，並且
+不要使用此文字中使用的名字！</p>
+
+<p>Also note that audio CDs are not the same as CD-ROMs. Audio CDs do not
+contain file systems and thus cannot be mounted in the usual sense.</p>
+
+<p>還要注意音訊 CD 和 CD-ROM 不一樣。音訊 CD 不包含檔案系統，這樣在通常意義上，它就不能被掛載了。</p>
+
+<p>Now that we have the device name of the CD-ROM drive, Let's unmount the disk and
+remount it another location in the file system tree. To do this, we become the superuser
+(using the command appropriate for our system) and unmount the disk with the umount
+(notice the spelling) command:</p>
+
+<p>現在我們擁有 CD-ROM 光碟的裝置名字，讓我們解除安裝這張光碟，並把它重新掛載到檔案系統樹
+的另一個位置。我們需要超級使用者身份（使用系統相應的命令）來進行操作，並且用
+umount（注意這個命令的拼寫）來解除安裝光碟：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ su -
+Password:
+[root@linuxbox ~]# umount /dev/hdc
+</code></pre></div></div>
+
+<p>The next step is to create a new mount point for the disk. A mount point is simply a
+directory somewhere on the file system tree. Nothing special about it. It doesn’t even
+have to be an empty directory, though if you mount a device on a non-empty directory,
+you will not be able to see the directory’s previous contents until you unmount the device.
+For our purposes, we will create a new directory:</p>
+
+<p>下一步是建立一個新的光碟掛載點。簡單地說，一個掛載點就是檔案系統樹中的一個目錄。它沒有
+什麼特殊的。它甚至不必是一個空目錄，如果你把裝置掛載到了一個非空目錄上，你將不能看到
+這個目錄中原來的內容，直到你解除安裝這個裝置。就我們的目的而言，我們將建立一個新目錄：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@linuxbox ~]# mkdir /mnt/cdrom
+</code></pre></div></div>
+
+<p>Finally, we mount the CD-ROM at the new mount point. The -t option is used to
+specify the file system type:</p>
+
+<p>最後，我們把這個 CD-ROW 掛載到一個新的掛載點上。這個-t 選項用來指定檔案系統型別：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@linuxbox ~]# mount -t iso9660 /dev/hdc /mnt/cdrom
+</code></pre></div></div>
+
+<p>Afterward, we can examine the contents of the CD-ROM via the new mount point:</p>
+
+<p>之後，我們可以透過這個新掛載點來檢視 CD-ROW 的內容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@linuxbox ~]# cd /mnt/cdrom
+[root@linuxbox cdrom]# ls
+</code></pre></div></div>
+
+<p>Notice what happens when we try to unmount the CD-ROM:</p>
+
+<p>注意當我們試圖解除安裝這個 CD-ROW 時，發生了什麼事情。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@linuxbox cdrom]# umount /dev/hdc
+umount: /mnt/cdrom: device is busy
+</code></pre></div></div>
+
+<p>Why is this? The reason is that we cannot unmount a device if the device is being used
+by someone or some process. In this case, we changed our working directory to the
+mount point for the CD-ROM, which causes the device to be busy. We can easily remedy
+the issue by changing the working directory to something other than the mount point:</p>
+
+<p>這是怎麼回事呢？原因是我們不能解除安裝一個裝置，如果某個使用者或程序正在使用這個裝置的話。在這種
+情況下，我們把工作目錄更改到了 CD-ROW 的掛載點，這個掛載點導致裝置忙碌。我們可以很容易地修復這個問題
+透過把工作目錄改到其它目錄而不是這個掛載點。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@linuxbox cdrom]# cd
+[root@linuxbox ~]# umount /dev/hdc
+</code></pre></div></div>
+
+<p>Now the device unmounts successfully.</p>
+
+<p>現在這個裝置成功解除安裝了。</p>
+
+<blockquote>
+  <p>Why Unmounting Is Important</p>
+
+  <p>為什麼解除安裝重要</p>
+
+  <p>If you look at the output of the free command, which displays statistics about
+memory usage, you will see a statistic called “buffers.” Computer systems are
+designed to go as fast as possible. One of the impediments to system speed is
+slow devices. Printers are a good example. Even the fastest printer is extremely
+slow by computer standards. A computer would be very slow indeed if it had to
+stop and wait for a printer to finish printing a page. In the early days of PCs
+(before multi-tasking), this was a real problem. If you were working on a
+spreadsheet or text document, the computer would stop and become unavailable
+every time you printed. The computer would send the data to the printer as fast as
+the printer could accept it, but it was very slow since printers don’t print very fast.
+This problem was solved by the advent of the printer buffer, a device containing
+some RAM memory that would sit between the computer and the printer. With
+the printer buffer in place, the computer would send the printer output to the
+buffer and it would quickly be stored in the fast RAM so the computer could go
+back to work without waiting. Meanwhile, the printer buffer would slowly spool
+the data to the printer from the buffer’s memory at the speed at which the printer
+could accept it.</p>
+
+  <p>如果你看一下 free 命令的輸出結果，這個命令用來顯示關於記憶體使用情況的統計資訊，你
+會看到一個統計值叫做”buffers“。計算機系統旨在儘可能快地執行。系統執行速度的
+一個阻礙是緩慢的裝置。印表機是一個很好的例子。即使最快速的印表機相比於計算機標準也
+極其地緩慢。一臺計算機確實會執行得非常慢，如果它要停下來等待一臺印表機列印完一頁。
+在早期的個人電腦時代（多工之前），這真是個問題。如果你正在編輯電子表格
+或者是文字文件，每次你要列印檔案時，計算機都會停下來而且變得不能使用。
+計算機能以印表機可接受的最快速度把資料傳送給印表機，但由於印表機不能快速地列印，
+這個傳送速度會非常慢。由於印表機快取的出現，這個問題被解決了。印表機快取是一個包含一些 RAM 記憶體
+的裝置，位於計算機和印表機之間。透過印表機快取，計算機把要列印的結果傳送到這個快取區，
+資料會迅速地儲存到這個 RAM 中，這樣計算機就能回去工作，而不用等待。與此同時，印表機快取將會
+以印表機可接受的速度把快取中的資料緩慢地輸出給印表機。</p>
+
+  <p>This idea of buffering is used extensively in computers to make them faster.
+Don’t let the need to occasionally read or write data to/from slow devices impede
+the speed of the system. Operating systems store data read from, and to be
+written to storage devices in memory for as long as possible before actually
+having to interact with the slower device. On a Linux system for example, you
+will notice that the system seems to fill up memory the longer it is used. This
+does not mean Linux is “using“ all the memory, it means that Linux is taking
+advantage of all the available memory to do as much buffering as it can.</p>
+
+  <p>快取被廣泛地應用於計算機中，使其執行得更快。別讓偶爾地的讀取或寫入慢裝置的需求阻礙了
+系統的執行速度。在真正與比較慢的裝置互動之前，作業系統會盡可能多的讀取或寫入資料到記憶體中的
+儲存裝置裡。以 Linux 作業系統為例，你會注意到系統看似填充了多於它所需要的記憶體。
+這不意味著 Linux 正在使用所有的記憶體，它意味著 Linux 正在利用所有可用的記憶體，來作為快取區。</p>
+
+  <p>This buffering allows writing to storage devices to be done very quickly, because
+the writing to the physical device is being deferred to a future time. In the
+meantime, the data destined for the device is piling up in memory. From time to
+time, the operating system will write this data to the physical device.</p>
+
+  <p>這個快取區允許非常快速地對儲存裝置進行寫入，因為寫入物理裝置的操作被延遲到後面進行。同時，
+這些註定要傳送到裝置中的資料正在記憶體中堆積起來。時不時地，作業系統會把這些資料
+寫入物理裝置。</p>
+
+  <p>Unmounting a device entails writing all the remaining data to the device so that it
+can be safely removed. If the device is removed without unmounting it first, the
+possibility exists that not all the data destined for the device has been transferred.
+In some cases, this data may include vital directory updates, which will lead to
+file system corruption, one of the worst things that can happen on a computer.</p>
+
+  <p>解除安裝一個裝置需要把所有剩餘的資料寫入這個裝置，所以裝置可以被安全地移除。如果
+沒有解除安裝裝置，就移除了它，就有可能沒有把註定要傳送到裝置中的資料輸送完畢。在某些情況下，
+這些資料可能包含重要的目錄更新資訊，這將導致檔案系統損壞，這是發生在計算機中的最壞的事情之一。</p>
+</blockquote>
+
+<h3 id="確定裝置名稱">確定裝置名稱</h3>
+
+<p>It’s sometimes difficult to determine the name of a device. Back in the old days, it wasn’t
+very hard. A device was always in the same place and it didn’t change. Unix-like
+systems like it that way. Back when Unix was developed, “changing a disk drive”
+involved using a forklift to remove a washing machine-sized device from the computer
+room. In recent years, the typical desktop hardware configuration has become quite
+dynamic and Linux has evolved to become more flexible than its ancestors.
+In the examples above we took advantage of the modern Linux desktop’s ability to
+“automagically” mount the device and then determine the name after the fact. But what
+if we are managing a server or some other environment where this does not occur? How
+can we figure it out?</p>
+
+<p>有時很難來確定裝置名稱。在以前，這並不是很難。一臺裝置總是在某個固定的位置，也不會
+挪動它。類別 Unix 的系統喜歡裝置那樣安排。退回到 Unix 系統的時代，“更改一個磁碟驅動器”更像是要用一輛
+叉車從機房中移除一臺如洗衣機大小的裝置那樣困難。最近幾年，典型的桌面硬體配置已經變得相當動態，並且
+Linux 已經發展地比其祖先更加靈活。在以上事例中，我們利用現代 Linux 桌面系統的功能來“自動地”掛載
+裝置，然後再確定裝置名稱。但是如果我們正在管理一臺伺服器或者是其它一些（這種自動掛載功能）不會
+發生的環境，我們又如何能查清裝置名呢？</p>
+
+<p>First, Let's look at how the system names devices. If we list the contents of the /dev
+directory (where all devices live), we can see that there are lots and lots of devices:</p>
+
+<p>首先，讓我們看一下系統怎樣來命名裝置。如果我們列出目錄/dev（所有裝置的住所）的內容，我們
+會看到許許多多的裝置：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls /dev
+</code></pre></div></div>
+
+<p>The contents of this listing reveal some patterns of device naming. Here are a few:</p>
+
+<p>這個列表的內容揭示了一些裝置命名的模式。這裡有幾個：</p>
+
+<table class="multi">
+<caption class="cap">Table 16-2: Linux Storage Device Names</caption>
+<tr>
+<th class="title">Pattern</th>
+<th class="title">Device</th>
+</tr>
+<tr>
+<td valign="top" width="15%">/dev/fd* </td>
+<td valign="top">Floppy disk drives</td>
+</tr>
+<tr>
+<td valign="top">/dev/hd* </td>
+<td valign="top">IDE (PATA) disks on older systems. Typical motherboards
+contain two IDE connectors or channels, each with a cable with
+two attachment points for drives. The first drive on the cable is
+called the master device and the second is called the slave
+device. The device names are ordered such that /dev/hda
+refers to the master device on the first channel, /dev/hdb is the
+slave device on the first channel; /dev/hdc, the master device
+on the second channel, and so on. A trailing digit indicates the
+partition number on the device. For example, /dev/hda1 refers
+to the first partition on the first hard drive on the system while /
+dev/hda refers to the entire drive.</td>
+</tr>
+<tr>
+<td valign="top">/dev/lp* </td>
+<td valign="top">Printers</td>
+</tr>
+<tr>
+<td valign="top">/dev/sd* </td>
+<td valign="top">SCSI disks. On recent Linux systems, the kernel treats all disk-
+like devices (including PATA/SATA hard disks, flash drives, and
+USB mass storage devices, such as portable music players and
+digital cameras) as SCSI disks. The rest of the naming system is
+similar to the older /dev/hd* naming scheme described above.</td>
+</tr>
+<tr>
+<td valign="top">/dev/sr* </td>
+<td valign="top">Optical drives (CD/DVD readers and burners)</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap"> 表16-2: Linux 儲存裝置名稱</caption>
+<tr>
+<th class="title">模式</th>
+<th class="title">裝置</th>
+</tr>
+<tr>
+<td valign="top" width="15%">/dev/fd* </td>
+<td valign="top">軟盤驅動器</td>
+</tr>
+<tr>
+<td valign="top">/dev/hd* </td>
+<td valign="top">老系統中的 IDE(PATA)磁碟。典型的主機板包含兩個 IDE 聯結器或者是通道，每個聯結器
+帶有一根纜線，每根纜線上有兩個硬碟驅動器連線點。纜線上的第一個驅動器叫做主裝置，
+第二個叫做從裝置。裝置名稱這樣安排，/dev/hda 是指第一通道上的主裝置名；/dev/hdb
+是第一通道上的從裝置名；/dev/hdc 是第二通道上的主裝置名，等等。末尾的數字表示
+硬碟驅動器上的分割槽。例如，/dev/hda1是指系統中第一硬碟驅動器上的第一個分割槽，而
+/dev/hda 則是指整個硬碟驅動器。</td>
+</tr>
+<tr>
+<td valign="top">/dev/lp* </td>
+<td valign="top">印表機</td>
+</tr>
+<tr>
+<td valign="top">/dev/sd* </td>
+<td valign="top">
+SCSI 磁碟。在最近的 Linux 系統中，核心把所有類似於磁碟的裝置（包括 PATA/SATA 硬碟，
+快閃記憶體，和 USB 儲存裝置，比如說可移動的音樂播放器和數位相機）看作 SCSI 磁碟。
+剩下的命名系統類似於上述所描述的舊的/dev/hd*命名方案。</td>
+</tr>
+<tr>
+<td valign="top">/dev/sr* </td>
+<td valign="top">光碟（CD/DVD 讀取器和燒寫器）</td>
+</tr>
+</table>
+
+<p>In addition, we often see symbolic links such as /dev/cdrom, /dev/dvd and /dev/
+floppy, which point to the actual device files, provided as a convenience.
+If you are working on a system that does not automatically mount removable devices,
+you can use the following technique to determine how the removable device is named
+when it is attached. First, start a real-time view of the /var/log/messages file (you
+may require superuser privileges for this):</p>
+
+<p>另外，我們經常看到符號連結比如說/dev/cdrom，/dev/dvd 和/dev/floppy，它們指向實際的
+裝置檔案，提供這些連結是為了方便使用。如果你工作的系統不能自動掛載可移動的裝置，你可以使用
+下面的技巧來決定當可移動裝置連線後，它是怎樣被命名的。首先，啟動一個實時檢視檔案/var/log/messages
+（你可能需要超級使用者許可權）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sudo tail -f /var/log/messages
+</code></pre></div></div>
+
+<p>The last few lines of the file will be displayed and then pause. Next, plug in the
+removable device. In this example, we will use a 16 MB flash drive. Almost
+immediately, the kernel will notice the device and probe it:</p>
+
+<p>這個檔案的最後幾行會被顯示，然後停止。下一步，插入這個可移動的裝置。在
+這個例子裡，我們將使用一個16MB 快閃記憶體。瞬間，核心就會發現這個裝置，
+並且探測它：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Jul 23 10:07:53 linuxbox kernel: usb 3-2: new full speed USB device
+using uhci_hcd and address 2
+Jul 23 10:07:53 linuxbox kernel: usb 3-2: configuration #1 chosen
+from 1 choice
+Jul 23 10:07:53 linuxbox kernel: scsi3 : SCSI emulation for USB Mass
+Storage devices
+Jul 23 10:07:58 linuxbox kernel: scsi scan: INQUIRY result too short
+(5), using 36
+Jul 23 10:07:58 linuxbox kernel: scsi 3:0:0:0: Direct-Access Easy
+Disk 1.00 PQ: 0 ANSI: 2
+Jul 23 10:07:59 linuxbox kernel: sd 3:0:0:0: [sdb] 31263 512-byte
+hardware sectors (16 MB)
+Jul 23 10:07:59 linuxbox kernel: sd 3:0:0:0: [sdb] Write Protect is
+off
+Jul 23 10:07:59 linuxbox kernel: sd 3:0:0:0: [sdb] Assuming drive
+cache: write through
+Jul 23 10:07:59 linuxbox kernel: sd 3:0:0:0: [sdb] 31263 512-byte
+hardware sectors (16 MB)
+Jul 23 10:07:59 linuxbox kernel: sd 3:0:0:0: [sdb] Write Protect is
+off
+Jul 23 10:07:59 linuxbox kernel: sd 3:0:0:0: [sdb] Assuming drive
+cache: write through
+Jul 23 10:07:59 linuxbox kernel: sdb: sdb1
+Jul 23 10:07:59 linuxbox kernel: sd 3:0:0:0: [sdb] Attached SCSI
+removable disk
+Jul 23 10:07:59 linuxbox kernel: sd 3:0:0:0: Attached scsi generic
+sg3 type 0
+</code></pre></div></div>
+
+<p>After the display pauses again, type Ctrl-c to get the prompt back. The interesting parts
+of the output are the repeated references to “[sdb]” which matches our expectation of a
+SCSI disk device name. Knowing this, two lines become particularly illuminating:</p>
+
+<p>顯示再次停止之後，輸入 Ctrl-c，重新得到提示符。輸出結果的有趣部分是一再提及“[sdb]”，
+這正好符和我們期望的 SCSI 磁碟裝置名稱。知道這一點後，有兩行輸出變得頗具啟發性：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Jul 23 10:07:59 linuxbox kernel: sdb: sdb1
+Jul 23 10:07:59 linuxbox kernel: sd 3:0:0:0: [sdb] Attached SCSI
+removable disk
+</code></pre></div></div>
+
+<p>This tells us the device name is /dev/sdb for the entire device and /dev/sdb1 for
+the first partition on the device. As we have seen, working with Linux is full of
+interesting detective work!</p>
+
+<p>這告訴我們這個裝置名稱是/dev/sdb 指整個裝置，/dev/sdb1是這個裝置的第一分割槽。
+正如我們所看到的，使用 Linux 系統充滿了有趣的監測工作。</p>
+
+<p>Tip: Using the tail -f /var/log/messages technique is a great way to
+watch what the system is doing in near real-time.</p>
+
+<p>小貼士：使用這個 tail -f /var/log/messages 技巧是一個很不錯的方法，可以實時
+觀察系統的一舉一動。</p>
+
+<p>With our device name in hand, we can now mount the flash drive:</p>
+
+<p>既然知道了裝置名稱，我們就可以掛載這個快閃記憶體驅動器了：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sudo mkdir /mnt/flash
+[me@linuxbox ~]$ sudo mount /dev/sdb1 /mnt/flash
+[me@linuxbox ~]$ df
+Filesystem      1K-blocks   Used        Available   Use%    Mounted on
+/dev/sda2       15115452    5186944     9775164     35%     /
+/dev/sda5       59631908    31777376    24776480    57%     /home
+/dev/sda1       147764      17277       122858      13%     /boot
+tmpfs           776808      0           776808      0%      /dev/shm
+/dev/sdb1       15560       0           15560       0%      /mnt/flash
+</code></pre></div></div>
+
+<p>The device name will remain the same as long as it remains physically attached to the
+computer and the computer is not rebooted.</p>
+
+<p>這個裝置名稱會保持不變只要裝置與計算機保持連線並且計算機不會重新啟動。</p>
+
+<h3 id="建立新的檔案系統">建立新的檔案系統</h3>
+
+<p>Let's say that we want to reformat the flash drive with a Linux native file system, rather
+than the FAT32 system it has now. This involves two steps: 1. (optional) create a new
+partition layout if the existing one is not to our liking, and 2. create a new, empty file
+system on the drive.</p>
+
+<p>假若我們想要用 Linux 本地檔案系統來重新格式化這個快閃記憶體驅動器，而不是它現用的 FAT32系統。
+這涉及到兩個步驟：1.（可選的）建立一個新的分割槽佈局若已存在的分割槽不是我們喜歡的。2.
+在這個快閃記憶體上建立一個新的空的檔案系統。</p>
+
+<p>Warning! In the following exercise, we are going to format a flash drive. Use a
+drive that contains nothing you care about because it will be erased! Again, make
+absolutely sure you are specifying the correct device name for your system, not
+the one shown in the text. Failure to heed this warning could result in you
+formatting (i.e., erasing) the wrong drive!</p>
+
+<p>注意！在下面的練習中，我們將要格式化一個快閃記憶體驅動器。拿一個不包含有用資料的驅動器
+作為實驗品，因為它將會被擦除！再次，請確定你指定了正確的系統裝置名稱。未能注意此
+警告可能導致你格式化（即擦除）錯誤的驅動器！</p>
+
+<h3 id="用-fdisk-命令操作分割槽">用 fdisk 命令操作分割槽</h3>
+
+<p>The fdisk program allows us to interact directly with disk-like devices (such as hard
+disk drives and flash drives) at a very low level. With this tool we can edit, delete, and
+create partitions on the device. To work with our flash drive, we must first unmount it (if
+needed) and then invoke the fdisk program as follows:</p>
+
+<p>這個 fdisk 程式允許我們直接在底層與類似磁碟的裝置（比如說硬碟驅動器和快閃記憶體驅動器）進行互動。
+使用這個工具可以在裝置上編輯，刪除，和建立分割槽。以我們的快閃記憶體驅動器為例，
+首先我們必須解除安裝它（如果需要的話），然後呼叫 fdisk 程式，如下所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sudo umount /dev/sdb1
+[me@linuxbox ~]$ sudo fdisk /dev/sdb
+</code></pre></div></div>
+
+<p>Notice that we must specify the device in terms of the entire device, not by partition
+number. After the program starts up, we will see the following prompt:</p>
+
+<p>注意我們必須指定裝置名稱，就整個裝置而言，而不是透過分割槽號。這個程式啟動後，我們
+將看到以下提示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Command (m for help):
+</code></pre></div></div>
+
+<p>Entering an “m” will display the program menu:</p>
+
+<p>輸入”m”會顯示程式選單：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Command action
+a       toggle a bootable flag
+....
+</code></pre></div></div>
+
+<p>The first thing we want to do is examine the existing partition layout. We do this by
+entering “p” to print the partition table for the device:</p>
+
+<p>我們想要做的第一件事情是檢查已存在的分割槽佈局。輸入”p”會打印出這個裝置的分割槽表：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Command (m for help): p
+
+Disk /dev/sdb: 16 MB, 16006656 bytes
+1 heads, 31 sectors/track, 1008 cylinders
+Units = cylinders of 31 * 512 = 15872 bytes
+
+Device Boot     Start        End     Blocks   Id        System
+/dev/sdb1           2       1008      15608+   b       w95 FAT32
+</code></pre></div></div>
+
+<p>In this example, we see a 16 MB device with a single partition (1) that uses 1006 of the
+available 1008 cylinders on the device. The partition is identified as Windows 95 FAT32
+partition. Some programs will use this identifier to limit the kinds of operation that can
+be done to the disk, but most of the time it is not critical to change it. However, in the
+interest of demonstration, we will change it to indicate a Linux partition. To do this, we
+must first find out what ID is used to identify a Linux partition. In the listing above, we
+see that the ID “b” is used to specify the exiting partition. To see a list of the available
+partition types, we refer back to the program menu. There we can see the following
+choice:</p>
+
+<p>在此例中，我們看到一個16MB 的裝置只有一個分割槽(1)，此分割槽佔用了可用的1008個柱面中的1006個,
+並被標識為 Windows 95 FAT32分割槽。有些程式會使用這個標誌符來限制一些可以對磁碟所做的操作，
+但大多數情況下更改這個標誌符沒有危害。然而，為了敘述方便，我們將會更改它，
+以此來表明是個 Linux 分割槽。在更改之前，首先我們必須找到被用來識別一個 Linux 分割槽的 ID 號碼。
+在上面列表中，我們看到 ID 號碼“b”被用來指定這個已存在的分割槽。要檢視可用的分割槽型別列表，
+參考之前的程式選單。我們會看到以下選項：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>l   list known partition types
+</code></pre></div></div>
+
+<p>If we enter “l” at the prompt, a large list of possible types is displayed. Among them we
+see “b” for our existing partition type and “83” for Linux.</p>
+
+<p>如果我們在提示符下輸入“l”，就會顯示一個很長的可能型別列表。在它們之中會看到“b”為已存在分割槽
+型別的 ID 號，而“83”是針對 Linux 系統的 ID 號。</p>
+
+<p>Going back to the menu, we see this choice to change a partition ID:</p>
+
+<p>回到之前的選單，看到這個選項來更改分割槽 ID 號：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>t   change a partition's system id
+</code></pre></div></div>
+
+<p>We enter “t” at the prompt enter the new ID:</p>
+
+<p>我們先輸入“t”，再輸入新的 ID 號：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Command (m for help): t
+Selected partition 1
+Hex code (type L to list codes): 83
+Changed system type of partition 1 to 83 (Linux)
+</code></pre></div></div>
+
+<p>This completes all the changes that we need to make. Up to this point, the device has
+been untouched (all the changes have been stored in memory, not on the physical device),
+so we will write the modified partition table to the device and exit. To do this, we enter
+“w” at the prompt:</p>
+
+<p>這就完成了我們需要做得所有修改。到目前為止，還沒有接觸這個裝置（所有修改都儲存在記憶體中，
+而不是在此物理裝置中），所以我們將會把修改過的分割槽表寫入此裝置，再退出。為此，我們輸入
+在提示符下輸入”w”:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Command (m for help): w
+The partition table has been altered!
+Calling ioctl() to re-read partition table.
+WARNING: If you have created or modified any DOS 6.x
+partitions, please see the fdisk manual page for additional
+information.
+Syncing disks.
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>If we had decided to leave the device unaltered, we could have entered “q” at the prompt,
+which would have exited the program without writing the changes. We can safely ignore
+the ominous sounding warning message.</p>
+
+<p>如果我們已經決定保持裝置不變，可在提示符下輸入”q”，這將退出程式而沒有寫更改。我們
+可以安全地忽略這些不祥的警告資訊。</p>
+
+<h3 id="用-mkfs-命令建立一個新的檔案系統">用 mkfs 命令建立一個新的檔案系統</h3>
+
+<p>With our partition editing done (lightweight though it might have been) it’s time to create
+a new file system on our flash drive. To do this, we will use mkfs (short for “make file
+system”), which can create file systems in a variety of formats. To create an ext3 file
+system on the device, we use the “-t” option to specify the “ext3” system type, followed
+by the name of device containing the partition we wish to format:</p>
+
+<p>完成了分割槽編輯工作（它或許是輕量級的），是時候在我們的快閃記憶體驅動器上建立一個新的檔案系統了。
+為此，我們會使用 mkfs（”make file system”的簡寫），它能建立各種格式的檔案系統。
+在此裝置上建立一個 ext3檔案系統，我們使用”-t”
+選項來指定這個”ext3”系統型別，隨後是我們要格式化的裝置分割槽名稱：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sudo mkfs -t ext3 /dev/sdb1
+mke2fs 1.40.2 (12-Jul-2007)
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+3904 inodes, 15608 blocks
+780 blocks (5.00%) reserved for the super user
+First data block=1
+Maximum filesystem blocks=15990784
+2 block groups
+8192 blocks per group, 8192 fragments per group
+1952 inodes per group
+Superblock backups stored on blocks:
+8193
+Writing inode tables: done
+Creating journal (1024 blocks): done
+Writing superblocks and filesystem accounting information: done
+This filesystem will be automatically checked every 34 mounts or
+180 days, whichever comes first. Use tune2fs -c or -i to override.
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>The program will display a lot of information when ext3 is the chosen file system type.
+To re-format the device to its original FAT32 file system, specify “vfat” as the file system
+type:</p>
+
+<p>當 ext3被選為檔案系統型別時，這個程式會顯示許多資訊。若把這個裝置重新格式化為它最初的 FAT32檔案
+系統，指定”vfat”作為檔案系統型別：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sudo mkfs -t vfat /dev/sdb1
+</code></pre></div></div>
+
+<p>This process of partitioning and formatting can be used anytime additional storage
+devices are added to the system. While we worked with a tiny flash drive, the same
+process can be applied to internal hard disks and other removable storage devices like
+USB hard drives.</p>
+
+<p>任何時候新增額外的儲存裝置到系統中時，都可以使用這個分割槽和格式化的過程。雖然我們
+只以一個小小的快閃記憶體驅動器為例，同樣的操作可以被應用到內部硬碟和其它可移動的儲存裝置上
+像 USB 硬碟驅動器。</p>
+
+<h3 id="測試和修復檔案系統">測試和修復檔案系統</h3>
+
+<p>In our earlier discussion of the /etc/fstab file, we saw some mysterious digits at the
+end of each line. Each time the system boots, it routinely checks the integrity of the file
+systems before mounting them. This is done by the fsck program (short for “file system
+check”). The last number in each fstab entry specifies the order the devices are to be
+checked. In our example above, we see that the root file system is checked first, followed
+by the home and boot file systems. Devices with a zero as the last digit are not
+routinely checked.</p>
+
+<p>在之前討論檔案/etc/fstab 時，我們會在每行的末尾看到一些神祕的數字。每次系統啟動時，
+在掛載系統之前，都會按照慣例檢查檔案系統的完整性。這個任務由 fsck 程式（是”file system
+check”的簡寫）完成。每個 fstab 項中的最後一個數字指定了裝置的檢查順序。
+在上面的範例中，我們看到首先檢查根檔案系統，然後是 home 和 boot 檔案系統。若最後一個數字
+是零則相應裝置不會被檢查。</p>
+
+<p>In addition to checking the integrity of file systems, fsck can also repair corrupt file
+systems with varying degrees of success, depending on the amount of damage. On Unix-
+like file systems, recovered portions of files are placed in the lost+found directory,
+located in the root of each file system.</p>
+
+<p>除了檢查檔案系統的完整性之外，fsck 還能修復受損的檔案系統，其成功度依賴於損壞的數量。
+在類別 Unix 的檔案系統中，檔案恢復的部分被放置於 lost+found 目錄裡面，位於每個檔案
+系統的根目錄下面。</p>
+
+<p>To check our flash drive (which should be unmounted first), we could do the following:</p>
+
+<p>檢查我們的快閃記憶體驅動器（首先應該解除安裝），我們能執行下面的操作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sudo fsck /dev/sdb1
+fsck 1.40.8 (13-Mar-2008)
+e2fsck 1.40.8 (13-Mar-2008)
+/dev/sdb1: clean, 11/3904 files, 1661/15608 blocks
+</code></pre></div></div>
+
+<p>In my experience, file system corruption is quite rare unless there is a hardware problem,
+such as a failing disk drive. On most systems, file system corruption detected at boot
+time will cause the system to stop and direct you to run fsck before continuing.</p>
+
+<p>以我的經驗，檔案系統損壞情況相當罕見，除非硬體存在問題，如磁碟驅動器故障。
+在大多數系統中，系統啟動階段若探測到檔案系統已經損壞了，則會導致系統停止下來，
+在系統繼續執行之前，會指導你執行 fsck 程式。</p>
+
+<blockquote>
+  <p>What The fsck?</p>
+
+  <p>什麼是 fsck?</p>
+
+  <p>In Unix culture, the word “fsck” is often used in place of a popular word with
+which it shares three letters. This is especially appropriate, given that you will
+probably be uttering the aforementioned word if you find yourself in a situation
+where you are forced to run fsck.</p>
+
+  <p>在 Unix 文化中，”fsck”這個單詞往往會被用來指代另一個和它僅有一個字母差別的常用詞。
+因為如果你遇到了迫不得已需要執行 fsck 命令的糟糕境遇時，這個詞經常會脫口而出。</p>
+  <h3 id="格式化軟盤">格式化軟盤</h3>
+</blockquote>
+
+<p>For those of us still using computers old enough to be equipped with floppy diskette
+drives, we can manage those devices, too. Preparing a blank floppy for use is a two step
+process. First, we perform a low-format on the diskette, then create a file system. To
+accomplish the formatting, we use the fdformat program specifying the name of the
+floppy device (usually /dev/fd0):</p>
+
+<p>對於那些還在使用配備了軟盤驅動器的計算機的使用者，我們也能管理這些裝置。準備一
+張可用的空白軟盤要分兩個步驟。首先，對這張軟盤執行低階格式化，然後建立一個檔案系統。
+為了完成格式化，我們使用 fdformat 程式，同時指定軟盤裝置名稱（通常為/dev/fd0）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sudo fdformat /dev/fd0
+Double-sided, 80 tracks, 18 sec/track. Total capacity 1440 kB.
+Formatting ... done
+Verifying ... done
+</code></pre></div></div>
+
+<p>Next, we apply a FAT file system to the diskette with mkfs:</p>
+
+<p>接下來，透過 mkfs 命令，給這個軟盤建立一個 FAT 檔案系統：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sudo mkfs -t msdos /dev/fd0
+</code></pre></div></div>
+
+<p>Notice that we use the “msdos” file system type to get the older (and smaller) style file
+allocation tables. After a diskette is prepared, it may be mounted like other devices.</p>
+
+<p>注意我們使用這個“msdos”檔案系統型別來得到舊（小的）風格的檔案分配表。當一個軟磁碟
+被準備好之後，則可能像其它裝置一樣掛載它。</p>
+
+<h3 id="直接把資料移入出裝置">直接把資料移入/出裝置</h3>
+
+<p>While we usually think of data on our computers as being organized into files, it is also
+possible to think of the data in “raw” form. If we look at a disk drive, for example, we
+see that it consists of a large number of “blocks” of data that the operating system sees as
+directories and files. However, if we could treat a disk drive as simply a large collection
+of data blocks, we could perform useful tasks, such as cloning devices.</p>
+
+<p>雖然我們通常認為計算機中的資料以檔案形式來組織資料，也可以“原始的”形式來考慮資料。
+如果我們看一下磁碟驅動器，例如，
+我們看到它由大量的資料“塊”組成，而作業系統卻把這些資料塊看作目錄和檔案。然而，如果
+把磁碟驅動器簡單地看成一個數據塊大集合，我們就能執行有用的任務，如複製裝置。</p>
+
+<p>The dd program performs this task. It copies blocks of data from one place to another. It
+uses a unique syntax (for historical reasons) and is usually used this way:</p>
+
+<p>這個 dd 程式能執行此任務。它可以把資料塊從一個地方複製到另一個地方。它使用獨特的語法（由於歷史原因）
+，經常它被這樣使用：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dd if=input_file of=output_file [bs=block_size [count=blocks]]
+</code></pre></div></div>
+
+<p>Let's say we had two USB flash drives of the same size and we wanted to exactly copy
+the first drive to the second. If we attached both drives to the computer and they are
+assigned to devices /dev/sdb and /dev/sdc respectively, we could copy everything
+on the first drive to the second drive with the following:</p>
+
+<p>比方說我們有兩個相同容量的 USB 快閃記憶體驅動器，並且要精確地把第一個驅動器（中的內容）
+複製給第二個。如果連線兩個裝置到計算機上，它們各自被分配到裝置/dev/sdb 和
+/dev/sdc 上，這樣我們就能透過下面的命令把第一個驅動器中的所有資料複製到第二個
+驅動器中。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dd if=/dev/sdb of=/dev/sdc
+</code></pre></div></div>
+
+<p>Alternately, if only the first device were attached to the computer, we could copy its
+contents to an ordinary file for later restoration or copying:</p>
+
+<p>或者，如果只有第一個驅動器被連線到計算機上，我們可以把它的內容複製到一個普通檔案中供
+以後恢復或複製資料：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dd if=/dev/sdb of=flash_drive.img
+</code></pre></div></div>
+
+<hr />
+
+<p>Warning! The dd command is very powerful. Though its name derives from “data
+definition,” it is sometimes called “destroy disk” because users often mistype either
+the if or of specifications. <em>Always double check your input and output
+specifications before pressing enter!</em></p>
+
+<p>警告！這個 dd 命令非常強大。雖然它的名字來自於“資料定義”，有時候也把它叫做“清除磁碟”
+因為使用者經常會誤輸入 if 或 of 的規範。<em>在按下回車鍵之前，要再三檢查輸入與輸出規範！</em></p>
+
+<hr />
+
+<h3 id="建立-cd-rom-映像">建立 CD-ROM 映像</h3>
+
+<p>Writing a recordable CD-ROM (either a CD-R or CD-RW) consists of two steps; first,
+constructing an iso image file that is the exact file system image of the CD-ROM and
+second, writing the image file onto the CD-ROM media.</p>
+
+<p>寫入一個可記錄的 CD-ROM（一個 CD-R 或者是 CD-RW）由兩步組成；首先，建構一個 iso 映像檔案，
+這就是一個 CD-ROM 的檔案系統映像，第二步，把這個映像檔案寫入到 CD-ROM 媒介中。</p>
+
+<h4 id="建立一個-cd-rom-的映像拷貝">建立一個 CD-ROM 的映像拷貝</h4>
+
+<p>If we want to make an iso image of an existing CD-ROM, we can use dd to read all the
+data blocks off the CD-ROM and copy them to a local file. Say we had an Ubuntu CD
+and we wanted to make an iso file that we could later use to make more copies. After
+inserting the CD and determining its device name (we’ll assume /dev/cdrom), we can
+make the iso file like so:</p>
+
+<p>如果想要製作一張現有 CD-ROM 的 iso 映像，我們可以使用 dd 命令來讀取 CD-ROW 中的所有資料塊，
+並把它們複製到本地檔案中。比如說我們有一張 Ubuntu
+CD，用它來製作一個 iso 檔案，以後我們可以用它來製作更多的拷貝。插入這張 CD 之後，確定
+它的裝置名稱（假定是/dev/cdrom），然後像這樣來製作 iso 檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dd if=/dev/cdrom of=ubuntu.iso
+</code></pre></div></div>
+
+<p>This technique works for data DVDs as well, but will not work for audio CDs, as they do
+not use a file system for storage. For audio CDs, look at the cdrdao command.</p>
+
+<p>這項技術也適用於 DVD 光碟，但是不能用於音訊 CD，因為它們不使用檔案系統來儲存資料。
+對於音訊 CD，看一下 cdrdao 命令。</p>
+
+<h4 id="從檔案集合中建立一個映像">從檔案集合中建立一個映像</h4>
+
+<p>To create an iso image file containing the contents of a directory, we use the
+genisoimage program. To do this, we first create a directory containing all the files
+we wish to include in the image and then execute the genisoimage command to create
+the image file. For example, if we had created a directory called ~/cd-rom-files
+and filled it with files for our CD-ROM, we could create an image file named cd-
+rom.iso with the following command:</p>
+
+<p>建立一個包含目錄內容的 iso 映像檔案，我們使用 genisoimage 程式。為此，我們首先建立
+一個目錄，這個目錄中包含了要包括到此映像中的所有檔案，然後執行這個 genisoimage 命令
+來建立映像檔案。例如，如果我們已經建立一個叫做~/cd-rom-files 的目錄，然後用檔案
+填充此目錄，再透過下面的命令來建立一個叫做 cd-rom.iso 映像檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>genisoimage -o cd-rom.iso -R -J ~/cd-rom-files
+</code></pre></div></div>
+
+<p>The “-R” option adds metadata for the Rock Ridge extensions, which allows the use of
+long filenames and POSIX style file permissions. Likewise, the “-J” option enables the
+Joliet extensions, which permit long filenames for Windows.</p>
+
+<p>“-R”選項新增元資料為 Rock Ridge 擴充套件，這允許使用長檔名和 POSIX 風格的檔案許可權。
+同樣地，這個”-J”選項使 Joliet 擴充套件生效，這樣 Windows 中就支援長檔名了。</p>
+
+<blockquote>
+  <p>A Program By Any Other Name…</p>
+
+  <p>一個有著其它名字的程式。。。</p>
+
+  <p>If you look at on-line tutorials for creating and burning optical media like CD-
+ROMs and DVDs, you will frequently encounter two programs called mkisofs
+and cdrecord. These programs were part of a popular package called
+“cdrtools” authored by Jorg Schilling. In the summer of 2006, Mr. Schilling
+made a license change to a portion of the cdrtools package which, in the opinion
+of many in the Linux community, created a license incompatibility with the GNU
+GPL. As a result, a fork of the cdrtools project was started that now includes
+replacement programs for cdrecord and mkisofs named wodim and
+genisoimage, respectively.</p>
+
+  <p>如果你看一下關於建立和燒寫光介質如 CD-ROMs 和 DVD 的線上文件，你會經常碰到兩個程式
+叫做 mkisofs 和 cdrecord。這些程式是流行軟體包”cdrtools”的一部分，”cdrtools”由 Jorg Schilling
+編寫成。在2006年春天，Schilling 先生更改了部分 cdrtools 軟體包的協議，Linux 社群許多人的看法是，
+這建立了一個與 GNU GPL 不相相容的協議。結果，就 fork 了這個 cdrtools 專案，
+目前新專案裡面包含了 cdrecord 和 mkisofs 的替代程式，分別是 wodim 和 genisoimage。</p>
+</blockquote>
+
+<h3 id="寫入-cd-rom-映象">寫入 CD-ROM 映象</h3>
+
+<p>After we have an image file, we can burn it onto our optical media. Most of the
+commands we will discuss below can be applied to both recordable CD-ROM and DVD
+media.</p>
+
+<p>有了一個映像檔案之後，我們可以把它燒寫到光碟中。下面討論的大多數命令對可
+記錄的 CD-ROW 和 DVD 媒介都適用。</p>
+
+<h4 id="直接掛載一個-iso-映象">直接掛載一個 ISO 映象</h4>
+
+<p>There is a trick that we can use to mount an iso image while it is still on our hard disk and
+treat it as though it was already on optical media. By adding the “-o loop” option to
+mount (along with the required “-t iso9660” file system type), we can mount the image
+file as though it were a device and attach it to the file system tree:</p>
+
+<p>有一個訣竅，我們可以用它來掛載 iso 映像檔案，雖然此檔案仍然在我們的硬碟中，但我們
+當作它已經在光碟中了。新增 “-o loop” 選項來掛載（同時帶有必需的 “-t iso9660” 檔案系統型別），
+掛載這個映像檔案就好像它是一臺裝置，把它連線到檔案系統樹上：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mkdir /mnt/iso_image
+mount -t iso9660 -o loop image.iso /mnt/iso_image
+</code></pre></div></div>
+
+<p>In the example above, we created a mount point named /mnt/iso_image and then
+mounted the image file image.iso at that mount point. After the image is mounted, it
+can be treated just as though it were a real CD-ROM or DVD. Remember to unmount the
+image when it is no longer needed.</p>
+
+<p>上面的示例中，我們建立了一個掛載點叫做/mnt/iso_image，然後把此映像檔案
+image.iso 掛載到掛載點上。映像檔案被掛載之後，可以把它當作，就好像它是一張
+真正的 CD-ROM 或者 DVD。當不再需要此映像檔案後，記得解除安裝它。</p>
+
+<h4 id="清除一張可重寫入的-cd-rom">清除一張可重寫入的 CD-ROM</h4>
+
+<p>Rewritable CD-RW media needs to be erased or blanked before it can be reused. To do
+this, we can use wodim, specifying the device name for the CD writer and the type of
+blanking to be performed. The wodim program offers several types. The most minimal
+(and fastest) is the “fast” type:</p>
+
+<p>可重寫入的 CD-RW 媒介在被重使用之前需要擦除或清空。為此，我們可以用 wodim 命令，指定
+裝置名稱和清空的型別。此 wodim 程式提供了幾種清空型別。最小（且最快）的是 “fast” 型別：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wodim dev=/dev/cdrw blank=fast
+</code></pre></div></div>
+
+<h4 id="寫入映象">寫入映象</h4>
+
+<p>To write an image, we again use wodim, specifying the name of the optical media writer
+device and the name of the image file:</p>
+
+<p>寫入一個映像檔案，我們再次使用 wodim 命令，指定光碟裝置名稱和映像檔名：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wodim dev=/dev/cdrw image.iso
+</code></pre></div></div>
+
+<p>In addition to the device name and image file, wodim supports a very large set of
+options. Two common ones are “-v” for verbose output, and “-dao” which writes the disk
+in disk-at-once mode. This mode should be used if you are preparing a disk for
+commercial reproduction. The default mode for wodim is track-at-once, which is useful
+for recording music tracks.</p>
+
+<p>除了裝置名稱和映像檔案之外，wodim 命令還支援非常多的選項。常見的兩個選項是，”-v” 可詳細輸出，
+和 “－dao” 以 disk-at-once 模式寫入光碟。如果你正在準備一張光碟為的是商業複製，那麼應該使用這種模式。
+wodim 命令的預設模式是 track-at-once，這對於錄製音樂很有用。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<p>We have just touched on the many ways that the command line can be used to manage
+storage media. Take a look at the man pages of the commands we have covered. Some
+of them support huge numbers of options and operations. Also, look for on-line tutorials
+for adding hard drives to your Linux system (there are many) and working with optical
+media.</p>
+
+<p>我們剛才談到了很多方法，可以使用命令列管理儲存介質。看看我們所講過命令的手冊頁。
+一些命令支援大量的選項和操作。此外，尋找一些如何新增硬碟驅動器到 Linux 系統（有許多）的線上課程，
+這些課程也要適用於光介質儲存裝置。</p>
+
+<h3 id="友情提示">友情提示</h3>
+
+<p>It’s often useful to verify the integrity of an iso image that we have downloaded. In most
+cases, a distributor of an iso image will also supply a checksum file. A checksum is the
+result of an exotic mathematical calculation resulting in a number that represents the
+content of the target file. If the contents of the file change by even one bit, the resulting
+checksum will be much different. The most common method of checksum generation
+uses the md5sum program. When you use md5sum, it produces a unique hexadecimal
+number:</p>
+
+<p>通常驗證一下我們已經下載的 iso 映像檔案的完整性很有用處。在大多數情況下，iso 映像檔案的貢獻者也會提供
+一個 checksum 檔案。一個 checksum 是一個神奇的數學運算的計算結果，這個數學計算會產生一個能表示目標檔案內容的數字。
+如果目標檔案的內容即使更改一個二進位制位，checksum 的結果將會非常不一樣。
+產生 checksum 數字的最常見方法是使用 md5sum 程式。當你使用 md5sum 程式的時候，
+它會產生一個獨一無二的十六進位制數字：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>md5sum image.iso
+34e354760f9bb7fbf85c96f6a3f94ece    image.iso
+</code></pre></div></div>
+
+<p>After you download an image, you should run md5sum against it and compare the results
+with the md5sum value supplied by the publisher.</p>
+
+<p>當你下載完映像檔案之後，你應該對映像檔案執行 md5sum 命令，然後把執行結果與發行商提供的 md5sum 數值作比較。</p>
+
+<p>In addition to checking the integrity of a downloaded file, we can use md5sum to verify
+newly written optical media. To do this, we first calculate the checksum of the image file
+and then calculate a checksum for the media. The trick to verifying the media is to limit
+the calculation to only the portion of the optical media that contains the image. We do
+this by determining the number of 2048 byte blocks the image contains (optical media is
+always written in 2048 byte blocks) and reading that many blocks from the media. On
+some types of media, this is not required. A CD-R written in disk-at-once mode can be
+checked this way:</p>
+
+<p>除了檢查下載檔案的完整性之外，我們也可以使用 md5sum 程式驗證新寫入的光學儲存介質。
+為此，首先我們計算映像檔案的 checksum 數值，然後計算此光學儲存介質的 checksum 數值。
+這種驗證光學介質的技巧是限定只對 光學儲存介質中包含映像檔案的部分計算 checksum 數值。
+透過確定映像檔案所包含的 2048 個位元組塊的數目（光學儲存介質總是以 2048 個位元組塊的方式寫入）
+並從儲存介質中讀取那麼多的位元組塊，我們就可以完成操作。
+某些型別的儲存介質，並不需要這樣做。一個以 disk-at-once 模式寫入的 CD-R，可以用下面的方式檢驗：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>md5sum /dev/cdrom
+34e354760f9bb7fbf85c96f6a3f94ece    /dev/cdrom
+</code></pre></div></div>
+
+<p>Many types of media, such as DVDs require a precise calculation of the number of
+blocks. In the example below, we check the integrity of the image file dvd-image.iso
+and the disk in the DVD reader /dev/dvd. Can you figure out how this works?</p>
+
+<p>許多儲存介質型別，如 DVD 需要精確地計算位元組塊的數目。在下面的例子中，我們檢驗了映像檔案 dvd-image.iso
+以及 DVD 光碟機中磁碟 /dev/dvd 檔案的完整性。你能弄明白這是怎麼回事嗎？</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>md5sum dvd-image.iso; dd if=/dev/dvd bs=2048 count=$(( $(stat -c "%s" dvd-image.iso) / 2048 )) | md5sum
+</code></pre></div></div>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

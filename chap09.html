@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">鍵盤高階操作技巧</h1><br>
+<p>I often kiddingly describe Unix as “the operating system for people who like to type.” Of
+course, the fact that it even has a command line is a testament to that. But command line
+users don’t like to type that much. Why else would so many commands have such short
+names like cp, ls, mv, and rm? In fact, one of the most cherished goals of the command
+line is laziness; doing the most work with the fewest number of keystrokes. Another goal
+is never having to lift your fingers from the keyboard, never reaching for the mouse. In
+this chapter, we will look at bash features that make keyboard use faster and more
+efficient.</p>
+
+<p>開玩笑地說，我經常把 Unix 描述為“這個作業系統是為喜歡敲鍵盤的人們服務的。”
+當然，Unix 甚至還有一個命令列這件事證明了我所說的話。但是命令列使用者不喜歡敲入
+那麼多字。要不為什麼會有如此多的命令有這樣簡短的命令名，像cp、ls、mv和 rm？事實上
+，命令列最為珍視的目標之一就是懶惰；用最少的擊鍵次數來完成最多的工作。另一個
+目標是你的手指永遠不必離開鍵盤，永不觸控滑鼠。在這一章節，我們將看一下 bash 特性
+，這些特性使鍵盤使用起來更加迅速，更加高效。</p>
+
+<p>The following commands will make an appearance:</p>
+
+<p>以下命令將會露面：</p>
+
+<ul>
+  <li>
+    <p>clear - Clear the screen</p>
+  </li>
+  <li>
+    <p>history - Display the contents of the history list</p>
+  </li>
+  <li>
+    <p>clear － 清空螢幕</p>
+  </li>
+  <li>
+    <p>history － 顯示歷史列表內容</p>
+  </li>
+</ul>
+
+<h3 id="命令列編輯">命令列編輯</h3>
+
+<p>bash uses a library (a shared collection of routines that different programs can use)
+called Readline to implement command line editing. We have already seen some of this.
+We know, for example, that the arrow keys move the cursor but there are many more
+features. Think of these as additional tools that we can employ in our work. It’s not
+important to learn all of them, but many of them are very useful. Pick and choose as
+desired.</p>
+
+<p>Bash 使用了一個名為 Readline 的函式庫（共享的例程集合，可以被不同的程式使用），
+來實現命令列編輯。我們已經看到一些例子。我們知道，例如，箭頭按鍵可以移動游標，
+此外還有許多特性。想想這些額外的工具，我們可以在工作中使用。學會所有的特性
+並不重要，但許多特性非常有幫助。選擇自己需要的特性。</p>
+
+<p>Note: Some of the key sequences below (particularly those which use the Alt key)
+may be intercepted by the GUI for other functions. All of the key sequences should
+work properly when using a virtual console.</p>
+
+<p>注意：下面一些按鍵組合（尤其使用 Alt 鍵的組合），可能會被 GUI 攔截來觸發其它的功能。
+當使用虛擬控制檯時，所有的按鍵組合都應該正確地工作。</p>
+
+<h3 id="移動游標">移動游標</h3>
+
+<p>The following table lists the keys used to move the cursor:</p>
+
+<p>下表列出了移動游標所使用的按鍵：</p>
+
+<table class="multi">
+<caption class="cap">Table 9-1: Cursor Movement Commands</caption>
+<tr>
+<th class="title">Key</th>
+<th class="title">Action</th>
+</tr>
+<tr>
+<td valign="top" width="25%">Ctrl-a</td>
+<td valign="top">Move cursor to the beginning of the line.</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-e</td>
+<td valign="top">Move cursor to the end of the line.</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-f</td>
+<td valign="top">Move cursor forward one character;same as the right arrow key.</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-b</td>
+<td valign="top">Move cursor backward one character;same as the left arrow key.</td>
+</tr>
+<tr>
+<td valign="top">Alt-f</td>
+<td valign="top">Move cursor forward one word.</td>
+</tr>
+<tr>
+<td valign="top">Alt-b</td>
+<td valign="top">Move cursor backward one word.</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-l</td>
+<td valign="top">Clear the screen and move the cursor to the top left corner. The clear command does the same thing.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表9-1: 游標移動命令</caption>
+<tr>
+<th class="title">按鍵</th>
+<th class="title">行動</th>
+</tr>
+<tr>
+<td valign="top" width="25%">Ctrl-a</td>
+<td valign="top">移動游標到行首。</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-e</td>
+<td valign="top">移動游標到行尾。</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-f</td>
+<td valign="top">游標前移一個字元；和右箭頭作用一樣。</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-b</td>
+<td valign="top">游標後移一個字元；和左箭頭作用一樣。</td>
+</tr>
+<tr>
+<td valign="top">Alt-f</td>
+<td valign="top">游標前移一個字。</td>
+</tr>
+<tr>
+<td valign="top">Alt-b</td>
+<td valign="top">游標後移一個字。</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-l</td>
+<td valign="top">清空螢幕，移動游標到左上角。clear 命令完成同樣的工作。</td>
+</tr>
+</table>
+
+<h3 id="修改文字">修改文字</h3>
+
+<p>Table 9-2 lists keyboard commands that are used to edit characters on the command line.</p>
+
+<p>表9－2列出了鍵盤命令，這些命令用來在命令列中編輯字元。</p>
+
+<table class="multi">
+<caption class="cap">Table 9-2: Text Editing Commands</caption>
+<tr>
+<th class="title">Key</th>
+<th class="title">Action</th>
+</tr>
+<tr>
+<td valign="top" width="25%">Ctrl-d</td>
+<td valign="top">Delete the character at the cursor location</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-t</td>
+<td valign="top">Transpose(exchange)the character at the cursor location with the one preceding it.</td>
+</tr>
+<tr>
+<td valign="top">Alt-t</td>
+<td valign="top">Transpose the word at the cursor location with the one preceding it.</td>
+</tr>
+<tr>
+<td valign="top">Alt-l</td>
+<td valign="top">Convert the characters from the cursor location to the end of the word to lowercase.</td>
+</tr>
+<tr>
+<td valign="top">Alt-u</td>
+<td valign="top">Convert the characters from the cursor location to the end of the word to uppercase.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表9-2: 文字編輯命令</caption>
+<tr>
+<th class="title"> 按鍵</th>
+<th class="title"> 行動</th>
+</tr>
+<tr>
+<td valign="top" width="25%">Ctrl-d</td>
+<td valign="top"> 刪除游標位置的字元。</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-t</td>
+<td valign="top"> 游標位置的字元和游標前面的字元互換位置。</td>
+</tr>
+<tr>
+<td valign="top">Alt-t</td>
+<td valign="top"> 游標位置的字和其前面的字互換位置。</td>
+</tr>
+<tr>
+<td valign="top">Alt-l</td>
+<td valign="top"> 把從游標位置到字尾的字元轉換成小寫字母。</td>
+</tr>
+<tr>
+<td valign="top">Alt-u</td>
+<td valign="top"> 把從游標位置到字尾的字元轉換成大寫字母。</td>
+</tr>
+</table>
+
+<h3 id="剪下和貼上文字">剪下和貼上文字</h3>
+
+<p>The Readline documentation uses the terms killing and yanking to refer to what we would
+commonly call cutting and pasting. Items that are cut are stored in a buffer called the
+kill-ring.</p>
+
+<p>Readline 的文件使用術語 killing 和 yanking 來指我們平常所說的剪下和貼上。
+剪下下來的本文被儲存在一個叫做剪下環(kill-ring)的緩衝區中。</p>
+
+<table class="multi">
+<caption class="cap">Table 9-3: Cut And Paste Commands</caption>
+<tr>
+<th class="title">Key</th>
+<th class="title">Action</th>
+</tr>
+<tr>
+<td valign="top" width="25%">Ctrl-k</td>
+<td valign="top">Kill text from the cursor location to the end of line.</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-u</td>
+<td valign="top">Kill text from the cursor location to the beginning of the line.</td>
+</tr>
+<tr>
+<td valign="top">Alt-d</td>
+<td valign="top">Kill text from the cursor location to the end of the current word.</td>
+</tr>
+<tr>
+<td valign="top">Alt-Backspace</td>
+<td valign="top">Kill text from the cursor location to the beginning of the
+word. If the cursor is at the beginning of a word, kill the previous word.</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-y</td>
+<td valign="top">Yank text from the kill-ring and insert it at the cursor location.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表9-3: 剪下和貼上命令</caption>
+<tr>
+<th class="title"> 按鍵</th>
+<th class="title"> 行動</th>
+</tr>
+<tr>
+<td valign="top" width="25%">Ctrl-k</td>
+<td valign="top"> 剪下從游標位置到行尾的文字。</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-u</td>
+<td valign="top"> 剪下從游標位置到行首的文字。</td>
+</tr>
+<tr>
+<td valign="top">Alt-d</td>
+<td valign="top"> 剪下從游標位置到詞尾的文字。</td>
+</tr>
+<tr>
+<td valign="top">Alt-Backspace</td>
+<td valign="top"> 剪下從游標位置到詞頭的文字。如果游標在一個單詞的開頭，剪下前一個單詞。</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-y</td>
+<td valign="top"> 把剪下環中的文字貼上到游標位置。</td>
+</tr>
+</table>
+
+<blockquote>
+  <p>The Meta Key</p>
+
+  <p>Meta 鍵</p>
+
+  <p>If you venture into the Readline documentation, which can be found in the
+READLINE section of the bash man page, you will encounter the term “meta
+key.” On modern keyboards this maps to the Alt key but it wasn’t always so.</p>
+
+  <p>如果你冒險進入到 Readline 的文件中，你會在 bash 手冊頁的 READLINE 段落，
+遇到一個術語「Meta 鍵」（meta key）。在當今的鍵盤上，這個 Meta 鍵是指 Alt 鍵，但
+並不總是這樣。</p>
+
+  <p>Back in the dim times (before PCs but after Unix) not everybody had their own
+computer. What they might have had was a device called a terminal. A terminal
+was a communication device that featured a text display screen and a keyboard
+and just enough electronics inside to display text characters and move the
+cursor around. It was attached (usually by serial cable) to a larger computer or the
+communication network of a larger computer. There were many different brands
+of terminals and they all had different keyboards and display feature sets.
+Since they all tended to at least understand ASCII, software developers wanting
+portable applications wrote to the lowest common denominator. Unix systems
+have a very elaborate way of dealing with terminals and their different
+display features. Since the developers of Readline could not be sure of the presence
+of a dedicated extra control key, they invented one and called it “meta.” While the
+Alt key serves as the meta key on modern keyboards, you can also press and
+release the Esc key to get the same effect as holding down the Alt key if
+you’re still using a terminal (which you can still do in Linux!).</p>
+
+  <p>回到昏暗的年代（在 PC 之前 Unix 之後），並不是每個人都有他們自己的計算機。
+他們可能有一個叫做終端的裝置。一個終端是一種通訊裝置，它以一個文字顯示
+螢幕和一個鍵盤作為其特色，它裡面有足夠的電子器件來顯示文字字元和移動游標。
+它連線到（通常透過序列電纜）一個更大的計算機或者是一個大型計算機的通訊
+網路。有許多不同的終端產品商標，它們有著不同的鍵盤和特徵顯示集。因為它們
+都傾向於至少能理解 ASCII，所以軟體開發者想要符合最低標準的可移植的應用程式。
+Unix 系統有一個非常精巧的方法來處理各種終端產品和它們不同的顯示特徵。因為
+Readline 程式的開發者們，不能確定一個專用多餘的控制鍵的存在，他們發明了一個
+控制鍵，並把它叫做 Meta 鍵。然而在現代的鍵盤上，Alt 鍵作為 Meta 鍵來服務。
+如果你仍然在使用終端（在 Linux 中，你仍然可以得到一個終端），你也可以按下和
+釋放 Esc 鍵來得到如控制 Alt 鍵一樣的效果。</p>
+</blockquote>
+
+<h3 id="自動完成">自動完成</h3>
+
+<p>Another way that the shell can help you is through a mechanism called completion.
+Completion occurs when you press the tab key while typing a command. Let's see how
+this works. Given a home directory that looks like this:</p>
+
+<p>shell 能幫助你的另一種方式是透過一種叫做自動完成的機制。當你敲入一個命令時，
+按下 tab 鍵，自動完成就會發生。讓我們看一下這是怎樣工作的。給出一個看起來
+像這樣的家目錄：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls
+Desktop   ls-output.txt   Pictures   Templates   Videos
+....
+</code></pre></div></div>
+
+<p>Try typing the following but don’t press the Enter key:</p>
+
+<p>試著輸入下面的命令，但不要按下 Enter 鍵：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls l
+</code></pre></div></div>
+
+<p>Now press the tab key:</p>
+
+<p>現在按下 tab 鍵：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls ls-output.txt
+</code></pre></div></div>
+
+<p>See how the shell completed the line for you? Let's try another one. Again, don’t press
+Enter:</p>
+
+<p>看一下 shell 是怎樣補全這一行的？讓我們再試試另一個例子。這回，也
+不要按下 Enter:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls D
+</code></pre></div></div>
+
+<p>Press tab:</p>
+
+<p>按下 tab:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls D
+</code></pre></div></div>
+
+<p>No completion, just a beep. This happened because “D” matches more than one entry in
+the directory. For completion to be successful, the “clue” you give it has to be
+unambiguous. If we go further:</p>
+
+<p>沒有補全，只是嘟嘟響。因為”D”不止匹配目錄中的一個條目。為了自動完成執行成功，
+你給它的”線索”不能模稜兩可。如果我們繼續輸入：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls Do
+</code></pre></div></div>
+
+<p>Then press tab:</p>
+
+<p>然後按下 tab：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls Documents
+</code></pre></div></div>
+
+<p>The completion is successful.</p>
+
+<p>自動完成成功了。</p>
+
+<p>While this example shows completion of pathnames, which is its most common use,
+completion will also work on variables (if the beginning of the word is a “$”), user names
+(if the word begins with “~”), commands (if the word is the first word on the line.) and
+host names (if the beginning of the word is “@”). Host name completion only works for
+host names listed in /etc/hosts.</p>
+
+<p>這個範例展示了路徑名自動完成，這是最常用的形式。自動完成也能對變數（如果
+字的開頭是一個”$”）、使用者名稱字（單詞以”~”開始）、命令（如果單詞是一行的第一個單詞）
+和主機名（如果單詞的開頭是”@”）起作用。主機名自動完成只對包含在檔案/etc/hosts 中的主機名有效。</p>
+
+<p>There are a number of control and meta key sequences that are associated with
+completion:</p>
+
+<p>有一系列的控制和 Meta 鍵序列與自動完成相關聯：</p>
+
+<table class="multi">
+<caption class="cap">Table 9-4: Completion Commands</caption>
+<tr>
+<th class="title">Key</th>
+<th class="title">Action</th>
+</tr>
+<tr>
+<td valign="top" width="25%">Alt-?</td>
+<td valign="top">Display list of possible completions. On most systems you can
+also do this by pressing the tab key a second time, which is much easier.</td>
+</tr>
+<tr>
+<td valign="top">Alt-*</td>
+<td valign="top">Insert all possible completions. This is useful when you want
+to use more than one possible match.</td>
+</tr>
+
+</table>
+<table class="multi">
+<caption class="cap">表9-4: 自動完成命令</caption>
+<tr>
+<th class="title">按鍵</th>
+<th class="title">行動</th>
+</tr>
+<tr>
+<td valign="top" width="25%">Alt-?</td>
+<td valign="top"> 顯示可能的自動完成列表。在大多數系統中，你也可以完成這個透過按
+兩次 tab 鍵，這會更容易些。</td>
+</tr>
+<tr>
+<td valign="top">Alt-*</td>
+<td valign="top">插入所有可能的自動完成。當你想要使用多個可能的匹配項時，這個很有幫助。</td>
+</tr>
+</table>
+
+<blockquote>
+  <p>Programmable Completion</p>
+
+  <p>可程式設計自動完成</p>
+
+  <p>Recent versions of bash have a facility called programmable completion.
+Programmable completion allows you (or more likely, your distribution
+provider) to add additional completion rules. Usually this is done to add support for
+specific applications. For example it is possible to add completions for the
+option list of a command or match particular file types that an application supports.
+Ubuntu has a fairly large set defined by default. Programmable completion is
+implemented by shell functions, a kind of mini shell script that we will cover
+in later chapters. If you are curious, try:</p>
+
+  <p>目前的 bash 版本有一個叫做可程式設計自動完成工具。可程式設計自動完成允許你（更可能是，你的
+發行版提供商）來加入額外的自動完成規則。通常需要加入對特定應用程式的支援，來完成這個
+任務。例如，有可能為一個命令的選項列表，或者一個應用程式支援的特殊檔案型別加入自動完成。
+預設情況下，Ubuntu 已經定義了一個相當大的規則集合。可程式設計自動完成是由 shell
+函式實現的，shell 函式是一種小巧的 shell 指令碼，我們會在後面的章節中討論到。如果你感到好奇，試一下：</p>
+
+  <p><em>set | less</em></p>
+
+  <p>and see if you can find them. Not all distributions include them by default.</p>
+
+  <p>檢視一下如果你能找到它們的話。預設情況下，並不是所有的發行版都包括它們。</p>
+</blockquote>
+
+<h3 id="利用歷史命令">利用歷史命令</h3>
+
+<p>As we discovered in Chapter 2, bash maintains a history of commands that have been
+entered. This list of commands is kept in your home directory in a file called
+.bash_history. The history facility is a useful resource for reducing the amount of
+typing you have to do, especially when combined with command line editing.</p>
+
+<p>正如我們在第二章中討論到的，bash 維護著一個已經執行過的命令的歷史列表。這個命令列表
+被儲存在你家目錄下，一個叫做 .bash_history 的檔案裡。這個 history 工具是個有用資源，
+因為它可以減少你敲鍵盤的次數，尤其當和命令列編輯聯絡起來時。</p>
+
+<h3 id="搜尋歷史命令">搜尋歷史命令</h3>
+
+<p>At any time, we can view the contents of the history list by:</p>
+
+<p>在任何時候，我們都可以瀏覽歷史列表的內容，透過：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ history | less
+</code></pre></div></div>
+
+<p>By default, bash stores the last five hundred commands you have entered. We will see
+how to adjust this value in a later chapter. Let's say we want to find the commands we
+used to list /usr/bin. One way we could do this:</p>
+
+<p>在預設情況下，bash 會儲存你所輸入的最後 500 個命令。在隨後的章節裡，我們會知道
+怎樣調整這個數值。比方說我們想在自己曾經用過的命令中，找出和/usr/bin這一目錄相關的。那麼我們就可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ history | grep /usr/bin
+</code></pre></div></div>
+
+<p>And Let's say that among our results we got a line containing an interesting command like
+this:</p>
+
+<p>比方說在我們的搜尋結果之中，我們得到一行，包含了有趣的命令，像這樣；</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>88  ls -l /usr/bin &gt; ls-output.txt
+</code></pre></div></div>
+
+<p>The number “88” is the line number of the command in the history list. We could use this
+immediately using another type of expansion called history expansion. To use our
+discovered line we could do this:</p>
+
+<p>數字「88」是這個命令在歷史列表中的行號。我們可以使用另一種叫做
+歷史命令展開的方式，來呼叫“88”所代表的這一行命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ !88
+</code></pre></div></div>
+
+<p>bash will expand “!88” into the contents of the eighty-eighth line in the
+history list. There are other forms of history expansion that we will cover a
+little later. bash also provides the ability to search the history list
+incrementally. This means that we can tell bash to search the history list as
+we enter characters, with each additional character further refining our
+search. To start incremental search type Ctrl-r followed by the text you are
+looking for. When you find it, you can either type Enter to execute the
+command or type Ctrl-j to copy the line from the history list to the current
+command line. To find the next occurrence of the text (moving “up” the history
+list), type Ctrl-r again. To quit searching, type either Ctrl-g or Ctrl-c.
+Here we see it in action:</p>
+
+<p>bash 會把「!88」展開成為歷史列表中88行的內容。還有其它的歷史命令展開形式，我們一會
+討論它們。bash 也具有增量搜尋歷史列表的能力。意思是在字元輸入的同時，bash 會去搜索歷史列表（直接出結果，並高亮匹配的第一個字），每多輸入一個字元都會使搜尋結果更接近目標。輸入 Ctrl-r來啟動增量搜尋，
+接著輸入你要尋找的字。當你找到它以後，你可以敲入 Enter 來執行命令，
+或者輸入 Ctrl-j，從歷史列表中複製這一行到當前命令列。再次輸入 Ctrl-r，來找到下一個
+匹配項（歷史列表中向上移動）。輸入 Ctrl-g 或者 Ctrl-c，退出搜尋。現在看看它的實際效果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>First type Ctrl-r:</p>
+
+<p>首先輸入 Ctrl-r:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(reverse-i-search)`':
+</code></pre></div></div>
+
+<p>The prompt changes to indicate that we are performing a reverse incremental search. It is
+“reverse” because we are searching from “now” to some time in the past. Next, we start
+typing our search text. In this example “/usr/bin”:</p>
+
+<p>提示符改變，顯示我們正在執行反向增量搜尋。搜尋過程是”反向的”，因為我們按照從”現在”到過去
+某個時間段的順序來搜尋。下一步，我們開始輸入要查詢的文字。在這個例子裡是 “/usr/bin”：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(reverse-i-search)`/usr/bin': ls -l /usr/bin &gt; ls-output.txt
+</code></pre></div></div>
+
+<blockquote>
+  <p>上面這一行冒號後面的第一個”/”會高亮顯示。</p>
+</blockquote>
+
+<p>Immediately, the search returns our result. With our result, we can execute the command
+by pressing Enter, or we can copy the command to our current command line for
+further editing by typing Ctrl-j. Let's copy it. Type Ctrl-j:</p>
+
+<p>即刻，搜尋返回我們需要的結果。我們可以按下 Enter 鍵來執行這個命令，或者我們可以按下Ctrl-j複製
+這個命令到我們當前的命令列，來進一步編輯它。好了現在我們複製它，輸入 Ctrl-j：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -l /usr/bin &gt; ls-output.txt
+</code></pre></div></div>
+
+<p>Our shell prompt returns and our command line is loaded and ready for action!
+The table below lists some of the keystrokes used to manipulate the history list:</p>
+
+<p>我們的 shell 提示符重新出現，命令列載入完畢，準備接受下一命令！
+下表列出了一些按鍵組合，
+這些按鍵可以用來操作歷史列表：</p>
+
+<table class="multi">
+<caption class="cap">Table 9-5: History Commands</caption>
+<tr>
+<th class="title">Key</th>
+<th class="title">Action</th>
+</tr>
+<tr>
+<td valign="top" width="25%">Ctrl-p </td>
+<td valign="top">Move to the previous history entry. Same action as the up arrow.</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-n</td>
+<td valign="top">Move to the next history entry. Same action as the down arrow.</td>
+</tr>
+<tr>
+<td valign="top">Alt-&lt; </td>
+<td valign="top">Move to the beginning (top) of the history list.</td>
+</tr>
+<tr>
+<td valign="top">Alt-&gt; </td>
+<td valign="top">Move to the end (bottom) of the history list, i.e., the current
+command line.</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-r </td>
+<td valign="top">Reverse incremental search. Searches incrementally from the
+current command line up the history list.</td>
+</tr>
+<tr>
+<td valign="top">Alt-p </td>
+<td valign="top">Reverse search, non-incremental. With this key, type in the search
+string and press enter before the search is performed.</td>
+</tr>
+<tr>
+<td valign="top">Alt-n </td>
+<td valign="top">Forward search, non-incremental.</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-o </td>
+<td valign="top">Execute the current item in the history list and advance to the next
+one. This is handy if you are trying to re-execute a sequence of
+commands in the history list.</td>
+</tr>
+</table>
+<table class="multi">
+<caption class="cap">表9-5: 歷史命令</caption>
+<tr>
+<th class="title">按鍵</th>
+<th class="title">行為</th>
+</tr>
+<tr>
+<td valign="top" width="25%">Ctrl-p</td>
+<td valign="top">移動到上一個歷史條目。類似於上箭頭按鍵。</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-n</td>
+<td valign="top">移動到下一個歷史條目。類似於下箭頭按鍵。</td>
+</tr>
+<tr>
+<td valign="top">Alt-&lt;</td>
+<td valign="top"> 移動到歷史列表開頭。</td>
+</tr>
+<tr>
+<td valign="top">Alt-&gt;</td>
+<td valign="top">移動到歷史列表結尾，即當前命令列。</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-r</td>
+<td valign="top">反向增量搜尋。從當前命令列開始，向上增量搜尋。</td>
+</tr>
+<tr>
+<td valign="top">Alt-p</td>
+<td valign="top">反向搜尋，非增量搜尋。（輸入要查詢的字串，按下 Enter來執行搜尋）。</td>
+</tr>
+<tr>
+<td valign="top">Alt-n</td>
+<td valign="top"> 向前搜尋，非增量。</td>
+</tr>
+<tr>
+<td valign="top">Ctrl-o</td>
+<td valign="top">執行歷史列表中的當前項，並移到下一個。如果你想要執行歷史列表中一系列的命令，這很方便。</td>
+</tr>
+</table>
+
+<h3 id="歷史命令展開">歷史命令展開</h3>
+
+<p>The shell offers a specialized type of expansion for items in the history list by using the
+“!” character. We have already seen how the exclamation point can be followed by a
+number to insert an entry from the history list. There are a number of other expansion
+features:</p>
+
+<p>透過使用「!」字元，shell 為歷史列表中的命令，提供了一個特殊的展開型別。我們已經知道一個感嘆號
+，其後再加上一個數字，可以把來自歷史列表中的命令插入到命令列中。這裡還有一些其它的展開特性：</p>
+
+<table class="multi">
+<caption class="cap">Table 9-6: History Expansion Commands</caption>
+<tr>
+<th class="title">Sequence</th>
+<th class="title">Action</th>
+</tr>
+<tr>
+<td valign="top" width="25%">!!</td>
+<td valign="top">Repeat the last command. It is probably easier to press up arrow and enter.</td>
+</tr>
+<tr>
+<td valign="top">!number</td>
+<td valign="top">Repeat history list item number.</td>
+</tr>
+<tr>
+<td valign="top">!string</td>
+<td valign="top">Repeat last history list item starting with string.</td>
+</tr>
+<tr>
+<td valign="top">!?string</td>
+<td valign="top">Repeat last history list item containing string.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表9-6: 歷史展開命令 </caption>
+<tr>
+<th class="title">序列</th>
+<th class="title">行為</th>
+</tr>
+<tr>
+<td valign="top" width="25%">!!</td>
+<td valign="top">重複最後一次執行的命令。可能按下上箭頭按鍵和 enter 鍵更容易些。</td>
+</tr>
+<tr>
+<td valign="top">!number</td>
+<td valign="top">重複歷史列表中第 number 行的命令。</td>
+</tr>
+<tr>
+<td valign="top">!string</td>
+<td valign="top">重複最近歷史列表中，以這個字串開頭的命令。</td>
+</tr>
+<tr>
+<td valign="top">!?string</td>
+<td valign="top">重複最近歷史列表中，包含這個字串的命令。</td>
+</tr>
+</table>
+
+<p>I would caution against using the “!string” and “!?string” forms unless you are absolutely
+sure of the contents of the history list items.</p>
+
+<p>應該小心謹慎地使用 “!string” 和 “!?string” 格式，除非你完全確信歷史列表條目的內容。</p>
+
+<p>There are many more elements available in the history expansion mechanism, but this
+subject is already too arcane and our heads may explode if we continue. The HISTORY
+EXPANSION section of the bash man page goes into all the gory details. Feel free to
+explore!</p>
+
+<p>在歷史展開機制中，還有許多可利用的特點，但是這個題目已經太晦澀難懂了，
+如果我們再繼續討論的話，我們的頭可能要爆炸了。bash 手冊頁的 HISTORY EXPANSION
+部分詳盡地講述了所有要素。</p>
+
+<blockquote>
+  <p>script</p>
+
+  <p>指令碼</p>
+
+  <p>In addition to the command history feature in bash, most Linux distributions
+include a program called script that can be used to record an entire shell
+session and store it in a file. The basic syntax of the command is:</p>
+
+  <p>除了 bash 中的命令歷史特性，許多 Linux 發行版包括一個叫做 script 的程式，
+這個程式可以記錄整個 shell 會話，並把 shell
+會話存在一個檔案裡面。這個命令的基本語法是：</p>
+
+  <p><em>script [file]</em></p>
+
+  <p>where file is the name of the file used for storing the recording. If no
+file is specified, the file typescript is used. See the script man page for a
+complete list of the program’s options and features.</p>
+
+  <p>命令中的 file 是指用來儲存 shell 會話記錄的檔名。如果沒有指定檔名，則使用檔案
+typescript。檢視指令碼的手冊頁，可以得到一個關於 script 程式選項和特點的完整列表。</p>
+</blockquote>
+
+<h3 id="總結歸納">總結歸納</h3>
+
+<p>In this chapter we have covered some of the keyboard tricks that the shell provides to
+help hardcore typists reduce their workloads. I suspect that as time goes by and you
+become more involved with the command line, you will refer back to this chapter to pick
+up more of these tricks. For now, consider them optional and potentially helpful.</p>
+
+<p>在這一章中，我們已經討論了一些由 shell 提供的鍵盤操作技巧，這些技巧是來幫助打字員減少工作量的。
+隨著時光流逝，你和命令列打交道越來越多，我猜想你會重新翻閱這一章的內容，學會更多的技巧。
+目前，你就認為它們是可選的，潛在地有幫助的。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The Wikipedia has a good article on computer terminals:</p>
+  </li>
+  <li>
+    <p>Wikipedia 上有一篇關於計算機終端的好文章：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Computer_terminal">http://en.wikipedia.org/wiki/Computer_terminal</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

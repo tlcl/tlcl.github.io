@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">自訂製 shell 提示符</h1><br>
+<p>In this chapter we will look at a seemingly trivial detail — our shell prompt. This
+examination will reveal some of the inner workings of the shell and the terminal emulator
+program itself.</p>
+
+<p>在這一章中，我們將會看一下表面上看來很瑣碎的細節－shell 提示符。但這會揭示一些 shell 和
+終端模擬器的內部工作方式。</p>
+
+<p>Like so many things in Linux, the shell prompt is highly configurable, and while we have
+pretty much taken it for granted, the prompt is a really useful device once we learn how
+to control it.</p>
+
+<p>和 Linux 內的許多程式一樣，shell 提示符是可高度配置的，雖然我們把它相當多地看作是理所當然的，
+但是我們一旦學會了怎樣控制它，shell 提示符是一個相當有用的工具。</p>
+
+<p>Anatomy Of A Prompt</p>
+
+<h3 id="解剖一個提示符">解剖一個提示符</h3>
+
+<p>Our default prompt looks something like this:</p>
+
+<p>我們預設的提示符看起來像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>Notice that it contains our user name, our host name and our current working directory,
+but how did it get that way? Very simply, it turns out. The prompt is defined by an
+environment variable named PS1 (short for “prompt string one”). We can view the
+contents of PS1 with the echo command:</p>
+
+<p>注意它包含我們的使用者名稱，主機名和當前工作目錄，但是它又是怎樣得到這些東西的呢？
+結果證明非常簡單。提示符是由一個環境變數定義的，叫做 PS1（是“prompt string one”
+的簡寫）。我們可以透過 echo 命令來檢視 PS1的內容。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo $PS1
+[\u@\h \W]\$
+</code></pre></div></div>
+
+<hr />
+
+<p>Note: Don’t worry if your results are not exactly the same as the example above.
+Every Linux distribution defines the prompt string a little differently, some quite
+exotically.</p>
+
+<p>注意：如果你 shell 提示符的內容和上例不是一模一樣，也不必擔心。每個 Linux 發行版
+定義的提示符稍微有點不同，其中一些相當異於尋常。</p>
+
+<hr />
+
+<p>From the results, we can see that PS1 contains a few of the characters we see in our
+prompt such as the brackets, the at-sign, and the dollar sign, but the rest are a mystery.
+The astute among us will recognize these as backslash-escaped special characters like
+those we saw in Chapter 8. Here is a partial list of the characters that the shell treats
+specially in the prompt string:</p>
+
+<p>從輸出結果中，我們看到那個 PS1 環境變數包含一些這樣的字元，比方說中括號，@符號，和美元符號，
+但是剩餘部分就是個謎。我們中一些機敏的人會把這些看作是由反斜槓轉義的特殊字元，就像我們
+在第八章中看到的一樣。這裡是一部分字元列表，在提示符中 shell 會特殊對待這些字元：</p>
+
+<table class="multi">
+<caption class="cap">Table 14-1: Escape Codes Used In Shell Prompts</caption>
+<tr>
+<th class="title">Sequence</th>
+<th class="title">Value Displayed</th>
+</tr>
+<tr>
+<td valign="top" width="20%">\a</td>
+<td valign="top">ASCII bell. This makes the computer beep when it is encountered.</td>
+</tr>
+<tr>
+<td valign="top">\d</td>
+<td valign="top">Current date in day, month, date format. For example, “Mon
+May 26."</td>
+</tr>
+<tr>
+<td valign="top">\h</td>
+<td valign="top">Host name of the local machine minus the trailing domain name.</td>
+</tr>
+<tr>
+<td valign="top">\H</td>
+<td valign="top">Full host name.</td>
+</tr>
+<tr>
+<td valign="top">\j</td>
+<td valign="top">Number of jobs running in the current shell session.</td>
+</tr>
+<tr>
+<td valign="top">\l</td>
+<td valign="top">Name of the current terminal device.</td>
+</tr>
+<tr>
+<td valign="top">\n</td>
+<td valign="top">A newline character.</td>
+</tr>
+<tr>
+<td valign="top">\r</td>
+<td valign="top">A carriage return.</td>
+</tr>
+<tr>
+<td valign="top">\s</td>
+<td valign="top">Name of the shell program.</td>
+</tr>
+<tr>
+<td valign="top">\t</td>
+<td valign="top">Current time in 24 hour hours:minutes:seconds format.
+</td>
+</tr>
+<tr>
+<td valign="top">\T</td>
+<td valign="top">Current time in 12 hour format.
+</td>
+</tr>
+<tr>
+<td valign="top">\@</td>
+<td valign="top">Current time in 12 hour AM/PM format.</td>
+</tr>
+<tr>
+<td valign="top">\A</td>
+<td valign="top">Current time in 24 hour hours:minutes format.</td>
+</tr>
+<tr>
+<td valign="top">\u</td>
+<td valign="top">User name of the current user.</td>
+</tr>
+<tr>
+<td valign="top">\v</td>
+<td valign="top">Version number of the shell.
+</td>
+</tr>
+<tr>
+<td valign="top">\V</td>
+<td valign="top">Version and release numbers of the shell.</td>
+</tr>
+<tr>
+<td valign="top">\w</td>
+<td valign="top">Name of the current working directory.
+</td>
+</tr>
+<tr>
+<td valign="top">\W</td>
+<td valign="top">Last part of the current working directory name.</td>
+</tr>
+<tr>
+<td valign="top">\!</td>
+<td valign="top">History number of the current command.
+</td>
+</tr>
+<tr>
+<td valign="top">\#</td>
+<td valign="top">Number of commands entered into this shell session.
+</td>
+</tr>
+<tr>
+<td valign="top">\$</td>
+<td valign="top">This displays a “$” character unless you have superuser privileges.
+In that case, it displays a “#” instead.
+</td>
+</tr>
+<tr>
+<td valign="top">\[</td>
+<td valign="top">Signals the start of a series of one or more non-printing characters.
+This is used to embed non-printing control characters which
+manipulate the terminal emulator in some way, such as moving the
+cursor or changing text colors.
+</td>
+</tr>
+<tr>
+<td valign="top">\]</td>
+<td valign="top">Signals the end of a non-printing character sequence.
+</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表14-1: Shell 提示符中用到的轉義字元</caption>
+<tr>
+<th class="title">序列</th>
+<th class="title">顯示值</th>
+</tr>
+<tr>
+<td valign="top" width="20%">\a</td>
+<td valign="top">以 ASCII 格式編碼的鈴聲 . 當遇到這個轉義序列時，計算機會發出嗡嗡的響聲。</td>
+</tr>
+<tr>
+<td valign="top">\d</td>
+<td valign="top">以日，月，天格式來表示當前日期。例如，“Mon May 26.”</td>
+</tr>
+<tr>
+<td valign="top">\h</td>
+<td valign="top">本地機的主機名，但不帶末尾的域名。</td>
+</tr>
+<tr>
+<td valign="top">\H</td>
+<td valign="top">完整的主機名。</td>
+</tr>
+<tr>
+<td valign="top">\j</td>
+<td valign="top">執行在當前 shell 會話中的工作數。</td>
+</tr>
+<tr>
+<td valign="top">\l</td>
+<td valign="top">當前終端裝置名。</td>
+</tr>
+<tr>
+<td valign="top">\n</td>
+<td valign="top">一個換行符。</td>
+</tr>
+<tr>
+<td valign="top">\r</td>
+<td valign="top">一個回車符。</td>
+</tr>
+<tr>
+<td valign="top">\s</td>
+<td valign="top">shell 程式名。</td>
+</tr>
+<tr>
+<td valign="top">\t</td>
+<td valign="top">以24小時制，hours:minutes:seconds 的格式表示當前時間.</td>
+</tr>
+<tr>
+<td valign="top">\T</td>
+<td valign="top">以12小時製表示當前時間。 </td>
+</tr>
+<tr>
+<td valign="top">\@</td>
+<td valign="top">以12小時制，AM/PM 格式來表示當前時間。</td>
+</tr>
+<tr>
+<td valign="top">\A</td>
+<td valign="top">以24小時制，hours:minutes 格式表示當前時間。</td>
+</tr>
+<tr>
+<td valign="top">\u</td>
+<td valign="top">當前使用者名稱。</td>
+</tr>
+<tr>
+<td valign="top">\v</td>
+<td valign="top">shell 程式的版本號。</td>
+</tr>
+<tr>
+<td valign="top">\V</td>
+<td valign="top">Version and release numbers of the shell.</td>
+</tr>
+<tr>
+<td valign="top">\w</td>
+<td valign="top">當前工作目錄名。</td>
+</tr>
+<tr>
+<td valign="top">\W</td>
+<td valign="top">當前工作目錄名的最後部分。</td>
+</tr>
+<tr>
+<td valign="top">\!</td>
+<td valign="top">當前命令的歷史號。
+</td>
+</tr>
+<tr>
+<td valign="top">\#</td>
+<td valign="top">當前 shell 會話中的命令數。
+</td>
+</tr>
+<tr>
+<td valign="top">\$</td>
+<td valign="top">這會顯示一個"$"字元，除非你擁有超級使用者許可權。在那種情況下，
+它會顯示一個"#"字元。</td>
+</tr>
+<tr>
+<td valign="top">\[</td>
+<td valign="top">標誌著一系列一個或多個非列印字元的開始。這被用來嵌入非列印
+的控制字元，這些字元以某種方式來操作終端模擬器，比方說移動游標或者是更改文字顏色。
+</td>
+</tr>
+<tr>
+<td valign="top">\]</td>
+<td valign="top">標誌著非列印字元序列結束。 </td>
+</tr>
+</table>
+
+<p>Trying Some Alternate Prompt Designs</p>
+
+<h3 id="試試一些可替代的提示符設計">試試一些可替代的提示符設計</h3>
+
+<p>With this list of special characters, we can change the prompt to see the effect. First,
+we’ll back up the existing string so we can restore it later. To do this, we will copy the
+existing string into another shell variable that we create ourselves:</p>
+
+<p>參照這個特殊字元列表，我們可以更改提示符來看一下效果。首先，
+我們把原來提示符字串的內容備份一下，以備之後恢復原貌。為了完成備份，
+我們把已有的字串複製到另一個 shell 變數中，這個變數是我們自己創造的。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ps1_old="$PS1"
+</code></pre></div></div>
+
+<p>We create a new variable called ps1_old and assign the value of PS1 to it. We can
+verify that the string has been copied with the echo command:</p>
+
+<p>我們新建立了一個叫做 ps1_old 的變數，並把變數 PS1的值賦 ps1_old。透過 echo 命令可以證明
+我們的確複製了 PS1的值。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo $ps1_old
+[\u@\h \W]\$
+</code></pre></div></div>
+
+<p>We can restore the original prompt at any time during our terminal session by simply
+reversing the process:</p>
+
+<p>在終端會話中，我們能在任一時間復原提示符，只要簡單地反向操作就可以了。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ PS1="$ps1_old"
+</code></pre></div></div>
+
+<p>Now that we are ready to proceed, Let's see what happens if we have an empty prompt
+string:</p>
+
+<p>現在，我們準備開始，讓我們看看如果有一個空的字串會發生什麼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ PS1=
+</code></pre></div></div>
+
+<p>If we assign nothing to the prompt string, we get nothing. No prompt string at all! The
+prompt is still there, but displays nothing, just as we asked it to. Since this is kind of
+disconcerting to look at, we’ll replace it with a minimal prompt:</p>
+
+<p>如果我們沒有給提示字串賦值，那麼我們什麼也得不到。根本沒有提示字串！提示符仍然在那裡，
+但是什麼也不顯示，正如我們所要求的那樣。我們將用一個最小的提示符來代替它：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PS1="\$ "
+</code></pre></div></div>
+
+<p>That’s better. At least now we can see what we are doing. Notice the trailing space
+within the double quotes. This provides the space between the dollar sign and the cursor
+when the prompt is displayed.</p>
+
+<p>這樣要好一些。至少能看到我們在做什麼。注意雙引號中末尾的空格。當提示符顯示的時候，
+這個空格把美元符號和游標分離開。</p>
+
+<p>Let's add a bell to our prompt:</p>
+
+<p>在提示符中新增一個響鈴：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ PS1="\a\$ "
+</code></pre></div></div>
+
+<p>Now we should hear a beep each time the prompt is displayed. This could get annoying,
+but it might be useful if we needed notification when an especially long-running
+command has been executed.</p>
+
+<p>現在每次提示符顯示的時候，我們應該能聽到嗡嗡聲。這會變得很煩人，但是它可能會
+很有用，特別是當一個需要執行很長時間的命令執行完後，我們要得到通知。</p>
+
+<p>Next, Let's try to make an informative prompt with some host name and time-of-day
+information:</p>
+
+<p>下一步，讓我們試著建立一個資訊豐富的提示符，包含主機名和當天時間的資訊。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ PS1="\A \h \$ "
+17:33 linuxbox $
+</code></pre></div></div>
+
+<p>Try out the other sequences listed in the table above and see if you can come up with a
+brilliant new prompt.</p>
+
+<p>試試其他上表中列出的轉義序列，看看你能否想出精彩的新提示符。</p>
+
+<p>Adding Color</p>
+
+<h3 id="新增顏色">新增顏色</h3>
+
+<p>Most terminal emulator programs respond to certain non-printing character sequences to
+control such things as character attributes (like color, bold text and the dreaded blinking
+text) and cursor position. We’ll cover cursor position in a little bit, but first we’ll look at
+color.</p>
+
+<p>大多數終端模擬器程式支援一定的非列印字元序列來控制，比方說字元屬性（像顏色，黑體和可怕的閃爍）
+和游標位置。我們會更深入地討論游標位置，但首先我們要看一下字型顏色。</p>
+
+<blockquote>
+  <p>Terminal Confusion</p>
+
+  <p>混亂的終端時代</p>
+
+  <p>Back in ancient times, when terminals were hooked to remote computers, there
+were many competing brands of terminals and they all worked differently. They
+had different keyboards and they all had different ways of interpreting control
+information. Unix and Unix-like systems have two rather complex subsystems to
+deal with the babel of terminal control (called termcap and terminfo). If
+you look in the deepest recesses of your terminal emulator settings you may find
+a setting for the type of terminal emulation.</p>
+
+  <p>回溯到終端連線到遠端計算機的時代，有許多競爭的終端品牌，它們各自工作不同。
+它們有著不同的鍵盤，以不同的方式來解釋控制資訊。Unix 和類別 Unix 的系統有兩個
+相當複雜的子系統來處理終端控制領域的混亂局面（稱為 termcap 和 terminfo）。如果你
+檢視一下終端模擬器最底層的屬性設定，可能會找到一個關於終端模擬器型別的設定。</p>
+
+  <p>In an effort to make terminals speak some sort of common language, the
+American National Standards Institute (ANSI) developed a standard set of
+character sequences to control video terminals. Old time DOS users will
+remember the ANSI.SYS file that was used to enable interpretation of these
+codes.</p>
+
+  <p>為了努力使所有的終端都講某種通用語言，美國國家標準委員會（ANSI）制定了
+一套標準的字元序列集合來控制視訊終端。原先 DOS 使用者會記得 ANSI.SYS 檔案，
+這是一個用來使這些編碼解釋生效的檔案。</p>
+</blockquote>
+
+<p>Character color is controlled by sending the terminal emulator an ANSI escape code
+embedded in the stream of characters to be displayed. The control code does not “print
+out” on the display, rather it is interpreted by the terminal as an instruction. As we saw in
+the table above, the [ and ] sequences are used to encapsulate non-printing characters.
+An ANSI escape code begins with an octal 033 (the code generated by the escape key)
+followed by an optional character attribute followed by an instruction. For example, the
+code to set the text color to normal (attribute = 0), black text is:</p>
+
+<p>字元顏色是由傳送到終端模擬器的一個嵌入到了要顯示的字元流中的 ANSI 轉義編碼來控制的。
+這個控制編碼不會“列印”到螢幕上，而是被終端解釋為一個指令。正如我們在上表看到的字元序列，
+這個 [ 和 ] 序列被用來封裝這些非列印字元。一個 ANSI 轉義編碼以一個八進位制033（這個編碼是由
+退出按鍵產生的）開頭，其後跟著一個可選的字元屬性，在之後是一個指令。例如，把文字顏色
+設為正常（attribute = 0），黑色文字的編碼如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\033[0;30m
+</code></pre></div></div>
+
+<p>Here is a table of available text colors. Notice that the colors are divided into two groups,
+differentiated by the application of the bold character attribute (1) which creates the
+appearance of “light” colors:</p>
+
+<p>這裡是一個可用的文字顏色列表。注意這些顏色被分為兩組，由應用程式粗體字元屬性（1）
+分化開來，這個屬性可以描繪出“淺”色文字。</p>
+
+<table class="multi">
+<caption class="cap">Table 14-2: Escape Sequences Used To Set Text Colors</caption>
+<tr>
+<th class="title">Sequence</th>
+<th class="title">Text Color</th>
+<th class="title">Sequence</th>
+<th class="title">Text Color</th>
+</tr>
+<tr>
+<td valign="top">\033[0;30m</td>
+<td valign="top">Black</td>
+<td valign="top">\033[1;30m </td>
+<td valign="top">Dark Gray</td>
+</tr>
+<tr>
+<td valign="top">\033[0;31m</td>
+<td valign="top">Red</td>
+<td valign="top">\033[1;31m </td>
+<td valign="top">Light Red</td>
+</tr>
+<tr>
+<td valign="top">\033[0;32m </td>
+<td valign="top">Green</td>
+<td valign="top">\033[1;32m </td>
+<td valign="top">Light Green</td>
+</tr>
+<tr>
+<td valign="top">\033[0;33m </td>
+<td valign="top">Brown</td>
+<td valign="top">\033[1;33m </td>
+<td valign="top">Yellow</td>
+</tr>
+<tr>
+<td valign="top">\033[0;34m </td>
+<td valign="top">Blue</td>
+<td valign="top">\033[1;34m </td>
+<td valign="top">Light Blue</td>
+</tr>
+<tr>
+<td valign="top">\033[0;35m </td>
+<td valign="top">Purple</td>
+<td valign="top">\033[1;35m </td>
+<td valign="top">Light Purple</td>
+</tr>
+<tr>
+<td valign="top">\033[0;36m </td>
+<td valign="top">Cyan</td>
+<td valign="top">\033[1;36m </td>
+<td valign="top">Light Cyan</td>
+</tr>
+<tr>
+<td valign="top">\033[0;37m </td>
+<td valign="top">Light Gray</td>
+<td valign="top">\033[1;37m </td>
+<td valign="top">White</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表14-2: 用轉義序列來設定文字顏色</caption>
+<tr>
+<th class="title">序列</th>
+<th class="title">文字顏色</th>
+<th class="title">序列</th>
+<th class="title">文字顏色</th>
+</tr>
+<tr>
+<td valign="top">\033[0;30m</td>
+<td valign="top">黑色</td>
+<td valign="top">\033[1;30m </td>
+<td valign="top">深灰色</td>
+</tr>
+<tr>
+<td valign="top">\033[0;31m</td>
+<td valign="top">紅色</td>
+<td valign="top">\033[1;31m </td>
+<td valign="top">淺紅色</td>
+</tr>
+<tr>
+<td valign="top">\033[0;32m </td>
+<td valign="top">綠色</td>
+<td valign="top">\033[1;32m </td>
+<td valign="top">淺綠色</td>
+</tr>
+<tr>
+<td valign="top">\033[0;33m </td>
+<td valign="top">棕色</td>
+<td valign="top">\033[1;33m </td>
+<td valign="top">黃色</td>
+</tr>
+<tr>
+<td valign="top">\033[0;34m </td>
+<td valign="top">藍色</td>
+<td valign="top">\033[1;34m </td>
+<td valign="top">淺藍色</td>
+</tr>
+<tr>
+<td valign="top">\033[0;35m </td>
+<td valign="top">粉紅</td>
+<td valign="top">\033[1;35m </td>
+<td valign="top">淺粉色</td>
+</tr>
+<tr>
+<td valign="top">\033[0;36m </td>
+<td valign="top">青色</td>
+<td valign="top">\033[1;36m </td>
+<td valign="top">淺青色</td>
+</tr>
+<tr>
+<td valign="top">\033[0;37m </td>
+<td valign="top">淺灰色</td>
+<td valign="top">\033[1;37m </td>
+<td valign="top">白色</td>
+</tr>
+</table>
+
+<p>Let's try to make a red prompt. We’ll insert the escape code at the beginning:</p>
+
+<p>讓我們試著製作一個紅色提示符。我們將在開頭加入轉義編碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;me@linuxbox ~&gt;$ PS1='\[\033[0;31m\]&lt;\u@\h \W&gt;\$'
+&lt;me@linuxbox ~&gt;$
+</code></pre></div></div>
+
+<p>That works, but notice that all the text that we type after the prompt is also red. To fix
+this, we will add another escape code to the end of the prompt that tells the terminal
+emulator to return to the previous color:</p>
+
+<p>我們的提示符生效了，但是注意我們在提示符之後輸入的文字也是紅色的。為了修改這個問題，
+我們將新增另一個轉義編碼到這個提示符的末尾來告訴終端模擬器恢復到原來的顏色。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;me@linuxbox ~&gt;$ PS1='\[\033[0;31m\]&lt;\u@\h \W&gt;\$\[\033[0m\]'
+&lt;me@linuxbox ~&gt;$
+</code></pre></div></div>
+
+<p>That’s better!</p>
+
+<p>這看起來要好些！</p>
+
+<p>It’s also possible to set the text background color using the codes listed below. The
+background colors do not support the bold attribute.</p>
+
+<p>也有可能要設定文字的背景顏色，使用下面列出的轉義編碼。這個背景顏色不支援黑體屬性。</p>
+
+<table class="multi">
+<caption class="cap">Table 14-3: Escape Sequences Used To Set Background Color</caption>
+<tr>
+<td valign="top">\033[0;40m </td>
+<td valign="top">Blue</td>
+<td valign="top">\033[1;44m </td>
+<td valign="top">Black</td>
+</tr>
+<tr>
+<td valign="top">\033[0;41m </td>
+<td valign="top">Red</td>
+<td valign="top">\033[1;45m </td>
+<td valign="top">Purple</td>
+</tr>
+<tr>
+<td valign="top">\033[0;42m </td>
+<td valign="top">Green</td>
+<td valign="top">\033[1;46m </td>
+<td valign="top">Cyan</td>
+</tr>
+<tr>
+<td valign="top">\033[0;43m </td>
+<td valign="top">Brown</td>
+<td valign="top">\033[1;47m </td>
+<td valign="top">Light Gray</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表14-3: 用轉義序列來設定背景顏色</caption>
+<tr>
+<td valign="top">\033[0;40m </td>
+<td valign="top">藍色</td>
+<td valign="top">\033[1;44m </td>
+<td valign="top">黑色</td>
+</tr>
+<tr>
+<td valign="top">\033[0;41m </td>
+<td valign="top">紅色</td>
+<td valign="top">\033[1;45m </td>
+<td valign="top">紫色</td>
+</tr>
+<tr>
+<td valign="top">\033[0;42m </td>
+<td valign="top">綠色</td>
+<td valign="top">\033[1;46m </td>
+<td valign="top">青色</td>
+</tr>
+<tr>
+<td valign="top">\033[0;43m </td>
+<td valign="top">棕色</td>
+<td valign="top">\033[1;47m </td>
+<td valign="top">淺灰色</td>
+</tr>
+</table>
+
+<p>We can create a prompt with a red background by applying a simple change to the first
+escape code:</p>
+
+<p>我們可以建立一個帶有紅色背景的提示符，只是對第一個轉義編碼做個簡單的修改。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;me@linuxbox ~&gt;$ PS1='\[\033[0;41m\]&lt;\u@\h \W&gt;\$\[\033[0m\] '
+&lt;me@linuxbox ~&gt;$
+</code></pre></div></div>
+
+<p>Try out the color codes and see what you can create!</p>
+
+<p>試試這些顏色編碼，看看你能訂製出怎樣的提示符！</p>
+
+<hr />
+
+<p>Note: Besides the normal (0) and bold (1) character attributes, text may also be
+given underscore (4), blinking (5), and inverse (7) attributes as well. In the
+interests of good taste, many terminal emulators refuse to honor the blinking
+attribute, however.</p>
+
+<p>注意：除了正常的 (0) 和黑體 (1) 字元屬性之外，文字也可以具有下劃線 (4)，閃爍 (5)，
+和反向 (7) 屬性。為了擁有好品味，然而，許多終端模擬器拒絕使用這個閃爍屬性。</p>
+
+<hr />
+
+<p>Moving The Cursor</p>
+
+<h3 id="移動游標">移動游標</h3>
+
+<p>Escape codes can be used to position the cursor. This is commonly used to provide a
+clock or some other kind of information at a different location on the screen such as an
+upper corner each time the prompt is drawn. Here is a list of the escape codes that
+position the cursor:</p>
+
+<p>轉義編碼也可以用來定位游標。這些編碼被普遍地用來，每次當提示符出現的時候，會在螢幕的不同位置
+比如說上面一個角落，顯示一個時鐘或者其它一些資訊。這裡是一系列用來定位游標的轉義編碼：</p>
+
+<table class="multi">
+<caption class="cap">Table 14-4: Cursor Movement Escape Sequences</caption>
+<tr>
+<th class="title">Escape Code</th>
+<th class="title">Action</th>
+</tr>
+<tr>
+<td valign="top" width="25%">\033[l;cH </td>
+<td valign="top">Move the cursor to line l and column c.  </td>
+</tr>
+<tr>
+<td valign="top">\033[nA </td>
+<td valign="top">Move the cursor up n lines.  </td>
+</tr>
+<tr>
+<td valign="top">\033[nB </td>
+<td valign="top">Move the cursor down n lines.  </td>
+</tr>
+<tr>
+<td valign="top">\033[nC </td>
+<td valign="top">Move the cursor forward n characters.  </td>
+</tr>
+<tr>
+<td valign="top">\033[nD </td>
+<td valign="top">Move the cursor backward n characters.  </td>
+</tr>
+<tr>
+<td valign="top">\033[2J </td>
+<td valign="top">Clear the screen and move the cursor to the upper left corner (line
+0, column 0).
+</td>
+</tr>
+<tr>
+<td valign="top">\033[K </td>
+<td valign="top">Clear from the cursor position to the end of the current line.  </td>
+</tr>
+<tr>
+<td valign="top">\033[s </td>
+<td valign="top">Store the current cursor position.  </td>
+</tr>
+<tr>
+<td valign="top">\033[u </td>
+<td valign="top">Recall the stored cursor position.  </td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表14-4: 游標移動轉義序列</caption>
+<tr>
+<th class="title">轉義編碼</th>
+<th class="title">行動</th>
+</tr>
+<tr>
+<td valign="top" width="25%">\033[l;cH </td>
+<td valign="top">把游標移到第 l 行，第 c 列。</td>
+</tr>
+<tr>
+<td valign="top">\033[nA </td>
+<td valign="top">把游標向上移動 n 行。</td>
+</tr>
+<tr>
+<td valign="top">\033[nB </td>
+<td valign="top">把游標向下移動 n 行。</td>
+</tr>
+<tr>
+<td valign="top">\033[nC </td>
+<td valign="top">把游標向前移動 n 個字元。</td>
+</tr>
+<tr>
+<td valign="top">\033[nD </td>
+<td valign="top">把游標向後移動 n 個字元。</td>
+</tr>
+<tr>
+<td valign="top">\033[2J </td>
+<td valign="top">清空螢幕，把游標移到左上角（第零行，第零列）。</td>
+</tr>
+<tr>
+<td valign="top">\033[K </td>
+<td valign="top">清空從游標位置到當前行末的內容。</td>
+</tr>
+<tr>
+<td valign="top">\033[s </td>
+<td valign="top">儲存當前游標位置。</td>
+</tr>
+<tr>
+<td valign="top">\033[u </td>
+<td valign="top">喚醒之前儲存的游標位置。</td>
+</tr>
+</table>
+
+<p>Using the codes above, we’ll construct a prompt that draws a red bar at the top of the
+screen containing a clock (rendered in yellow text) each time the prompt is displayed.
+The code for the prompt is this formidable looking string:</p>
+
+<p>使用上面的編碼，我們將建構一個提示符，每次當這個提示符出現的時候，會在螢幕的上方畫出一個
+包含時鐘（由黃色文字渲染）的紅色長條。建構好的提示符的編碼就是這串看起來令人敬畏的字串：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PS1='\[\033[s\033[0;0H\033[0;41m\033[K\033[1;33m\t\033[0m\033[u\]
+&lt;\u@\h \W&gt;\$ '
+</code></pre></div></div>
+
+<p>Let's take a look at each part of the string to see what it does:</p>
+
+<p>讓我們分別看一下這個字串的每一部分所表示的意思：</p>
+
+<table class="multi">
+<tr>
+<th class="title">Squence</th>
+<th class="title">Action</th>
+</tr>
+<tr>
+<td valign="top" width="25%">\[</td>
+<td valign="top">Begins a non-printing character sequence. The real purpose of
+this is to allow bash to correctly calculate the size of the
+visible prompt. Without this, command line editing features
+will improperly position the cursor.  </td>
+</tr>
+<tr>
+<td valign="top">\033[s </td>
+<td valign="top">Store the cursor position. This is needed to return to the prompt
+location after the bar and clock have been drawn at the top of
+the screen. Be aware that some terminal emulators do not
+honor this code.  </td>
+</tr>
+<tr>
+<td valign="top">\033[0;0H </td>
+<td valign="top">Move the cursor to the upper left corner, which is line zero,
+column zero.  </td>
+</tr>
+<tr>
+<td valign="top">\033[0;41m </td>
+<td valign="top">Set the background color to red.  </td>
+</tr>
+<tr>
+<td valign="top">\033[K </td>
+<td valign="top">Clear from the current cursor location (the top left corner) to
+the end of the line. Since the background color is now red, the
+line is cleared to that color creating our bar. Note that clearing
+to the end of the line does not change the cursor position, which
+remains at the upper left corner.
+</td>
+</tr>
+<tr>
+<td valign="top">\033[1;33m </td>
+<td valign="top">Set the text color to yellow.  </td>
+</tr>
+<tr>
+<td valign="top">\t </td>
+<td valign="top">Display the current time. While this is a “printing” element, we
+still include it in the non-printing portion of the prompt, since
+we don't want bash to include the clock when calculating the
+true size of the displayed prompt.  </td>
+</tr>
+<tr>
+<td valign="top">\033[0m </td>
+<td valign="top">Turn off color. This affects both the text and background.  </td>
+</tr>
+<tr>
+<td valign="top">\033[u </td>
+<td valign="top">Restore the cursor position saved earlier.  </td>
+</tr>
+<tr>
+<td valign="top">\] </td>
+<td valign="top">End non-printing characters sequence.  </td>
+</tr>
+<tr>
+<td valign="top">&lt;\u@\h \W&gt;\$ </td>
+<td valign="top">Prompt string.</td>
+</tr>
+</table>
+
+<table class="multi">
+<tr>
+<th class="title">序列</th>
+<th class="title">行動</th>
+</tr>
+<tr>
+<td valign="top" width="25%">\[</td>
+<td valign="top">開始一個非列印字元序列。其真正的目的是為了讓 bash
+能夠正確地計算提示符的大小。如果沒有這個轉義字元的話，命令列編輯
+功能會弄錯游標的位置。</td>
+</tr>
+<tr>
+<td valign="top">\033[s </td>
+<td valign="top">儲存游標位置。這個用來使游標能回到原來提示符的位置，
+當長條和時鐘顯示到螢幕上方之後。當心一些
+終端模擬器不推崇這個編碼。</td>
+</tr>
+<tr>
+<td valign="top">\033[0;0H </td>
+<td valign="top"> 把游標移到螢幕左上角，也就是第零行，第零列的位置。 </td>
+</tr>
+<tr>
+<td valign="top">\033[0;41m </td>
+<td valign="top">把背景設定為紅色。</td>
+</tr>
+<tr>
+<td valign="top">\033[K </td>
+<td valign="top">清空從當前游標位置到行末的內容。因為現在
+背景顏色是紅色，則被清空行背景成為紅色，以此來建立長條。注意雖然一直清空到行末，
+但是不改變游標位置，它仍然在螢幕左上角。</td>
+</tr>
+<tr>
+<td valign="top">\033[1;33m </td>
+<td valign="top">把文字顏色設為黃色。</td>
+</tr>
+<tr>
+<td valign="top">\t </td>
+<td valign="top">顯示當前時間。雖然這是一個可“列印”的元素，但我們仍把它包含在提示符的非列印部分，
+因為我們不想 bash 在計算可見提示符的真正大小時包括這個時鐘在內。</td>
+</tr>
+<tr>
+<td valign="top">\033[0m </td>
+<td valign="top">關閉顏色設定。這對文字和背景都起作用。</td>
+</tr>
+<tr>
+<td valign="top">\033[u </td>
+<td valign="top">恢復到之前儲存過的游標位置處。</td>
+</tr>
+<tr>
+<td valign="top">\] </td>
+<td valign="top">結束非列印字元序列。</td>
+</tr>
+<tr>
+<td valign="top">&lt;\u@\h \W&gt;\$ </td>
+<td valign="top">提示符字串。</td>
+</tr>
+</table>
+
+<p>Saving The Prompt</p>
+
+<h3 id="儲存提示符">儲存提示符</h3>
+
+<p>Obviously, we don’t want to be typing that monster all the time, so we’ll want to store our
+prompt someplace. We can make the prompt permanent by adding it to our .bashrc
+file. To do so, add these two lines to the file:</p>
+
+<p>顯然地，我們不想總是敲入那個怪物，所以我們將要把這個提示符儲存在某個地方。透過把它
+新增到我們的.bashrc 檔案，可以使這個提示符永久存在。為了達到目的，把下面這兩行新增到.bashrc 檔案中。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PS1='\[\033[s\033[0;0H\033[0;41m\033[K\033[1;33m\t\033[0m\033[u\]&lt;\u@\h \W&gt;\$ '
+export PS1
+</code></pre></div></div>
+
+<p>Summing Up</p>
+
+<h3 id="總結歸納">總結歸納</h3>
+
+<p>Believe it or not, there is much more that can be done with prompts involving shell
+functions and scripts that we haven’t covered here, but this is a good start. Not everyone
+will care enough to change the prompt, since the default prompt is usually satisfactory.
+But for those of us who like to tinker, the shell provides the opportunity for many hours
+of trivial fun.</p>
+
+<p>不管你信不信，如果加上我們在這裡沒有論及的 shell 函式和指令碼，還有許多事情可以由提示符來完成。
+但這是一個好的開始。並不是每個人都會花心思來更改提示符，因為通常預設的提示符就很讓人滿意。
+但是對於我們這些喜歡思考的人們來說，shell 卻提供了許多製造瑣碎樂趣的機會。</p>
+
+<p>Further Reading</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The Bash Prompt HOWTO from the Linux Documentation Project provides a
+pretty complete discussion of what the shell prompt can be made to do. It is
+available at:</p>
+  </li>
+  <li>
+    <p>The Bash Prompt HOWTO 來自於 Linux 文件工程，對 shell 提示符的用途進行了相當
+完備的論述。可在以下連結中得到：</p>
+
+    <p><a href="http://tldp.org/HOWTO/Bash-Prompt-HOWTO/">http://tldp.org/HOWTO/Bash-Prompt-HOWTO/</a></p>
+  </li>
+  <li>
+    <p>Wikipedia has a good article on the ANSI Escape Codes:</p>
+  </li>
+  <li>
+    <p>Wikipedia 上有一篇關於 ANSI Escape Codes 的好文章：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/ANSI_escape_code">http://en.wikipedia.org/wiki/ANSI_escape_code</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

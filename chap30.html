@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">流程控制：while/until 迴圈</h1><br>
+<p>In the previous chapter, we developed a menu-driven program to produce various kinds
+of system information. The program works, but it still has a significant usability
+problem. It only executes a single choice and then terminates. Even worse, if an invalid
+selection is made, the program terminates with an error, without giving the user an
+opportunity to try again. It would be better if we could somehow construct the program
+so that it could repeat the menu display and selection over and over, until the user
+chooses to exit the program.</p>
+
+<p>在前面的章節中，我們開發了選單驅動程式，來產生各種各樣的系統資訊。雖然程式能夠執行，
+但它仍然存在重大的可用性問題。它只能執行單一的選擇，然後終止。更糟糕地是，如果做了一個
+無效的選擇，程式會以錯誤終止，而沒有給使用者提供再試一次的機會。如果我們能建構程式，
+以致於程式能夠重複顯示選單，而且能一次又一次的選擇，直到使用者選擇退出程式，這樣的程式會更好一些。</p>
+
+<p>In this chapter, we will look at a programming concept called looping, which can be used
+to make portions of programs repeat. The shell provides three compound commands for
+looping. We will look at two of them in this chapter, and the third in a later one.</p>
+
+<p>在這一章中，我們將看一個叫做迴圈的程式概念，其可用來使程式的某些部分重複。shell 為迴圈提供了三個複合命令。
+本章我們將檢視其中的兩個命令，隨後章節介紹第三個命令。</p>
+
+<h3 id="迴圈">迴圈</h3>
+
+<p>Daily life is full of repeated activities. Going to work each day, walking the dog, slicing
+a carrot are all tasks that involve repeating a series of steps. Let's consider slicing a
+carrot. If we express this activity in pseudocode, it might look something like this:</p>
+
+<p>日常生活中充滿了重複性的活動。每天去散步，遛狗，切胡蘿蔔，所有任務都要重複一系列的步驟。
+讓我們以切胡蘿蔔為例。如果我們用偽碼錶達這種活動，它可能看起來像這樣：</p>
+
+<ol>
+  <li>
+    <p>get cutting board</p>
+  </li>
+  <li>
+    <p>get knife</p>
+  </li>
+  <li>
+    <p>place carrot on cutting board</p>
+  </li>
+  <li>
+    <p>lift knife</p>
+  </li>
+  <li>
+    <p>advance carrot</p>
+  </li>
+  <li>
+    <p>slice carrot</p>
+  </li>
+  <li>
+    <p>if entire carrot sliced, then quit, else go to step 4</p>
+  </li>
+</ol>
+<ol>
+  <li>
+    <p>準備切菜板</p>
+  </li>
+  <li>
+    <p>準備菜刀</p>
+  </li>
+  <li>
+    <p>把胡蘿蔔放到切菜板上</p>
+  </li>
+  <li>
+    <p>提起菜刀</p>
+  </li>
+  <li>
+    <p>向前推進胡蘿蔔</p>
+  </li>
+  <li>
+    <p>切胡蘿蔔</p>
+  </li>
+  <li>
+    <p>如果切完整個胡蘿蔔，就退出，要不然回到第四步繼續執行</p>
+  </li>
+</ol>
+
+<p>Steps 4 through 7 form a loop. The actions within the loop are repeated until the
+condition, “entire carrot sliced,” is reached.</p>
+
+<p>從第四步到第七步形成一個迴圈。重複執行迴圈內的動作直到滿足條件“切完整個胡蘿蔔”。</p>
+
+<h4 id="while">while</h4>
+
+<p>bash can express a similar idea. Let's say we wanted to display five numbers in
+sequential order from one to five. a bash script could be constructed as follows:</p>
+
+<p>bash 能夠表達相似的想法。比方說我們想要按照順序從1到5顯示五個數字。可如下構造一個 bash 指令碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># while-count: display a series of numbers</span>
+<span class="nv">count</span><span class="o">=</span>1
+<span class="k">while</span> <span class="o">[</span> <span class="nv">$count</span> <span class="nt">-le</span> 5 <span class="o">]</span><span class="p">;</span> <span class="k">do
+    </span><span class="nb">echo</span> <span class="nv">$count</span>
+    <span class="nv">count</span><span class="o">=</span><span class="k">$((</span>count <span class="o">+</span> <span class="m">1</span><span class="k">))</span>
+<span class="k">done
+</span><span class="nb">echo</span> <span class="s2">"Finished."</span>
+</code></pre></div></div>
+
+<p>When executed, this script displays the following:</p>
+
+<p>當執行的時候，這個指令碼顯示如下資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ while-count
+1
+2
+3
+4
+5
+Finished.
+</code></pre></div></div>
+
+<p>The syntax of the <code class="highlighter-rouge">while</code> command is:</p>
+
+<p>while 命令的語法是：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>while commands; do commands; done
+</code></pre></div></div>
+
+<p>Like <code class="highlighter-rouge">if</code>, <code class="highlighter-rouge">while</code> evaluates the exit status of a list of commands. As long as the exit status
+is zero, it performs the commands inside the loop. In the script above, the variable
+<code class="highlighter-rouge">count</code> is created and assigned an initial value of 1. The <code class="highlighter-rouge">while</code> command evaluates the
+exit status of the <code class="highlighter-rouge">test</code> command. As long as the <code class="highlighter-rouge">test</code> command returns an exit status
+of zero, the commands within the loop are executed. At the end of each cycle, the test
+command is repeated. After six iterations of the loop, the value of <code class="highlighter-rouge">count</code> has increased
+to six, the <code class="highlighter-rouge">test</code> command no longer returns an exit status of zero and the loop
+terminates. The program continues with the next statement following the loop.</p>
+
+<p>和 if 一樣， while 計算一系列命令的退出狀態。只要退出狀態為零，它就執行迴圈內的命令。
+在上面的指令碼中，建立了變數 count ，並初始化為1。 while 命令將會計算 test 命令的退出狀態。
+只要 test 命令返回退出狀態零，迴圈內的所有命令就會執行。每次迴圈結束之後，會重複執行 test 命令。
+第六次迴圈之後， count 的數值增加到6， test 命令不再返回退出狀態零，且迴圈終止。
+程式繼續執行迴圈之後的語句。</p>
+
+<p>We can use a <code class="highlighter-rouge">while</code> loop to improve the read-menu program from the previous chapter:</p>
+
+<p>我們可以使用一個 while 迴圈，來提高前面章節的 read-menu 程式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># while-menu: a menu driven system information program</span>
+<span class="nv">DELAY</span><span class="o">=</span>3 <span class="c"># Number of seconds to display results</span>
+<span class="k">while</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">!=</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">do
+    </span>clear
+    <span class="nb">cat</span> <span class="o">&lt;&lt;-</span> <span class="no">_EOF_</span><span class="sh">
+        Please Select:
+        1. Display System Information
+        2. Display Disk Space
+        3. Display Home Space Utilization
+        0. Quit
+</span><span class="no">    _EOF_
+</span>    <span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Enter selection [0-3] &gt; "</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">=</span>~ ^[0-3]<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+        if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 1 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"Hostname: </span><span class="nv">$HOSTNAME</span><span class="s2">"</span>
+            uptime
+            sleep <span class="nv">$DELAY</span>
+        <span class="k">fi
+        if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 2 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            </span>df <span class="nt">-h</span>
+            sleep <span class="nv">$DELAY</span>
+        <span class="k">fi
+        if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 3 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            if</span> <span class="o">[[</span> <span class="k">$(</span>id <span class="nt">-u</span><span class="k">)</span> <span class="nt">-eq</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+                </span><span class="nb">echo</span> <span class="s2">"Home Space Utilization (All Users)"</span>
+                du <span class="nt">-sh</span> /home/<span class="k">*</span>
+            <span class="k">else
+                </span><span class="nb">echo</span> <span class="s2">"Home Space Utilization (</span><span class="nv">$USER</span><span class="s2">)"</span>
+                du <span class="nt">-sh</span> <span class="nv">$HOME</span>
+            <span class="k">fi
+            </span>sleep <span class="nv">$DELAY</span>
+        <span class="k">fi
+    else
+        </span><span class="nb">echo</span> <span class="s2">"Invalid entry."</span>
+        sleep <span class="nv">$DELAY</span>
+    <span class="k">fi
+done
+</span><span class="nb">echo</span> <span class="s2">"Program terminated."</span>
+</code></pre></div></div>
+
+<p>By enclosing the menu in a <code class="highlighter-rouge">while</code> loop, we are able to have the program repeat the menu
+display after each selection. The loop continues as long as <code class="highlighter-rouge">REPLY</code> is not equal to “0” and
+the menu is displayed again, giving the user the opportunity to make another selection.
+At the end of each action, a <code class="highlighter-rouge">sleep</code> command is executed so the program will pause for a
+few seconds to allow the results of the selection to be seen before the screen is cleared
+and the menu is redisplayed. Once <code class="highlighter-rouge">REPLY</code> is equal to “0,” indicating the “quit” selection,
+the loop terminates and execution continues with the line following <code class="highlighter-rouge">done</code>.</p>
+
+<p>透過把選單包含在 while 迴圈中，每次使用者選擇之後，我們能夠讓程式重複顯示選單。只要 REPLY 不
+等於”0”，迴圈就會繼續，選單就能顯示，從而使用者有機會重新選擇。每次動作完成之後，會執行一個
+ sleep 命令，所以在清空螢幕和重新顯示選單之前，程式將會停頓幾秒鐘，為的是能夠看到選項輸出結果。
+一旦 REPLY 等於“0”，則表示選擇了“退出”選項，迴圈就會終止，程式繼續執行 done 語句之後的程式碼。</p>
+
+<h3 id="跳出迴圈">跳出迴圈</h3>
+
+<p>bash provides two builtin commands that can be used to control program flow inside
+loops. The <code class="highlighter-rouge">break</code> command immediately terminates a loop, and program control
+resumes with the next statement following the loop. The <code class="highlighter-rouge">continue</code> command causes
+the remainder to the loop to be skipped, and program control resumes with the next
+iteration of the loop. Here we see a version of the while-menu program incorporating
+both <code class="highlighter-rouge">break</code> and <code class="highlighter-rouge">continue</code>:</p>
+
+<p>bash 提供了兩個內部命令，它們可以用來在迴圈內部控制程式流程。 break 命令立即終止一個迴圈，
+且程式繼續執行迴圈之後的語句。 continue 命令導致程式跳過迴圈中剩餘的語句，且程式繼續執行
+下一次迴圈。這裡我們看看採用了 break 和 continue 兩個命令的 while-menu 程式版本：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># while-menu2: a menu driven system information program</span>
+<span class="nv">DELAY</span><span class="o">=</span>3 <span class="c"># Number of seconds to display results</span>
+<span class="k">while </span><span class="nb">true</span><span class="p">;</span> <span class="k">do
+    </span>clear
+    <span class="nb">cat</span> <span class="o">&lt;&lt;-</span> <span class="no">_EOF_</span><span class="sh">
+        Please Select:
+        1. Display System Information
+        2. Display Disk Space
+        3. Display Home Space Utilization
+        0. Quit
+</span><span class="no">    _EOF_
+</span>    <span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Enter selection [0-3] &gt; "</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">=</span>~ ^[0-3]<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+        if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 1 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"Hostname: </span><span class="nv">$HOSTNAME</span><span class="s2">"</span>
+            uptime
+            sleep <span class="nv">$DELAY</span>
+            <span class="k">continue
+        fi
+        if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 2 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            </span>df <span class="nt">-h</span>
+            sleep <span class="nv">$DELAY</span>
+            <span class="k">continue
+        fi
+        if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 3 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            if</span> <span class="o">[[</span> <span class="k">$(</span>id <span class="nt">-u</span><span class="k">)</span> <span class="nt">-eq</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+                </span><span class="nb">echo</span> <span class="s2">"Home Space Utilization (All Users)"</span>
+                du <span class="nt">-sh</span> /home/<span class="k">*</span>
+            <span class="k">else
+                </span><span class="nb">echo</span> <span class="s2">"Home Space Utilization (</span><span class="nv">$USER</span><span class="s2">)"</span>
+                du <span class="nt">-sh</span> <span class="nv">$HOME</span>
+            <span class="k">fi
+            </span>sleep <span class="nv">$DELAY</span>
+            <span class="k">continue
+        fi
+        if</span> <span class="o">[[</span> <span class="nv">$REPLY</span> <span class="o">==</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">break
+        </span><span class="k">fi
+    else
+        </span><span class="nb">echo</span> <span class="s2">"Invalid entry."</span>
+        sleep <span class="nv">$DELAY</span>
+    <span class="k">fi
+done
+</span><span class="nb">echo</span> <span class="s2">"Program terminated."</span>
+</code></pre></div></div>
+
+<p>In this version of the script, we set up an endless loop (one that never terminates on its
+own) by using the true command to supply an exit status to while. Since true will
+always exit with a exit status of zero, the loop will never end. This is a surprisingly
+common scripting technique. Since the loop will never end on its own, it’s up to the
+programmer to provide some way to break out of the loop when the time is right. In this
+script, the <code class="highlighter-rouge">break</code> command is used to exit the loop when the “0” selection is chosen.
+The <code class="highlighter-rouge">continue</code> command has been included at the end of the other script choices to
+allow for more efficient execution. By using <code class="highlighter-rouge">continue</code>, the script will skip over code
+that is not needed when a selection is identified. For example, if the “1” selection is
+chosen and identified, there is no reason to test for the other selections.</p>
+
+<p>在這個指令碼版本中，我們設定了一個無限迴圈（就是自己永遠不會終止的迴圈），透過使用 true 命令
+為 while 提供一個退出狀態。因為 true 的退出狀態總是為零，所以迴圈永遠不會終止。這是一個
+令人驚訝的通用指令碼程式設計技巧。因為迴圈自己永遠不會結束，所以由程式設計師在恰當的時候提供某種方法來跳出迴圈。
+此指令碼，當選擇”0”選項的時候，break 命令被用來退出迴圈。continue 命令被包含在其它選擇動作的末尾，
+來提高程式執行的效率。透過使用 continue 命令，當一個選項確定後，程式會跳過不需執行的其他程式碼。例如，
+如果選擇了選項”1”，則沒有理由去測試其它選項。</p>
+
+<h4 id="until">until</h4>
+
+<p>The <code class="highlighter-rouge">until</code> command is much like <code class="highlighter-rouge">while</code>, except instead of exiting a loop when a non-
+zero exit status is encountered, it does the opposite. An <code class="highlighter-rouge">until</code> loop continues until it
+receives a zero exit status. In our while-count script, we continued the loop as long
+as the value of the <code class="highlighter-rouge">count</code> variable was less than or equal to five. We could get the same
+result by coding the script with <code class="highlighter-rouge">until</code>:</p>
+
+<p>until 命令與 while 非常相似，除了當遇到一個非零退出狀態的時候， while 退出迴圈，
+而 until 不退出。一個 until 迴圈會繼續執行直到它接受了一個退出狀態零。在我們的 while-count 指令碼中，
+我們繼續執行迴圈直到 count 變數的數值小於或等於5。我們可以得到相同的結果，透過在指令碼中使用 until 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># until-count: display a series of numbers</span>
+<span class="nv">count</span><span class="o">=</span>1
+<span class="k">until</span> <span class="o">[</span> <span class="nv">$count</span> <span class="nt">-gt</span> 5 <span class="o">]</span><span class="p">;</span> <span class="k">do
+    </span><span class="nb">echo</span> <span class="nv">$count</span>
+    <span class="nv">count</span><span class="o">=</span><span class="k">$((</span>count <span class="o">+</span> <span class="m">1</span><span class="k">))</span>
+<span class="k">done
+</span><span class="nb">echo</span> <span class="s2">"Finished."</span>
+</code></pre></div></div>
+
+<p>By changing the test expression to <code class="highlighter-rouge">$count -gt 5</code>, until will terminate the loop at
+the correct time. The decision of whether to use the <code class="highlighter-rouge">while</code> or <code class="highlighter-rouge">until</code> loop is usually a
+matter of choosing the one that allows the clearest <code class="highlighter-rouge">test</code> to be written.</p>
+
+<p>透過把 test 表示式更改為 $count -gt 5 ， until 會在正確的時間終止迴圈。至於使用 while 迴圈
+還是 until 迴圈，通常是選擇其 test 判斷條件最容易寫的那種。</p>
+
+<h3 id="使用迴圈讀取檔案">使用迴圈讀取檔案</h3>
+
+<p><code class="highlighter-rouge">while</code> and <code class="highlighter-rouge">until</code> can process standard input. This allows files to be processed with
+<code class="highlighter-rouge">while</code> and <code class="highlighter-rouge">until</code> loops. In the following example, we will display the contents of the
+distros.txt file used in earlier chapters:</p>
+
+<p>while 和 until 能夠處理標準輸入。這就可以使用 while 和 until 處理檔案。在下面的例子中，
+我們將顯示在前面章節中使用的 distros.txt 檔案的內容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># while-read: read lines from a file</span>
+<span class="k">while </span><span class="nb">read </span>distro version release<span class="p">;</span> <span class="k">do
+    </span><span class="nb">printf</span> <span class="s2">"Distro: %s</span><span class="se">\t</span><span class="s2">Version: %s</span><span class="se">\t</span><span class="s2">Released: %s</span><span class="se">\n</span><span class="s2">"</span> <span class="se">\</span>
+        <span class="nv">$distro</span> <span class="se">\</span>
+        <span class="nv">$version</span> <span class="se">\</span>
+        <span class="nv">$release</span>
+<span class="k">done</span> &lt; distros.txt
+</code></pre></div></div>
+
+<p>To redirect a file to the loop, we place the redirection operator after the <code class="highlighter-rouge">done</code> statement.
+The loop will use <code class="highlighter-rouge">read</code> to input the fields from the redirected file. The <code class="highlighter-rouge">read</code> command
+will exit after each line is read, with a zero exit status until the end-of-file is reached. At
+that point, it will exit with a non-zero exit status, thereby terminating the loop. It is also
+possible to pipe standard input into a loop:</p>
+
+<p>為了重新導向檔案到迴圈中，我們把重新導向運算子放置到 done 語句之後。迴圈將使用 read 從重新導向檔案中讀取
+欄位。這個 read 命令讀取每個文字行之後，將會退出，其退出狀態為零，直到到達檔案末尾。到時候，它的
+退出狀態為非零數值，因此終止迴圈。也有可能把標準輸入管道到迴圈中。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># while-read2: read lines from a file</span>
+sort <span class="nt">-k</span> 1,1 <span class="nt">-k</span> 2n distros.txt | <span class="k">while </span><span class="nb">read </span>distro version release<span class="p">;</span> <span class="k">do
+    </span><span class="nb">printf</span> <span class="s2">"Distro: %s</span><span class="se">\t</span><span class="s2">Version: %s</span><span class="se">\t</span><span class="s2">Released: %s</span><span class="se">\n</span><span class="s2">"</span> <span class="se">\</span>
+        <span class="nv">$distro</span> <span class="se">\</span>
+        <span class="nv">$version</span> <span class="se">\</span>
+        <span class="nv">$release</span>
+<span class="k">done</span>
+</code></pre></div></div>
+
+<p>Here we take the output of the <code class="highlighter-rouge">sort</code> command and display the stream of text. However,
+it is important to remember that since a pipe will execute the loop in a subshell, any
+variables created or assigned within the loop will be lost when the loop terminates.</p>
+
+<p>這裡我們接受 sort 命令的標準輸出，然後顯示文字流。然而，因為管道將會在子 shell 中執行
+迴圈，當迴圈終止的時候，迴圈中建立的任意變數或賦值的變數都會消失，記住這一點很重要。</p>
+
+<h3 id="總結">總結</h3>
+
+<p>With the introduction of loops, and our previous encounters with branching, subroutines
+and sequences, we have covered the major types of flow control used in programs. bash
+has some more tricks up its sleeve, but they are refinements on these basic concepts.</p>
+
+<p>透過引入迴圈和我們之前遇到的分支、子例程和序列，我們已經介紹了程式流程控制的主要型別。
+bash 還有一些錦囊妙計，但它們都是關於這些基本概念的完善。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The Bash Guide for Beginners from the Linux Documentation Project has some
+more examples of while loops:</p>
+  </li>
+  <li>
+    <p>Linux 文件工程中的 Bash 初學者指南一書中介紹了更多的 while 迴圈範例：</p>
+
+    <p><a href="http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_02.html">http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_02.html</a></p>
+  </li>
+  <li>
+    <p>The Wikipedia has an article on loops, which is part of a larger article on flow
+control:</p>
+  </li>
+  <li>
+    <p>Wikipedia 中有一篇關於迴圈的文章，其是一篇比較長的關於流程控制的文章中的一部分：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Control_flow#Loops">http://en.wikipedia.org/wiki/Control_flow#Loops</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

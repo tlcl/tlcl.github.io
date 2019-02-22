@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">流程控制：if 分支結構</h1><br>
+<p>In the last chapter, we were presented with a problem. How can we make our report
+generator script adapt to the privileges of the user running the script? The solution to this
+problem will require us to find a way to “change directions” within our script, based on a
+the results of a test. In programming terms, we need the program to branch.
+Let's consider a simple example of logic expressed in pseudocode, a simulation of a
+computer language intended for human consumption:</p>
+
+<p>在上一章中，我們遇到一個問題。怎樣使我們的報告產生器指令碼能適應執行此指令碼的使用者的許可權？
+這個問題的解決方案要求我們能找到一種方法，在指令碼中基於測試條件結果，來“改變方向”。
+用程式設計術語表達，就是我們需要程式可以分支。讓我們考慮一個簡單的用偽碼錶示的邏輯範例，
+偽碼是一種模擬的計算機語言，為的是便於人們理解：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>X=5
+If X = 5, then:
+Say “X equals 5.”
+Otherwise:
+Say “X is not equal to 5.”
+</code></pre></div></div>
+
+<p>This is an example of a branch. Based on the condition, “Does X = 5?” do one thing,
+“Say X equals 5,” otherwise do another thing, “Say X is not equal to 5.”</p>
+
+<p>這就是一個分支的例子。根據條件，“Does X = 5?” 做一件事情，“Say X equals 5,”
+否則，做另一件事情，“Say X is not equal to 5.”</p>
+
+<h3 id="if">if</h3>
+
+<p>Using the shell, we can code the logic above as follows:</p>
+
+<p>使用 shell，我們可以編碼上面的邏輯，如下所示：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>x=5
+if [ $x = 5 ]; then
+    echo "x equals 5."
+else
+    echo "x does not equal 5."
+fi
+</code></pre></div></div>
+
+<p>or we can enter it directly at the command line (slightly shortened):</p>
+
+<p>或者我們可以直接在命令列中輸入以上程式碼（略有縮短）：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ x=5
+[me@linuxbox ~]$ if [ $x = 5 ]; then echo "equals 5"; else echo "does
+not equal 5"; fi
+equals 5
+[me@linuxbox ~]$ x=0
+[me@linuxbox ~]$ if [ $x = 5 ]; then echo "equals 5"; else echo "does
+not equal 5"; fi
+does not equal 5
+</code></pre></div></div>
+
+<p>In this example, we execute the command twice. Once, with the value of x set to 5,
+which results in the string “equals 5” being output, and the second time with the value of
+x set to 0, which results in the string “does not equal 5” being output.</p>
+
+<p>在這個例子中，我們執行了兩次這個命令。第一次是，把 x 的值設定為5，從而導致輸出字串“equals 5”,
+第二次是，把 x 的值設定為0，從而導致輸出字串“does not equal 5”。</p>
+
+<p>The if statement has the following syntax:</p>
+
+<p>這個 if 語句語法如下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if commands; then
+     commands
+[elif commands; then
+     commands...]
+[else
+     commands]
+fi
+</code></pre></div></div>
+
+<p>where commands is a list of commands. This is a little confusing at first glance. But
+before we can clear this up, we have to look at how the shell evaluates the success or
+failure of a command.</p>
+
+<p>這裡的 commands 是指一系列命令。第一眼看到會有點困惑。但是在我們弄清楚這些語句之前，我們
+必須看一下 shell 是如何評判一個命令的成功與失敗的。</p>
+
+<h3 id="退出狀態">退出狀態</h3>
+
+<p>Commands (including the scripts and shell functions we write) issue a value to the system
+when they terminate, called an exit status. This value, which is an integer in the range of
+0 to 255, indicates the success or failure of the command’s execution. By convention, a
+value of zero indicates success and any other value indicates failure. The shell provides a
+parameter that we can use to examine the exit status. Here we see it in action:</p>
+
+<p>當命令執行完畢後，命令（包括我們編寫的指令碼和 shell 函式）會給系統傳送一個值，叫做退出狀態。
+這個值是一個 0 到 255 之間的整數，說明命令執行成功或是失敗。按照慣例，一個零值說明成功，其它所有值說明失敗。
+Shell 提供了一個引數，我們可以用它檢查退出狀態。用具體範例看一下：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ls -d /usr/bin
+/usr/bin
+[me@linuxbox ~]$ echo $?
+0
+[me@linuxbox ~]$ ls -d /bin/usr
+ls: cannot access /bin/usr: No such file or directory
+[me@linuxbox ~]$ echo $?
+2
+</code></pre></div></div>
+
+<p>In this example, we execute the ls command twice. The first time, the command
+executes successfully. If we display the value of the parameter <code class="highlighter-rouge">$?</code>, we see that it is zero.
+We execute the ls command a second time, producing an error and examine the
+parameter <code class="highlighter-rouge">$?</code> again. This time it contains a 2, indicating that the command encountered
+an error. Some commands use different exit status values to provide diagnostics for
+errors, while many commands simply exit with a value of one when they fail. Man pages
+often include a section entitled “Exit Status,” describing what codes are used. However,
+a zero always indicates success.</p>
+
+<p>在這個例子中，我們執行了兩次 ls 命令。第一次，命令執行成功。如果我們顯示引數<code class="highlighter-rouge">$?</code>的值，我們
+看到它是零。我們第二次執行 ls 命令的時候，產生了一個錯誤，並再次檢視引數<code class="highlighter-rouge">$?</code>。這次它包含一個
+數字 2，表明這個命令遇到了一個錯誤。有些命令使用不同的退出值，來診斷錯誤，而許多命令當
+它們執行失敗的時候，會簡單地退出併發送一個數字1。手冊頁中經常會包含一章標題為“退出狀態”的內容，
+描述了使用的程式碼。然而，一個零總是表明成功。</p>
+
+<p>The shell provides two extremely simple builtin commands that do nothing except
+terminate with either a zero or one exit status. The true command always executes
+successfully and the false command always executes unsuccessfully:</p>
+
+<p>shell 提供了兩個極其簡單的內部命令，它們不做任何事情，除了以一個0或1退出狀態來終止執行。
+True 命令總是執行成功，而 false 命令總是執行失敗：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox~]$ true
+[me@linuxbox~]$ echo $?
+0
+[me@linuxbox~]$ false
+[me@linuxbox~]$ echo $?
+1
+</code></pre></div></div>
+
+<p>We can use these commands to see how the if statement works. What the if statement
+really does is evaluate the success or failure of commands:</p>
+
+<p>我們能夠使用這些命令，來看一下 if 語句是怎樣工作的。If 語句真正做的事情是計算命令執行成功或失敗：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ if true; then echo "It's true."; fi
+It's true.
+[me@linuxbox ~]$ if false; then echo "It's true."; fi
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>The command echo “It’s true.” is executed when the command following if
+executes successfully, and is not executed when the command following if does not
+execute successfully. If a list of commands follows if, the last command in the list is
+evaluated:</p>
+
+<p>當 if 之後的命令執行成功的時候，命令 echo “It’s true.” 將會執行，否則此命令不執行。
+如果 if 之後跟隨一系列命令，則將計算列表中的最後一個命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ if false; true; then echo "It's true."; fi
+It's true.
+[me@linuxbox ~]$ if true; false; then echo "It's true."; fi
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<h3 id="測試">測試</h3>
+
+<p>By far, the command used most frequently with if is test. The test command
+performs a variety of checks and comparisons. It has two equivalent forms:</p>
+
+<p>到目前為止，經常與 if 一塊使用的命令是 test。這個 test 命令執行各種各樣的檢查與比較。
+它有兩種等價模式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>test expression
+</code></pre></div></div>
+
+<p>and the more popular:</p>
+
+<p>比較流行的格式是：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[ expression ]
+</code></pre></div></div>
+
+<p>where expression is an expression that is evaluated as either true or false. The test
+command returns an exit status of zero when the expression is true and a status of one
+when the expression is false.</p>
+
+<p>這裡的 expression 是一個表示式，其執行結果是 true 或者是 false。當表示式為真時，這個 test 命令返回一個零
+退出狀態，當表示式為假時，test 命令退出狀態為1。</p>
+
+<h4 id="檔案表示式">檔案表示式</h4>
+
+<p>The following expressions are used to evaluate the status of files:</p>
+
+<p>以下表達式被用來計算檔案狀態：</p>
+
+<table class="multi">
+<caption class="cap">Table 28-1: test File Expressions</caption>
+<tr>
+<th class="title">Expression</th>
+<th class="title">Is Ture If</th>
+</tr>
+<tr>
+<td valign="top" width="16%">file1 -ef file2 </td>
+<td valign="top">file1 and file2 have the same inode numbers (the two
+filenames refer to the same file by hard linking).  </td>
+</tr>
+<tr>
+<td valign="top">file1 -nt file2 </td>
+<td valign="top">file 1 is newer than file2.  </td>
+</tr>
+<tr>
+<td valign="top">file1 -ot file2 </td>
+<td valign="top">file1 is older than file2.  </td>
+</tr>
+<tr>
+<td valign="top">-b file </td>
+<td valign="top">file exists and is a block special (device) file.  </td>
+</tr>
+<tr>
+<td valign="top">-c file </td>
+<td valign="top">file exists and is a character special (device) file.  </td>
+</tr>
+<tr>
+<td valign="top">-d file</td>
+<td valign="top">file exists and is a directory.  </td>
+</tr>
+<tr>
+<td valign="top">-e file</td>
+<td valign="top">file exists.</td>
+</tr>
+<tr>
+<td valign="top">-f file</td>
+<td valign="top">file exists and is a regular file.</td>
+</tr>
+<tr>
+<td valign="top">-g file</td>
+<td valign="top">file exists and is set-group-ID.</td>
+</tr>
+<tr>
+<td valign="top">-G file</td>
+<td valign="top">file exists and is owned by the effective group ID.  </td>
+</tr>
+<tr>
+<td valign="top">-k file</td>
+<td valign="top">file exists and has its “sticky bit” set.</td>
+</tr>
+<tr>
+<td valign="top">-L file</td>
+<td valign="top">file exists and is a symbolic link.</td>
+</tr>
+<tr>
+<td valign="top">-O file</td>
+<td valign="top">file exists and is owned by the effective user ID.</td>
+</tr>
+<tr>
+<td valign="top">-p file </td>
+<td valign="top">file exists and is a named pipe.</td>
+</tr>
+<tr>
+<td valign="top">-r file </td>
+<td valign="top">file exists and is readable (has readable permission for
+the effective user).
+</td>
+</tr>
+<tr>
+<td valign="top">-s file</td>
+<td valign="top">file exists and has a length greater than zero.
+</td>
+</tr>
+<tr>
+<td valign="top">-S file</td>
+<td valign="top">file exists and is a network socket.</td>
+</tr>
+<tr>
+<td valign="top">-t fd</td>
+<td valign="top">fd is a file descriptor directed to/from the terminal. This
+can be used to determine whether standard input/output/
+error is being redirected.  </td>
+</tr>
+<tr>
+<td valign="top">-u file </td>
+<td valign="top">file exists and is setuid.</td>
+</tr>
+<tr>
+<td valign="top">-w file </td>
+<td valign="top">file exists and is writable (has write permission for the
+effective user).</td>
+</tr>
+<tr>
+<td valign="top">-x file </td>
+<td valign="top">file exists and is executable (has execute/search
+permission for the effective user).</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表28-1: 測試檔案表示式</caption>
+<tr>
+<th class="title">表示式</th>
+<th class="title">如果下列條件為真則返回True</th>
+</tr>
+<tr>
+<td valign="top" width="16%">file1 -ef file2 </td>
+<td valign="top">file1 和 file2 擁有相同的索引號（透過硬連結兩個檔名指向相同的檔案）。</td>
+</tr>
+<tr>
+<td valign="top">file1 -nt file2 </td>
+<td valign="top">file1新於 file2。</td>
+</tr>
+<tr>
+<td valign="top">file1 -ot file2 </td>
+<td valign="top">file1早於 file2。</td>
+</tr>
+<tr>
+<td valign="top">-b file </td>
+<td valign="top">file 存在並且是一個塊（裝置）檔案。</td>
+</tr>
+<tr>
+<td valign="top">-c file </td>
+<td valign="top">file 存在並且是一個字元（裝置）檔案。</td>
+</tr>
+<tr>
+<td valign="top">-d file</td>
+<td valign="top">file 存在並且是一個目錄。</td>
+</tr>
+<tr>
+<td valign="top">-e file</td>
+<td valign="top">file 存在。</td>
+</tr>
+<tr>
+<td valign="top">-f file</td>
+<td valign="top">file 存在並且是一個普通檔案。</td>
+</tr>
+<tr>
+<td valign="top">-g file</td>
+<td valign="top">file 存在並且設定了組 ID。</td>
+</tr>
+<tr>
+<td valign="top">-G file</td>
+<td valign="top">file 存在並且由有效組 ID 擁有。</td>
+</tr>
+<tr>
+<td valign="top">-k file</td>
+<td valign="top">file 存在並且設定了它的“sticky bit”。</td>
+</tr>
+<tr>
+<td valign="top">-L file</td>
+<td valign="top">file 存在並且是一個符號連結。</td>
+</tr>
+<tr>
+<td valign="top">-O file</td>
+<td valign="top">file 存在並且由有效使用者 ID 擁有。</td>
+</tr>
+<tr>
+<td valign="top">-p file </td>
+<td valign="top">file 存在並且是一個命名管道。</td>
+</tr>
+<tr>
+<td valign="top">-r file </td>
+<td valign="top">file 存在並且可讀（有效使用者有可讀許可權）。 </td>
+</tr>
+<tr>
+<td valign="top">-s file</td>
+<td valign="top">file 存在且其長度大於零。</td>
+</tr>
+<tr>
+<td valign="top">-S file</td>
+<td valign="top">file 存在且是一個網路 socket。</td>
+</tr>
+<tr>
+<td valign="top">-t fd</td>
+<td valign="top">fd 是一個定向到終端／從終端定向的檔案描述符 。
+這可以被用來決定是否重新導向了標準輸入／輸出錯誤。</td>
+</tr>
+<tr>
+<td valign="top">-u file </td>
+<td valign="top">file 存在並且設定了 setuid 位。</td>
+</tr>
+<tr>
+<td valign="top">-w file </td>
+<td valign="top">file 存在並且可寫（有效使用者擁有可寫許可權）。</td>
+</tr>
+<tr>
+<td valign="top">-x file </td>
+<td valign="top">file 存在並且可執行（有效使用者有執行／搜尋許可權）。</td>
+</tr>
+</table>
+
+<p>Here we have a script that demonstrates some of the file expressions:</p>
+
+<p>這裡我們有一個指令碼說明了一些檔案表示式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># test-file: Evaluate the status of a file</span>
+<span class="nv">FILE</span><span class="o">=</span>~/.bashrc
+<span class="k">if</span> <span class="o">[</span> <span class="nt">-e</span> <span class="s2">"</span><span class="nv">$FILE</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    if</span> <span class="o">[</span> <span class="nt">-f</span> <span class="s2">"</span><span class="nv">$FILE</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$FILE</span><span class="s2"> is a regular file."</span>
+    <span class="k">fi
+    if</span> <span class="o">[</span> <span class="nt">-d</span> <span class="s2">"</span><span class="nv">$FILE</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$FILE</span><span class="s2"> is a directory."</span>
+    <span class="k">fi
+    if</span> <span class="o">[</span> <span class="nt">-r</span> <span class="s2">"</span><span class="nv">$FILE</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$FILE</span><span class="s2"> is readable."</span>
+    <span class="k">fi
+    if</span> <span class="o">[</span> <span class="nt">-w</span> <span class="s2">"</span><span class="nv">$FILE</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$FILE</span><span class="s2"> is writable."</span>
+    <span class="k">fi
+    if</span> <span class="o">[</span> <span class="nt">-x</span> <span class="s2">"</span><span class="nv">$FILE</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$FILE</span><span class="s2"> is executable/searchable."</span>
+    <span class="k">fi
+else
+    </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$FILE</span><span class="s2"> does not exist"</span>
+    <span class="nb">exit </span>1
+<span class="k">fi
+</span><span class="nb">exit</span>
+</code></pre></div></div>
+
+<p>The script evaluates the file assigned to the constant FILE and displays its results as the
+evaluation is performed. There are two interesting things to note about this script. First,
+notice how the parameter <code class="highlighter-rouge">$FILE</code> is quoted within the expressions. This is not required,
+but is a defense against the parameter being empty. If the parameter expansion of <code class="highlighter-rouge">$FILE</code>
+were to result in an empty value, it would cause an error (the operators would be
+interpreted as non-null strings rather than operators). Using the quotes around the
+parameter insures that the operator is always followed by a string, even if the string is
+empty. Second, notice the presence of the exit commands near the end of the script.
+The exit command accepts a single, optional argument, which becomes the script’s exit
+status. When no argument is passed, the exit status defaults to zero. Using exit in this
+way allows the script to indicate failure if <code class="highlighter-rouge">$FILE</code> expands to the name of a nonexistent
+file. The exit command appearing on the last line of the script is there as a formality.
+When a script “runs off the end” (reaches end of file), it terminates with an exit status of
+zero by default, anyway.</p>
+
+<p>這個指令碼會計算賦值給常量 FILE 的檔案，並顯示計算結果。對於此指令碼有兩點需要注意。第一個，
+在表示式中引數<code class="highlighter-rouge">$FILE</code>是怎樣被引用的。引號並不是必需的，但這是為了防範空引數。如果<code class="highlighter-rouge">$FILE</code>的引數展開
+是一個空值，就會導致一個錯誤（運算子將會被解釋為非空的字串而不是運算子）。用引號把引數引起來就
+確保了運算子之後總是跟隨著一個字串，即使字串為空。第二個，注意指令碼末尾的 exit 命令。
+這個 exit 命令接受一個單獨的，可選的引數，其成為指令碼的退出狀態。當不傳遞引數時，退出狀態預設為零。
+以這種方式使用 exit 命令，則允許此指令碼提示失敗如果 <code class="highlighter-rouge">$FILE</code> 展開成一個不存在的檔名。這個 exit 命令
+出現在指令碼中的最後一行，是一個當一個指令碼“執行到最後”（到達檔案末尾），不管怎樣，
+預設情況下它以退出狀態零終止。</p>
+
+<p>Similarly, shell functions can return an exit status by including an integer argument to the
+return command. If we were to convert the script above to a shell function to include
+it in a larger program, we could replace the exit commands with return statements
+and get the desired behavior:</p>
+
+<p>類似地，透過帶有一個整數引數的 return 命令，shell 函式可以返回一個退出狀態。如果我們打算把
+上面的指令碼轉變為一個 shell 函式，為了在更大的程式中包含此函式，我們用 return 語句來代替 exit 命令，
+則得到期望的行為：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>test_file () {
+    # test-file: Evaluate the status of a file
+    FILE=~/.bashrc
+    if [ -e "$FILE" ]; then
+        if [ -f "$FILE" ]; then
+            echo "$FILE is a regular file."
+        fi
+        if [ -d "$FILE" ]; then
+            echo "$FILE is a directory."
+        fi
+        if [ -r "$FILE" ]; then
+            echo "$FILE is readable."
+        fi
+        if [ -w "$FILE" ]; then
+            echo "$FILE is writable."
+        fi
+        if [ -x "$FILE" ]; then
+            echo "$FILE is executable/searchable."
+        fi
+    else
+        echo "$FILE does not exist"
+        return 1
+    fi
+}
+</code></pre></div></div>
+
+<h4 id="字串表示式">字串表示式</h4>
+
+<p>The following expressions are used to evaluate strings:</p>
+
+<p>以下表達式用來計算字串：</p>
+
+<table class="multi">
+<caption class="cap">Table 28-2: test String Expressions</caption>
+<tr>
+<th class="title">Expression</th>
+<th class="title">Is Ture If...</th>
+</tr>
+<tr>
+<td valign="top" width="35%">string</td>
+<td valign="top">string is not null.</td>
+</tr>
+<tr>
+<td valign="top">-n string</td>
+<td valign="top">The length of string is greater than zero.</td>
+</tr>
+<tr>
+<td valign="top">-z string</td>
+<td valign="top">The length of string is zero.</td>
+</tr>
+<tr>
+<td valign="top"><p>string1 = string2</p><p>string1 == string2</p></td>
+<td valign="top">string1 and string2 are equal. Single or double
+equal signs may be used, but the use of double equal signs is greatly preferred.</td>
+</tr>
+<tr>
+<td valign="top">string1 != string2 </td>
+<td valign="top">string1 and string2 are not equal.</td>
+</tr>
+<tr>
+<td valign="top">string1 &gt; string2</td>
+<td valign="top">sting1 sorts after string2.</td>
+</tr>
+<tr>
+<td valign="top">string1 &lt; string2</td>
+<td valign="top">string1 sorts before string2.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表28-2: 測試字串表示式</caption>
+<tr>
+<th class="title">表示式</th>
+<th class="title">如果下列條件為真則返回True</th>
+</tr>
+<tr>
+<td valign="top" width="35%">string</td>
+<td valign="top">string 不為 null。</td>
+</tr>
+<tr>
+<td valign="top">-n string</td>
+<td valign="top">字串 string 的長度大於零。</td>
+</tr>
+<tr>
+<td valign="top">-z string</td>
+<td valign="top">字串 string 的長度為零。</td>
+</tr>
+<tr>
+<td valign="top"><p>string1 = string2</p><p>string1 == string2</p></td>
+<td valign="top">string1 和 string2 相同。 單或雙等號都可以，不過雙等號更受歡迎。 </td>
+</tr>
+<tr>
+<td valign="top">string1 != string2 </td>
+<td valign="top">string1 和 string2 不相同。</td>
+</tr>
+<tr>
+<td valign="top">string1 &gt; string2</td>
+<td valign="top">sting1 排列在 string2 之後。</td>
+</tr>
+<tr>
+<td valign="top">string1 &lt; string2</td>
+<td valign="top">string1 排列在 string2 之前。</td>
+</tr>
+</table>
+
+<hr />
+
+<p>Warning: the <code class="highlighter-rouge">&gt;</code> and <code class="highlighter-rouge">&lt;</code> expression operators must be quoted (or escaped with a
+backslash) when used with test. If they are not, they will be interpreted by the
+shell as redirection operators, with potentially destructive results. Also note that
+while the bash documentation states that the sorting order conforms to the
+collation order of the current locale, it does not. ASCII (POSIX) order is used in
+versions of bash up to and including 4.0.</p>
+
+<p>警告：當與 test 一塊使用的時候， &gt; 和 &lt; 表示式運算子必須用引號引起來（或者是用反斜槓轉義）。
+如果不這樣，它們會被 shell 解釋為重新導向運算子，造成潛在的破壞結果。
+同時也要注意雖然 bash 文件宣告排序遵從當前語系的排列規則，但並不這樣。將來的 bash 版本，包含 4.0，
+使用 ASCII（POSIX）排序規則。</p>
+
+<hr />
+
+<p>Here is a script that demonstrates them:</p>
+
+<p>這是一個示範這些問題的指令碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># test-string: evaluate the value of a string</span>
+<span class="nv">ANSWER</span><span class="o">=</span>maybe
+<span class="k">if</span> <span class="o">[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$ANSWER</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"There is no answer."</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="k">fi
+if</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$ANSWER</span><span class="s2">"</span> <span class="o">=</span> <span class="s2">"yes"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"The answer is YES."</span>
+<span class="k">elif</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$ANSWER</span><span class="s2">"</span> <span class="o">=</span> <span class="s2">"no"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"The answer is NO."</span>
+<span class="k">elif</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$ANSWER</span><span class="s2">"</span> <span class="o">=</span> <span class="s2">"maybe"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"The answer is MAYBE."</span>
+<span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"The answer is UNKNOWN."</span>
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>In this script, we evaluate the constant ANSWER. We first determine if the string is
+empty. If it is, we terminate the script and set the exit status to one. Notice the
+redirection that is applied to the echo command. This redirects the error message “There
+is no answer.” to standard error, which is the “proper” thing to do with error messages. If
+the string is not empty, we evaluate the value of the string to see if it is equal to either
+“yes,” “no,” or “maybe.” We do this by using elif, which is short for “else if.” By
+using elif, we are able to construct a more complex logical test.</p>
+
+<p>在這個指令碼中，我們計算常量 ANSWER。我們首先確定是否此字串為空。如果為空，我們就終止
+指令碼，並把退出狀態設為零。注意這個應用於 echo 命令的重新導向操作。其把錯誤資訊 “There
+is no answer.” 重新導向到標準錯誤，這是處理錯誤資訊的“正確”方法。如果字串不為空，我們就計算
+字串的值，看看它是否等於“yes,” “no,” 或者“maybe”。為此使用了 elif，它是 “else if” 的簡寫。
+透過使用 elif，我們能夠建構更復雜的邏輯測試。</p>
+
+<h4 id="整型表示式">整型表示式</h4>
+
+<p>The following expressions are used with integers:</p>
+
+<p>下面的表示式用於整數：</p>
+
+<table class="multi">
+<caption class="cap">Table 28-3: test Integer Expressions</caption>
+<tr>
+<th class="title">Expression </th>
+<th class="title">Is True If...</th>
+</tr>
+<tr>
+<td valign="top" width="40%">integer1 -eq integer2 </td>
+<td valign="top">integer1 is equal to integer2.</td>
+</tr>
+<tr>
+<td valign="top">integer1 -ne integer2 </td>
+<td valign="top">integer1 is not equal to integer2.  </td>
+</tr>
+<tr>
+<td valign="top">integer1 -le integer2 </td>
+<td valign="top">integer1 is less than or equal to integer2.  </td>
+</tr>
+<tr>
+<td valign="top">integer1 -lt integer2 </td>
+<td valign="top">integer1 is less than integer2.  </td>
+</tr>
+<tr>
+<td valign="top">integer1 -ge integer2 </td>
+<td valign="top">integer1 is greater than or equal to integer2.  </td>
+</tr>
+<tr>
+<td valign="top">integer1 -gt integer2 </td>
+<td valign="top">integer1 is greater than integer2.  </td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表28-3: 測試整數表示式</caption>
+<tr>
+<th class="title">表示式</th>
+<th class="title">如果為真...</th>
+</tr>
+<tr>
+<td valign="top" width="40%">integer1 -eq integer2 </td>
+<td valign="top">integer1 等於 integer2。</td>
+</tr>
+<tr>
+<td valign="top">integer1 -ne integer2 </td>
+<td valign="top">integer1 不等於 integer2。</td>
+</tr>
+<tr>
+<td valign="top">integer1 -le integer2 </td>
+<td valign="top">integer1 小於或等於 integer2。</td>
+</tr>
+<tr>
+<td valign="top">integer1 -lt integer2 </td>
+<td valign="top">integer1 小於 integer2。</td>
+</tr>
+<tr>
+<td valign="top">integer1 -ge integer2 </td>
+<td valign="top">integer1 大於或等於 integer2。</td>
+</tr>
+<tr>
+<td valign="top">integer1 -gt integer2 </td>
+<td valign="top">integer1 大於 integer2。</td>
+</tr>
+</table>
+
+<p>Here is a script that demonstrates them:</p>
+
+<p>這裡是一個示範以上表達式用法的指令碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># test-integer: evaluate the value of an integer.</span>
+<span class="nv">INT</span><span class="o">=</span><span class="nt">-5</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$INT</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"INT is empty."</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="k">fi
+if</span> <span class="o">[</span> <span class="nv">$INT</span> <span class="nt">-eq</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"INT is zero."</span>
+<span class="k">else
+    if</span> <span class="o">[</span> <span class="nv">$INT</span> <span class="nt">-lt</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"INT is negative."</span>
+    <span class="k">else
+        </span><span class="nb">echo</span> <span class="s2">"INT is positive."</span>
+    <span class="k">fi
+    if</span> <span class="o">[</span> <span class="k">$((</span>INT <span class="o">%</span> <span class="m">2</span><span class="k">))</span> <span class="nt">-eq</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"INT is even."</span>
+    <span class="k">else
+        </span><span class="nb">echo</span> <span class="s2">"INT is odd."</span>
+    <span class="k">fi
+fi</span>
+</code></pre></div></div>
+
+<p>The interesting part of the script is how it determines whether an integer is even or odd.
+By performing a modulo 2 operation on the number, which divides the number by two
+and returns the remainder, it can tell if the number is odd or even.</p>
+
+<p>這個指令碼中有趣的地方是怎樣來確定一個整數是偶數還是奇數。透過用模數2對數字執行求模操作，
+就是用數字來除以2，並返回餘數，從而知道數字是偶數還是奇數。</p>
+
+<h3 id="更現代的測試版本">更現代的測試版本</h3>
+
+<p>Recent versions of bash include a compound command that acts as an enhanced
+replacement for test. It uses the following syntax:</p>
+
+<p>目前的 bash 版本包括一個複合命令，作為加強的 test 命令替代物。它使用以下語法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[[ expression ]]
+</code></pre></div></div>
+
+<p>where, like test, expression is an expression that evaluates to either a true or false
+result. The <code class="highlighter-rouge">[[ ]]</code> command is very similar to test (it supports all of its expressions),
+but adds an important new string expression:</p>
+
+<p>這裡，類似於 test，expression 是一個表示式，其計算結果為真或假。這個<code class="highlighter-rouge">[[ ]]</code>命令非常
+相似於 test 命令（它支援所有的表示式），但是增加了一個重要的新的字串表示式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>string1 =~ regex
+</code></pre></div></div>
+
+<p>which returns true if string1 is matched by the extended regular expression regex. This
+opens up a lot of possibilities for performing such tasks as data validation. In our earlier
+example of the integer expressions, the script would fail if the constant INT contained
+anything except an integer. The script needs a way to verify that the constant contains an
+integer. Using <code class="highlighter-rouge">[[ ]]</code> with the <code class="highlighter-rouge">=~</code> string expression operator, we could improve the script this way:</p>
+
+<p>其返回值為真，如果 string1匹配擴充套件的正則表示式 regex。這就為執行比如資料驗證等任務提供了許多可能性。
+在我們前面的整數表示式示例中，如果常量 INT 包含除了整數之外的任何資料，指令碼就會執行失敗。這個指令碼
+需要一種方法來證明此常量包含一個整數。使用 <code class="highlighter-rouge">[[ ]]</code> 和 <code class="highlighter-rouge">=~</code> 字串表示式運算子，我們能夠這樣來改進指令碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># test-integer2: evaluate the value of an integer.</span>
+<span class="nv">INT</span><span class="o">=</span><span class="nt">-5</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$INT</span><span class="s2">"</span> <span class="o">=</span>~ ^-?[0-9]+<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+    if</span> <span class="o">[</span> <span class="nv">$INT</span> <span class="nt">-eq</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"INT is zero."</span>
+    <span class="k">else
+        if</span> <span class="o">[</span> <span class="nv">$INT</span> <span class="nt">-lt</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"INT is negative."</span>
+        <span class="k">else
+            </span><span class="nb">echo</span> <span class="s2">"INT is positive."</span>
+        <span class="k">fi
+        if</span> <span class="o">[</span> <span class="k">$((</span>INT <span class="o">%</span> <span class="m">2</span><span class="k">))</span> <span class="nt">-eq</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"INT is even."</span>
+        <span class="k">else
+            </span><span class="nb">echo</span> <span class="s2">"INT is odd."</span>
+        <span class="k">fi
+    fi
+else
+    </span><span class="nb">echo</span> <span class="s2">"INT is not an integer."</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>By applying the regular expression, we are able to limit the value of INT to only strings
+that begin with an optional minus sign, followed by one or more numerals. This
+expression also eliminates the possibility of empty values.</p>
+
+<p>透過應用正則表示式，我們能夠限制 INT 的值只是字串，其開始於一個可選的減號，隨後是一個或多個數字。
+這個表示式也消除了空值的可能性。</p>
+
+<p>Another added feature of <code class="highlighter-rouge">[[ ]]</code> is that the <code class="highlighter-rouge">==</code> operator supports pattern matching the
+same way pathname expansion does. For example:</p>
+
+<p><code class="highlighter-rouge">[[ ]]</code>新增的另一個功能是<code class="highlighter-rouge">==</code>運算子支援型別匹配，正如路徑名展開所做的那樣。例如：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ FILE=foo.bar
+[me@linuxbox ~]$ if [[ $FILE == foo.* ]]; then
+&gt; echo "$FILE matches pattern 'foo.*'"
+&gt; fi
+foo.bar matches pattern 'foo.*'
+</code></pre></div></div>
+
+<p>This makes <code class="highlighter-rouge">[[ ]]</code> useful for evaluating file and path names.</p>
+
+<p>這就使<code class="highlighter-rouge">[[ ]]</code>有助於計算檔案和路徑名。</p>
+
+<h3 id="----為整數設計">(( )) - 為整數設計</h3>
+
+<p>In addition to the <code class="highlighter-rouge">[[ ]]</code> compound command, bash also provides the <code class="highlighter-rouge">(( ))</code>
+compound command, which is useful for operating on integers. It supports a full set of
+arithmetic evaluations, a subject we will cover fully in Chapter 35.</p>
+
+<p>除了 <code class="highlighter-rouge">[[ ]]</code> 複合命令之外，bash 也提供了 <code class="highlighter-rouge">(( ))</code> 複合命令，其有利於操作整數。它支援一套
+完整的算術計算，我們將在第35章中討論這個主題。</p>
+
+<p><code class="highlighter-rouge">(( ))</code> is used to perform arithmetic truth tests. An arithmetic truth test results in true if
+the result of the arithmetic evaluation is non-zero.</p>
+
+<p><code class="highlighter-rouge">(( ))</code>被用來執行算術真測試。如果算術計算的結果是非零值，則其測試值為真。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ if ((1)); then echo "It is true."; fi
+It is true.
+[me@linuxbox ~]$ if ((0)); then echo "It is true."; fi
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>Using <code class="highlighter-rouge">(( ))</code>, we can slightly simplify the test-integer2 script like this:</p>
+
+<p>使用<code class="highlighter-rouge">(( ))</code>，我們能夠略微簡化 test-integer2指令碼，像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># test-integer2a: evaluate the value of an integer.</span>
+<span class="nv">INT</span><span class="o">=</span><span class="nt">-5</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$INT</span><span class="s2">"</span> <span class="o">=</span>~ ^-?[0-9]+<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+    if</span> <span class="o">((</span>INT <span class="o">==</span> 0<span class="o">))</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"INT is zero."</span>
+    <span class="k">else
+        if</span> <span class="o">((</span>INT &lt; 0<span class="o">))</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"INT is negative."</span>
+        <span class="k">else
+            </span><span class="nb">echo</span> <span class="s2">"INT is positive."</span>
+        <span class="k">fi
+        if</span> <span class="o">((</span> <span class="o">((</span>INT % 2<span class="o">))</span> <span class="o">==</span> 0<span class="o">))</span><span class="p">;</span> <span class="k">then
+            </span><span class="nb">echo</span> <span class="s2">"INT is even."</span>
+        <span class="k">else
+            </span><span class="nb">echo</span> <span class="s2">"INT is odd."</span>
+        <span class="k">fi
+    fi
+else
+    </span><span class="nb">echo</span> <span class="s2">"INT is not an integer."</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>Notice that we use less than and greater than signs and that == is used to test for
+equivalence. This is a more natural looking syntax for working with integers. Notice
+too, that because the compound command <code class="highlighter-rouge">(( ))</code> is part of the shell syntax rather than
+an ordinary command, and it deals only with integers, it is able to recognize variables by
+name and does not require expansion to be performed. We’ll discuss <code class="highlighter-rouge">(( ))</code> and the
+related arithmetic expansion further in Chapter 35.</p>
+
+<p>注意我們使用小於和大於符號，以及==用來測試是否相等。這是使用整數較為自然的語法了。也要
+注意，因為複合命令 <code class="highlighter-rouge">(( ))</code> 是 shell 語法的一部分，而不是一個普通的命令，而且它只處理整數，
+所以它能夠透過名字識別出變數，而不需要執行展開操作。我們將在第35中進一步討論 <code class="highlighter-rouge">(( ))</code> 命令
+和相關的算術展開操作。</p>
+
+<h3 id="結合表示式">結合表示式</h3>
+
+<p>It’s also possible to combine expressions to create more complex evaluations.
+Expressions are combined by using logical operators. We saw these in Chapter 18, when
+we learned about the find command. There are three logical operations for test and
+<code class="highlighter-rouge">[[ ]]</code>. They are AND, OR and NOT. test and <code class="highlighter-rouge">[[ ]]</code> use different operators to
+represent these operations :</p>
+
+<p>也有可能把表示式結合起來建立更復雜的計算。透過使用邏輯運算子來結合表示式。我們
+在第18章中學習 find 命令的時候已經知道了這些。有三個用於 test 和 <code class="highlighter-rouge">[[ ]]</code> 的邏輯操作。
+它們是 AND、OR 和 NOT。test 和 <code class="highlighter-rouge">[[ ]]</code> 使用不同的運算子來表示這些操作：</p>
+
+<table class="multi">
+<caption class="cap">Table 28-4: Logical Operators</caption>
+<tr>
+<th class="title" width="34%">Operation</th>
+<th class="title">test</th>
+<th class="title" width="34%">[[ ]] and (( ))</th>
+</tr>
+<tr>
+<td valign="top">AND</td>
+<td valign="top">-a</td>
+<td valign="top">&amp;&amp;</td>
+</tr>
+<tr>
+<td valign="top">OR</td>
+<td valign="top">-o</td>
+<td valign="top">||</td>
+</tr>
+<tr>
+<td valign="top">NOT</td>
+<td valign="top">!</td>
+<td valign="top">!</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表28-4: 邏輯運算子</caption>
+<tr>
+<th class="title" width="34%">運算子</th>
+<th class="title">測試</th>
+<th class="title" width="34%">[[ ]] and (( ))</th>
+</tr>
+<tr>
+<td valign="top">AND</td>
+<td valign="top">-a</td>
+<td valign="top">&amp;&amp;</td>
+</tr>
+<tr>
+<td valign="top">OR</td>
+<td valign="top">-o</td>
+<td valign="top">||</td>
+</tr>
+<tr>
+<td valign="top">NOT</td>
+<td valign="top">!</td>
+<td valign="top"> ! </td>
+</tr>
+</table>
+
+<p>Here’s an example of an AND operation. The following script determines if an integer is
+within a range of values:</p>
+
+<p>這裡有一個 AND 操作的示例。下面的指令碼決定了一個整數是否屬於某個範圍內的值：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># test-integer3: determine if an integer is within a</span>
+<span class="c"># specified range of values.</span>
+<span class="nv">MIN_VAL</span><span class="o">=</span>1
+<span class="nv">MAX_VAL</span><span class="o">=</span>100
+<span class="nv">INT</span><span class="o">=</span>50
+<span class="k">if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$INT</span><span class="s2">"</span> <span class="o">=</span>~ ^-?[0-9]+<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+    if</span> <span class="o">[[</span> INT <span class="nt">-ge</span> MIN_VAL <span class="o">&amp;&amp;</span> INT <span class="nt">-le</span> MAX_VAL <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$INT</span><span class="s2"> is within </span><span class="nv">$MIN_VAL</span><span class="s2"> to </span><span class="nv">$MAX_VAL</span><span class="s2">."</span>
+    <span class="k">else
+        </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$INT</span><span class="s2"> is out of range."</span>
+    <span class="k">fi
+else
+    </span><span class="nb">echo</span> <span class="s2">"INT is not an integer."</span> <span class="o">&gt;</span>&amp;2
+    <span class="nb">exit </span>1
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>We also include parentheses around the expression, for grouping. If these were not
+included, the negation would only apply to the first expression and not the combination
+of the two. Coding this with test would be done this way:</p>
+
+<p>我們也可以對錶達式使用圓括號，為的是分組。如果不使用括號，那麼否定只應用於第一個
+表示式，而不是兩個組合的表示式。用 test 可以這樣來編碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if [ ! \( $INT -ge $MIN_VAL -a $INT -le $MAX_VAL \) ]; then
+    echo "$INT is outside $MIN_VAL to $MAX_VAL."
+else
+    echo "$INT is in range."
+fi
+</code></pre></div></div>
+
+<p>Since all expressions and operators used by test are treated as command arguments by
+the shell (unlike <code class="highlighter-rouge">[[ ]]</code> and <code class="highlighter-rouge">(( ))</code> ), characters which have special meaning to bash,
+such as &lt;, &gt;, (, and ), must be quoted or escaped.</p>
+
+<p>因為 test 使用的所有的表示式和運算子都被 shell 看作是命令引數（不像 <code class="highlighter-rouge">[[ ]]</code> 和 <code class="highlighter-rouge">(( ))</code> ），
+對於 bash 有特殊含義的字元，比如說 &lt;，&gt;，(，和 )，必須引起來或者是轉義。</p>
+
+<p>Seeing that test and <code class="highlighter-rouge">[[ ]]</code> do roughly the same thing, which is preferable? test is
+traditional (and part of POSIX), whereas <code class="highlighter-rouge">[[ ]]</code> is specific to bash. It’s important to
+know how to use test, since it is very widely used, but <code class="highlighter-rouge">[[ ]]</code> is clearly more useful
+and is easier to code.</p>
+
+<p>知道了 test 和 <code class="highlighter-rouge">[[ ]]</code> 基本上完成相同的事情，哪一個更好呢？test 更傳統（是 POSIX 的一部分），
+然而 <code class="highlighter-rouge">[[ ]]</code> 特定於 bash。知道怎樣使用 test 很重要，因為它被非常廣泛地應用，但是顯然 <code class="highlighter-rouge">[[ ]]</code> 更
+有用，並更易於編碼。</p>
+
+<blockquote>
+  <p>Portability Is The Hobgoblin Of Little Minds</p>
+
+  <p>可移植性是頭腦狹隘人士的心魔</p>
+
+  <p>If you talk to “real” Unix people, you quickly discover that many of them don’t
+like Linux very much. They regard it as impure and unclean. One tenet of Unix
+followers is that everything should be “portable.” This means that any script you
+write should be able to run, unchanged, on any Unix-like system.</p>
+
+  <p>如果你和“真正的”Unix 使用者交談，你很快就會發現他們大多數人不是非常喜歡 Linux。他們
+認為 Linux 骯髒且不乾淨。Unix 追隨者的一個宗旨是，一切都應“可移植的”。這意味著你編寫
+的任意一個指令碼都應當無需修改，就能執行在任何一個類別 Unix 的系統中。</p>
+
+  <p>Unix people have good reason to believe this. Having seen what proprietary
+extensions to commands and shells did to the Unix world before POSIX, they are
+naturally wary of the effect of Linux on their beloved OS.</p>
+
+  <p>Unix 使用者有充分的理由相信這一點。在 POSIX 之前，Unix 使用者已經看到了命令的專有擴充套件以及
+shell 對 Unix 世界的所做所為，他們自然會警惕 Linux 對他們心愛系統的影響。</p>
+
+  <p>But portability has a serious downside. It prevents progress. It requires that
+things are always done using “lowest common denominator” techniques. In the
+case of shell programming, it means making everything compatible with sh, the
+original Bourne shell.</p>
+
+  <p>但是可移植性有一個嚴重的缺點。它防礙了進步。它要求做事情要遵循“最低常見標準”。
+在 shell 程式設計這種情況下，它意味著一切要與 sh 相容，最初的 Bourne shell。</p>
+
+  <p>This downside is the excuse that proprietary vendors use to justify their
+proprietary extensions, only they call them “innovations.” But they are really just
+lock-in devices for their customers.</p>
+
+  <p>這個缺點是一個專有軟體供應商用來為他們專有的擴充套件做辯解的藉口，只有他們稱他們為“創新”。
+但是他們只是為他們的客戶鎖定裝置。</p>
+
+  <p>The GNU tools, such as bash, have no such restrictions. They encourage
+portability by supporting standards and by being universally available. You can
+install bash and the other GNU tools on almost any kind of system, even
+Windows, without cost. So feel free to use all the features of bash. It’s really
+portable.</p>
+
+  <p>GNU 工具，比如說 bash，就沒有這些限制。他們透過支援標準和普遍地可用性來鼓勵可移植性。你幾乎可以
+在所有型別的系統中安裝 bash 和其它的 GNU 工具，甚至是 Windows，而沒有損失。所以就
+感覺可以自由的使用 bash 的所有功能。它是真正的可移植。</p>
+</blockquote>
+
+<h3 id="控制運算子分支的另一種方法">控制運算子：分支的另一種方法</h3>
+
+<p>bash provides two control operators that can perform branching. The <code class="highlighter-rouge">&amp;&amp; (AND)</code> and <code class="highlighter-rouge">|| (OR)</code> operators
+work like the logical operators in the <code class="highlighter-rouge">[[ ]]</code> compound command. This
+is the syntax:</p>
+
+<p>bash 支援兩種可以執行分支任務的控制運算子。 <code class="highlighter-rouge">&amp;&amp;（AND）</code> 和 <code class="highlighter-rouge">||（OR）</code> 運算子作用如同
+複合命令<code class="highlighter-rouge">[[ ]]</code>中的邏輯運算子。這是語法：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>command1 &amp;&amp; command2
+</code></pre></div></div>
+
+<p>and</p>
+
+<p>和</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>command1 || command2
+</code></pre></div></div>
+
+<p>It is important to understand the behavior of these. With the &amp;&amp; operator, command1 is
+executed and command2 is executed if, and only if, command1 is successful. With the
+<code class="highlighter-rouge">||</code> operator, command1 is executed and command2 is executed if, and only if,
+command1 is unsuccessful.</p>
+
+<p>理解這些操作很重要。對於 &amp;&amp; 運算子，先執行 command1，如果並且只有如果 command1 執行成功後，
+才會執行 command2。對於 || 運算子，先執行 command1，如果並且只有如果 command1 執行失敗後，
+才會執行 command2。</p>
+
+<p>In practical terms, it means that we can do something like this:</p>
+
+<p>在實際中，它意味著我們可以做這樣的事情：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mkdir temp &amp;&amp; cd temp
+</code></pre></div></div>
+
+<p>This will create a directory named temp, and if it succeeds, the current working directory
+will be changed to temp. The second command is attempted only if the mkdir
+command is successful. Likewise, a command like this:</p>
+
+<p>這會建立一個名為 temp 的目錄，並且若它執行成功後，當前目錄會更改為 temp。第二個命令會嘗試
+執行只有當 mkdir 命令執行成功之後。同樣地，一個像這樣的命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ [ -d temp ] || mkdir temp
+</code></pre></div></div>
+
+<p>will test for the existence of the directory temp, and only if the test fails, will the
+directory be created. This type of construct is very handy for handling errors in scripts, a
+subject we will discuss more in later chapters. For example, we could do this in a script:</p>
+
+<p>會測試目錄 temp 是否存在，並且只有測試失敗之後，才會建立這個目錄。這種構造型別非常有助於在
+指令碼中處理錯誤，這個主題我們將會在隨後的章節中討論更多。例如，我們在指令碼中可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[ -d temp ] || exit 1
+</code></pre></div></div>
+
+<p>If the script requires the directory temp, and it does not exist, then the script will
+terminate with an exit status of one.</p>
+
+<p>如果這個指令碼要求目錄 temp，且目錄不存在，然後指令碼會終止，並返回退出狀態1。</p>
+
+<h3 id="總結">總結</h3>
+
+<p>We started this chapter with a question. How could we make our <code class="highlighter-rouge">sys_info_page</code>
+script detect if the user had permission to read all the home directories? With our
+knowledge of if, we can solve the problem by adding this code to the
+<code class="highlighter-rouge">report_home_space</code> function:</p>
+
+<p>這一章開始於一個問題。我們怎樣使 <code class="highlighter-rouge">sys_info_page</code> 指令碼來檢測是否使用者擁有許可權來讀取所有的
+家目錄？根據我們的 if 知識，我們可以解決這個問題，透過把這些程式碼新增到 <code class="highlighter-rouge">report_home_space</code> 函式中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>report_home_space () {
+    if [[ $(id -u) -eq 0 ]]; then
+        cat &lt;&lt;- _EOF_
+        &lt;H2&gt;Home Space Utilization (All Users)&lt;/H2&gt;
+        &lt;PRE&gt;$(du -sh /home/*)&lt;/PRE&gt;
+_EOF_
+    else
+        cat &lt;&lt;- _EOF_
+        &lt;H2&gt;Home Space Utilization ($USER)&lt;/H2&gt;
+        &lt;PRE&gt;$(du -sh $HOME)&lt;/PRE&gt;
+_EOF_
+    fi
+    return
+}
+</code></pre></div></div>
+
+<p>We evaluate the output of the id command. With the -u option, id outputs the numeric
+user ID number of the effective user. The superuser is always zero and every other user
+is a number greater than zero. Knowing this, we can construct two different here
+documents, one taking advantage of superuser privileges, and the other, restricted to the
+user’s own home directory.</p>
+
+<p>我們計算 id 命令的輸出結果。透過帶有 -u 選項的 id 命令，輸出有效使用者的數字使用者 ID 號。
+超級使用者總是零，其它每個使用者是一個大於零的數字。知道了這點，我們能夠建構兩種不同的 here 文件，
+一個利用超級使用者許可權，另一個限制於使用者擁有的家目錄。</p>
+
+<p>We are going to take a break from the sys_info_page program, but don’t worry. It
+will be back. In the meantime, we’ll cover some topics that we’ll need when we resume
+our work.</p>
+
+<p>我們將暫別 <code class="highlighter-rouge">sys_info_page</code> 程式，但不要著急。它還會回來。同時，當我們繼續工作的時候，
+將會討論一些我們需要的話題。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<p>There are several sections of the bash man page that provide further detail on the topics
+covered in this chapter:</p>
+
+<p>bash 手冊頁中有幾部分對本章中涵蓋的主題提供了更詳細的內容：</p>
+
+<ul>
+  <li>
+    <p>Lists ( 討論控制運算子 <code class="highlighter-rouge">||</code> 和 <code class="highlighter-rouge">&amp;&amp;</code> )</p>
+  </li>
+  <li>
+    <p>Compound Commands ( 討論 <code class="highlighter-rouge">[[ ]]</code>, <code class="highlighter-rouge">(( ))</code> 和 if )</p>
+  </li>
+  <li>
+    <p>CONDITIONAL EXPRESSIONS （條件表示式）</p>
+  </li>
+  <li>
+    <p>SHELL BUILTIN COMMANDS ( 討論 test )</p>
+  </li>
+</ul>
+
+<p>Further, the Wikipedia has a good article on the concept of pseudocode:</p>
+
+<p>進一步，Wikipedia 中有一篇關於虛擬碼概念的好文章：</p>
+
+<p><a href="http://en.wikipedia.org/wiki/Pseudocode">http://en.wikipedia.org/wiki/Pseudocode</a></p>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

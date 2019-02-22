@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">由上而下設計</h1><br>
+<p>As programs get larger and more complex, they become more difficult to design, code
+and maintain. As with any large project, it is often a good idea to break large, complex
+tasks into a series of small, simple tasks. Let's imagine that we are trying to describe a
+common, everyday task, going to the market to buy food, to a person from Mars. We
+might describe the overall process as the following series of steps:</p>
+
+<p>隨著程式變得更加龐大和複雜，設計、編碼和維護它們也變得更加困難。對於任意一個大專案而言，
+把繁重、複雜的任務分割為細小且簡單的任務，往往是一個好主意。想象一下，我們試圖描述
+一個平凡無奇的工作，一位火星人要去市場買食物。我們可能透過下面一系列步驟來形容整個過程：</p>
+
+<ul>
+  <li>
+    <p>Get in car.</p>
+  </li>
+  <li>
+    <p>Drive to market.</p>
+  </li>
+  <li>
+    <p>Park car.</p>
+  </li>
+  <li>
+    <p>Enter market.</p>
+  </li>
+  <li>
+    <p>Purchase food.</p>
+  </li>
+  <li>
+    <p>Return to car.</p>
+  </li>
+  <li>
+    <p>Drive home.</p>
+  </li>
+  <li>
+    <p>Park car.</p>
+  </li>
+  <li>
+    <p>Enter house.</p>
+  </li>
+  <li>
+    <p>上車</p>
+  </li>
+  <li>
+    <p>開車到市場</p>
+  </li>
+  <li>
+    <p>停車</p>
+  </li>
+  <li>
+    <p>買食物</p>
+  </li>
+  <li>
+    <p>回到車中</p>
+  </li>
+  <li>
+    <p>開車回家</p>
+  </li>
+  <li>
+    <p>回到家中</p>
+  </li>
+</ul>
+
+<p>However, a person from Mars is likely to need more detail. We could further break down
+the subtask “Park car” into this series of steps:</p>
+
+<p>然而，火星人可能需要更詳細的資訊。我們可以進一步細化子任務“停車”為這些步驟：</p>
+
+<ul>
+  <li>
+    <p>Find parking space.</p>
+  </li>
+  <li>
+    <p>Drive car into space.</p>
+  </li>
+  <li>
+    <p>Turn off motor.</p>
+  </li>
+  <li>
+    <p>Set parking brake.</p>
+  </li>
+  <li>
+    <p>Exit car.</p>
+  </li>
+  <li>
+    <p>Lock car.</p>
+  </li>
+  <li>
+    <p>找到停車位</p>
+  </li>
+  <li>
+    <p>開車到停車位</p>
+  </li>
+  <li>
+    <p>關閉引擎</p>
+  </li>
+  <li>
+    <p>拉緊手剎</p>
+  </li>
+  <li>
+    <p>下車</p>
+  </li>
+  <li>
+    <p>鎖車</p>
+  </li>
+</ul>
+
+<p>The “Turn off motor” subtask could further be broken down into steps including “Turn
+off ignition,” “Remove ignition key” and so on, until every step of the entire process of
+going to the market has been fully defined.</p>
+
+<p>這個“關閉引擎”子任務可以進一步細化為這些步驟，包括“關閉點火裝置”，“移開點火匙”等等，直到
+已經完整定義了要去市場買食物整個過程的每一個步驟。</p>
+
+<p>This process of identifying the top-level steps and developing increasingly detailed views
+of those steps is called top-down design. This technique allows us to break large complex
+tasks into many small, simple tasks. Top-down design is a common method of designing
+programs and one that is well suited to shell programming in particular.</p>
+
+<p>這種先確定上層步驟，然後再逐步細化這些步驟的過程被稱為由上而下設計。這種技巧允許我們
+把龐大而複雜的任務分割為許多小而簡單的任務。由上而下設計是一種常見的程式設計方法，
+尤其適合 shell 程式設計。</p>
+
+<p>In this chapter, we will use top-down design to further develop our report generator
+script.</p>
+
+<p>在這一章中，我們將使用由上而下的設計方法來進一步開發我們的報告產生器指令碼。</p>
+
+<h3 id="shell-函式">Shell 函式</h3>
+
+<p>Our script currently performs the following steps to generate the HTML document:</p>
+
+<p>目前我們的指令碼執行以下步驟來產生這個 HTML 文件：</p>
+
+<ul>
+  <li>
+    <p>Open page.</p>
+  </li>
+  <li>
+    <p>Open page header.</p>
+  </li>
+  <li>
+    <p>Set page title.</p>
+  </li>
+  <li>
+    <p>Close page header.</p>
+  </li>
+  <li>
+    <p>Open page body.</p>
+  </li>
+  <li>
+    <p>Output page heading.</p>
+  </li>
+  <li>
+    <p>Output time stamp.</p>
+  </li>
+  <li>
+    <p>Close page body.</p>
+  </li>
+  <li>
+    <p>Close page.</p>
+  </li>
+  <li>
+    <p>開啟網頁</p>
+  </li>
+  <li>
+    <p>開啟網頁標頭</p>
+  </li>
+  <li>
+    <p>設定網頁標題</p>
+  </li>
+  <li>
+    <p>關閉網頁標頭</p>
+  </li>
+  <li>
+    <p>開啟網頁主體部分</p>
+  </li>
+  <li>
+    <p>輸出網頁標頭</p>
+  </li>
+  <li>
+    <p>輸出時間戳</p>
+  </li>
+  <li>
+    <p>關閉網頁主體</p>
+  </li>
+  <li>
+    <p>關閉網頁</p>
+  </li>
+</ul>
+
+<p>For our next stage of development, we will add some additional tasks between steps 7
+and 8. These will include:</p>
+
+<p>為了下一階段的開發，我們將在步驟7和8之間新增一些額外的任務。這些將包括：</p>
+
+<ul>
+  <li>
+    <p>System uptime and load. This is the amount of time since the last shutdown or
+reboot and the average number of tasks currently running on the processor over
+several time intervals.</p>
+  </li>
+  <li>
+    <p>Disk space. The overall use of space on the system’s storage devices.</p>
+  </li>
+  <li>
+    <p>Home space. The amount of storage space being used by each user.</p>
+  </li>
+  <li>
+    <p>系統正常執行時間和負載。這是自上次關機或重啟之後系統的執行時間，以及在幾個時間間隔內當前執行在處理
+中的平均任務量。</p>
+  </li>
+  <li>
+    <p>磁碟空間。系統中儲存裝置的總使用量。</p>
+  </li>
+  <li>
+    <p>家目錄空間。每個使用者所使用的儲存空間使用量。</p>
+  </li>
+</ul>
+
+<p>If we had a command for each of these tasks, we could add them to our script simply
+through command substitution:</p>
+
+<p>如果對於每一個任務，我們都有相應的命令，那麼透過命令替換，我們就能很容易地把它們新增到我們的指令碼中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Program to output a system information page</span>
+<span class="nv">TITLE</span><span class="o">=</span><span class="s2">"System Information Report For </span><span class="nv">$HOSTNAME</span><span class="s2">"</span>
+<span class="nv">CURRENT_TIME</span><span class="o">=</span><span class="k">$(</span>date +<span class="s2">"%x %r %Z"</span><span class="k">)</span>
+<span class="nv">TIME_STAMP</span><span class="o">=</span><span class="s2">"Generated </span><span class="nv">$CURRENT_TIME</span><span class="s2">, by </span><span class="nv">$USER</span><span class="s2">"</span>
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">_EOF_</span><span class="sh">
+&lt;HTML&gt;
+    &lt;HEAD&gt;
+        &lt;TITLE&gt;</span><span class="nv">$TITLE</span><span class="sh">&lt;/TITLE&gt;
+    &lt;/HEAD&gt;
+    &lt;BODY&gt;
+        &lt;H1&gt;</span><span class="nv">$TITLE</span><span class="sh">&lt;/H1&gt;
+        &lt;P&gt;</span><span class="nv">$TIME_STAMP</span><span class="sh">&lt;/P&gt;
+        </span><span class="k">$(</span>report_uptime<span class="k">)</span><span class="sh">
+        </span><span class="k">$(</span>report_disk_space<span class="k">)</span><span class="sh">
+        </span><span class="k">$(</span>report_home_space<span class="k">)</span><span class="sh">
+    &lt;/BODY&gt;
+&lt;/HTML&gt;
+</span><span class="no">_EOF_
+</span></code></pre></div></div>
+
+<p>We could create these additional commands two ways. We could write three separate
+scripts and place them in a directory listed in our PATH, or we could embed the scripts
+within our program as shell functions. As we have mentioned before, shell functions are
+“mini-scripts” that are located inside other scripts and can act as autonomous programs.
+Shell functions have two syntactic forms:</p>
+
+<p>我們能夠用兩種方法來建立這些額外的命令。我們可以分別編寫三個指令碼，並把它們放置到
+環境變數 PATH 所列出的目錄下，或者我們也可以把這些指令碼作為 shell 函式嵌入到我們的程式中。
+我們之前已經提到過，shell 函式是位於其它指令碼中的“微指令碼”，作為自主程式。Shell 函式有兩種語法形式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function name {
+    commands
+    return
+}
+and
+name () {
+    commands
+    return
+}
+</code></pre></div></div>
+
+<p>where <em>name</em> is the name of the function and <em>commands</em> are a series of commands
+contained within the function.</p>
+
+<p>這裡的 name 是函式名，commands 是一系列包含在函式中的命令。</p>
+
+<p>Both forms are equivalent and may be used interchangeably.
+Below we see a script that demonstrates the use of a shell function:</p>
+
+<p>兩種形式是等價的，可以交替使用。下面我們將檢視一個說明 shell 函式使用方法的指令碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1     #!/bin/bash
+2
+3     # Shell function demo
+4
+5     function funct {
+6       echo "Step 2"
+7       return
+8     }
+9
+10     # Main program starts here
+11
+12     echo "Step 1"
+13     funct
+14     echo "Step 3"
+</code></pre></div></div>
+
+<p>As the shell reads the script, it passes over lines 1 through 11, as those lines consist of
+comments and the function definition. Execution begins at line 12, with an echo
+command. Line 13 calls the shell function funct and the shell executes the function
+just as it would any other command. Program control then moves to line 6, and the
+second echo command is executed. Line 7 is executed next. Its return command
+terminates the function and returns control to the program at the line following the
+function call (line 14), and the final echo command is executed. Note that in order for
+function calls to be recognized as shell functions and not interpreted as the names of
+external programs, shell function definitions must appear in the script before they are
+called.</p>
+
+<p>隨著 shell 讀取這個指令碼，它會跳過第1行到第11行的程式碼，因為這些文字行由註釋和函式定義組成。
+從第12行程式碼開始執行，有一個 echo 命令。第13行會呼叫 shell 函式 funct，然後 shell 會執行這個函式，
+就如執行其它命令一樣。這樣程式控制權會轉移到第六行，執行第二個 echo 命令。然後再執行第7行。
+這個 return 命令終止這個函式，並把控制權交給函式呼叫之後的程式碼（第14行），從而執行最後一個
+echo 命令。注意為了使函式呼叫被識別出是 shell 函式，而不是被解釋為外部程式的名字，在指令碼中 shell
+函式定義必須出現在函式呼叫之前。</p>
+
+<p>We’ll add minimal shell function definitions to our script:</p>
+
+<p>我們將給指令碼新增最小的 shell 函式定義：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Program to output a system information page</span>
+<span class="nv">TITLE</span><span class="o">=</span><span class="s2">"System Information Report For </span><span class="nv">$HOSTNAME</span><span class="s2">"</span>
+<span class="nv">CURRENT_TIME</span><span class="o">=</span><span class="k">$(</span>date +<span class="s2">"%x %r %Z"</span><span class="k">)</span>
+<span class="nv">TIME_STAMP</span><span class="o">=</span><span class="s2">"Generated </span><span class="nv">$CURRENT_TIME</span><span class="s2">, by </span><span class="nv">$USER</span><span class="s2">"</span>
+report_uptime <span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span>
+<span class="o">}</span>
+report_disk_space <span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span>
+<span class="o">}</span>
+report_home_space <span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span>
+<span class="o">}</span>
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">_EOF_</span><span class="sh">
+&lt;HTML&gt;
+    &lt;HEAD&gt;
+        &lt;TITLE&gt;</span><span class="nv">$TITLE</span><span class="sh">&lt;/TITLE&gt;
+    &lt;/HEAD&gt;
+    &lt;BODY&gt;
+        &lt;H1&gt;</span><span class="nv">$TITLE</span><span class="sh">&lt;/H1&gt;
+        &lt;P&gt;</span><span class="nv">$TIME_STAMP</span><span class="sh">&lt;/P&gt;
+        </span><span class="k">$(</span>report_uptime<span class="k">)</span><span class="sh">
+        </span><span class="k">$(</span>report_disk_space<span class="k">)</span><span class="sh">
+        </span><span class="k">$(</span>report_home_space<span class="k">)</span><span class="sh">
+    &lt;/BODY&gt;
+&lt;/HTML&gt;
+</span><span class="no">_EOF_
+</span></code></pre></div></div>
+
+<p>Shell function names follow the same rules as variables. A function must contain at least
+one command. The return command (which is optional) satisfies the requirement.</p>
+
+<p>Shell 函式的命名規則和變數一樣。一個函式必須至少包含一條命令。這條 return 命令（是可選的）滿足要求。</p>
+
+<h3 id="區域性變數">區域性變數</h3>
+
+<p>In the scripts we have written so far, all the variables (including constants) have been
+global variables. Global variables maintain their existence throughout the program. This
+is fine for many things, but it can sometimes complicate the use of shell functions. Inside
+shell functions, it is often desirable to have local variables. Local variables are only
+accessible within the shell function in which they are defined and cease to exist once the
+shell function terminates.</p>
+
+<p>目前我們所寫的指令碼中，所有的變數（包括常量）都是全域性變數。全域性變數在整個程式中保持存在。
+對於許多事情來說，這很好，但是有時候它會使 shell 函式的使用變得複雜。在 shell 函式中，經常期望
+會有區域性變數。區域性變數只能在定義它們的 shell 函式中使用，並且一旦 shell 函式執行完畢，它們就不存在了。</p>
+
+<p>Having local variables allows the programmer to use variables with names that may
+already exist, either in the script globally or in other shell functions, without having to
+worry about potential name conflicts.</p>
+
+<p>區域性變數的存在使得程式設計師可以使用可能已存在的變數，這些變數可以是全域性變數，
+或者是其它 shell 函式中的區域性變數，卻不必擔心潛在的名字衝突。</p>
+
+<p>Here is an example script that demonstrates how local variables are defined and used:</p>
+
+<p>這裡有一個範例指令碼，其說明了怎樣來定義和使用區域性變數：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># local-vars: script to demonstrate local variables</span>
+<span class="nv">foo</span><span class="o">=</span>0 <span class="c"># global variable foo</span>
+funct_1 <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">local </span>foo  <span class="c"># variable foo local to funct_1</span>
+    <span class="nv">foo</span><span class="o">=</span>1
+    <span class="nb">echo</span> <span class="s2">"funct_1: foo = </span><span class="nv">$foo</span><span class="s2">"</span>
+<span class="o">}</span>
+funct_2 <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">local </span>foo  <span class="c"># variable foo local to funct_2</span>
+    <span class="nv">foo</span><span class="o">=</span>2
+    <span class="nb">echo</span> <span class="s2">"funct_2: foo = </span><span class="nv">$foo</span><span class="s2">"</span>
+<span class="o">}</span>
+<span class="nb">echo</span> <span class="s2">"global:  foo = </span><span class="nv">$foo</span><span class="s2">"</span>
+funct_1
+<span class="nb">echo</span> <span class="s2">"global: foo = </span><span class="nv">$foo</span><span class="s2">"</span>
+funct_2
+<span class="nb">echo</span> <span class="s2">"global: foo = </span><span class="nv">$foo</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>As we can see, local variables are defined by preceding the variable name with the word
+local. This creates a variable that is local to the shell function in which it is defined.
+Once outside the shell function, the variable no longer exists. When we run this script,
+we see the results:</p>
+
+<p>正如我們所看到的，透過在變數名之前加上單詞 local，來定義區域性變數。這就建立了一個只對其所在的
+shell 函式起作用的變數。在這個 shell 函式之外，這個變數不再存在。當我們執行這個指令碼的時候，
+我們會看到這樣的結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ local-vars
+global:  foo = 0
+funct_1: foo = 1
+global:  foo = 0
+funct_2: foo = 2
+global:  foo = 0
+</code></pre></div></div>
+
+<p>We see that the assignment of values to the local variable foo within both shell functions
+has no effect on the value of foo defined outside the functions.</p>
+
+<p>我們看到對兩個 shell 函式中的區域性變數 foo 賦值，不會影響到在函式之外定義的變數 foo 的值。</p>
+
+<p>This feature allows shell functions to be written so that they remain independent of each
+other and of the script in which they appear. This is very valuable, as it helps prevent one
+part of a program from interfering with another. It also allows shell functions to be
+written so that they can be portable. That is, they may be cut and pasted from script to
+script, as needed.</p>
+
+<p>這個功能就允許 shell 函式能保持各自以及與它們所在指令碼之間的獨立性。這個非常有價值，因為它幫忙
+阻止了程式各部分之間的相互干涉。這樣 shell 函式也可以移植。也就是說，按照需求，
+shell 函式可以在指令碼之間進行剪下和貼上。</p>
+
+<h3 id="保持指令碼執行">保持指令碼執行</h3>
+
+<p>While developing our program, it is useful to keep the program in a runnable state. By
+doing this, and testing frequently, we can detect errors early in the development process.
+This will make debugging problems much easier. For example, if we run the program,
+make a small change, then run the program again and find a problem, it’s very likely that
+the most recent change is the source of the problem. By adding the empty functions,
+called stubs in programmer-speak, we can verify the logical flow of our program at an
+early stage. When constructing a stub, it’s a good idea to include something that
+provides feedback to the programmer, which shows the logical flow is being carried out.
+If we look at the output of our script now:</p>
+
+<p>當開發程式的時候，保持程式的可執行狀態非常有用。這樣做，並且經常測試，我們就可以在程式
+開發過程的早期檢測到錯誤。這將使除錯問題容易多了。例如，如果我們執行這個程式，做一個小的修改，
+然後再次執行這個程式，最後發現一個問題，非常有可能這個最新的修改就是問題的來源。透過新增空函式，
+程式設計師稱之為 stub，我們可以在早期階段證明程式的邏輯流程。當建構一個 stub 的時候，
+能夠包含一些為程式設計師提供反饋資訊的程式碼是一個不錯的主意，這些資訊展示了正在執行的邏輯流程。
+現在看一下我們指令碼的輸出結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sys_info_page
+&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;TITLE&gt;System Information Report For twin2&lt;/TITLE&gt;
+&lt;/HEAD&gt;
+&lt;BODY&gt;
+&lt;H1&gt;System Information Report For linuxbox&lt;/H1&gt;
+&lt;P&gt;Generated 03/19/2009 04:02:10 PM EDT, by me&lt;/P&gt;
+
+
+
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+</code></pre></div></div>
+
+<p>we see that there are some blank lines in our output after the time stamp, but we can’t be
+sure of the cause. If we change the functions to include some feedback:</p>
+
+<p>我們看到時間戳之後的輸出結果中有一些空行，但是我們不能確定這些空行產生的原因。如果我們
+修改這些函式，讓它們包含一些反饋資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>report_uptime () {
+  echo "Function report_uptime executed."
+  return
+}
+report_disk_space () {
+  echo "Function report_disk_space executed."
+  return
+}
+report_home_space () {
+  echo "Function report_home_space executed."
+  return
+}
+</code></pre></div></div>
+
+<p>and run the script again:</p>
+
+<p>然後再次執行這個指令碼：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sys_info_page
+&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;TITLE&gt;System Information Report For linuxbox&lt;/TITLE&gt;
+&lt;/HEAD&gt;
+&lt;BODY&gt;
+&lt;H1&gt;System Information Report For linuxbox&lt;/H1&gt;
+&lt;P&gt;Generated 03/20/2009 05:17:26 AM EDT, by me&lt;/P&gt;
+Function report_uptime executed.
+Function report_disk_space executed.
+Function report_home_space executed.
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+</code></pre></div></div>
+
+<p>we now see that, in fact, our three functions are being executed.</p>
+
+<p>現在我們看到，事實上，執行了三個函式。</p>
+
+<p>With our function framework in place and working, it’s time to flesh out some of the
+function code. First, the report_uptime function:</p>
+
+<p>我們的函式框架已經各就各位並且能工作，是時候更新一些函式程式碼了。首先，是 report_uptime 函式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>report_uptime () {
+  cat &lt;&lt;- _EOF_
+  &lt;H2&gt;System Uptime&lt;/H2&gt;
+  &lt;PRE&gt;$(uptime)&lt;/PRE&gt;
+  _EOF_
+  return
+}
+</code></pre></div></div>
+
+<p>It’s pretty straightforward. We use a here document to output a section header and the
+output of the uptime command, surrounded by &lt;PRE&gt; tags to preserve the formatting
+of the command. The report_disk_space function is similar:</p>
+
+<p>這些程式碼相當直截了當。我們使用一個 here 文件來輸出標題和 uptime 命令的輸出結果，命令結果被 &lt;PRE&gt; 標籤包圍，
+為的是保持命令的輸出格式。這個 report_disk_space 函式類似：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>report_disk_space () {
+  cat &lt;&lt;- _EOF_
+  &lt;H2&gt;Disk Space Utilization&lt;/H2&gt;
+  &lt;PRE&gt;$(df -h)&lt;/PRE&gt;
+  _EOF_
+  return
+}
+</code></pre></div></div>
+
+<p>This function uses the df -h command to determine the amount of disk space. Lastly,
+we’ll build the report_home_space function:</p>
+
+<p>這個函式使用 df -h 命令來確定磁碟空間的數量。最後，我們將建造 report_home_space 函式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>report_home_space () {
+  cat &lt;&lt;- _EOF_
+  &lt;H2&gt;Home Space Utilization&lt;/H2&gt;
+  &lt;PRE&gt;$(du -sh /home/*)&lt;/PRE&gt;
+  _EOF_
+  return
+}
+</code></pre></div></div>
+
+<p>We use the du command with the -sh options to perform this task. This, however, is not
+a complete solution to the problem. While it will work on some systems (Ubuntu, for
+example), it will not work on others. The reason is that many systems set the permissions
+of home directories to prevent them from being world-readable, which is a reasonable
+security measure. On these systems, the report_home_space function, as written,
+will only work if our script is run with superuser privileges. A better solution would be to
+have the script could adjust its behavior according to the privileges of the user. We will
+take this up in the next chapter.</p>
+
+<p>我們使用帶有 -sh 選項的 du 命令來完成這個任務。然而，這並不是此問題的完整解決方案。雖然它會
+在一些系統（例如 Ubuntu）中起作用，但是在其它系統中它不工作。這是因為許多系統會設定家目錄的
+許可權，以此阻止其它使用者讀取它們，這是一個合理的安全措施。在這些系統中，這個 report_home_space 函式，
+只有用超級使用者許可權執行我們的指令碼時，才會工作。一個更好的解決方案是讓指令碼能根據使用者的使用許可權來
+調整自己的行為。我們將在下一章中討論這個問題。</p>
+
+<blockquote>
+  <p>Shell Functions In Your .bashrc File</p>
+
+  <p>你的 .bashrc 檔案中的 shell 函式</p>
+
+  <p>Shell functions make excellent replacements for aliases, and are actually the
+preferred method of creating small commands for personal use. Aliases are very
+limited in the kind of commands and shell features they support, whereas shell
+functions allow anything that can be scripted. For example, if we liked the
+report_disk_space shell function that we developed for our script, we
+could create a similar function named ds for our .bashrc file:</p>
+
+  <p>Shell 函式完美地替代了別名，並且實際上是建立個人所用的小命令的首選方法。別名
+ 非常侷限於命令的種類和它們支援的 shell 功能，然而 shell 函式允許任何可以編寫指令碼的東西。
+ 例如，如果我們喜歡 為我們的指令碼開發的這個 report_disk_space shell 函式，我們可以為我們的 .bashrc 檔案
+ 建立一個相似的名為 ds 的函式：</p>
+
+  <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ds () {
+  echo “Disk Space Utilization For $HOSTNAME”
+  df -h
+}
+</code></pre></div>  </div>
+</blockquote>
+
+<h3 id="總結歸納">總結歸納</h3>
+
+<p>In this chapter, we have introduced a common method of program design called top-
+down design, and we have seen how shell functions are used to build the stepwise
+refinement that it requires. We have also seen how local variables can be used to make
+shell functions independent from one another and from the program in which they are
+placed. This makes it possible for shell functions to be written in a portable manner and
+to be reusable by allowing them to be placed in multiple programs; a great time saver.</p>
+
+<p>這一章中，我們介紹了一種常見的程式設計方法，叫做由上而下設計，並且我們知道了怎樣
+使用 shell 函式按照要求來完成逐步細化的任務。我們也知道了怎樣使用區域性變數使 shell 函式
+獨立於其它函式，以及其所在程式的其它部分。這就有可能使 shell 函式以可移植的方式編寫，
+並且能夠重複使用，透過把它們放置到多個程式中；節省了大量的時間。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The Wikipedia has many articles on software design philosophy. Here are a
+couple of good ones:</p>
+  </li>
+  <li>
+    <p>Wikipedia 上面有許多關於軟體設計原理的文章。這裡是一些好文章：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Top-down_design">http://en.wikipedia.org/wiki/Top-down_design</a></p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Subroutines">http://en.wikipedia.org/wiki/Subroutines</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

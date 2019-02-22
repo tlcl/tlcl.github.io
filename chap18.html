@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">查詢檔案</h1><br>
+<p>As we have wandered around our Linux system, one thing has become abundantly clear:
+a typical Linux system has a lot of files! This begs the question, “how do we find
+things?” We already know that the Linux file system is well organized according to
+conventions that have been passed down from one generation of Unix-like system to the
+next, but the sheer number of files can present a daunting problem.
+In this chapter, we will look at two tools that are used to find files on a system. These
+tools are:</p>
+
+<p>隨著我們在Linux 系統中的不斷探索， 一件事已經變得非常清楚：一個典型的 Linux 系統包含很多檔案！
+這就引發了一個問題，“我們怎樣查詢東西？”。雖然我們已經知道 Linux 檔案系統已經根據類別 Unix 系統的
+代代相傳的慣例而被良好地組織起來了。但是海量的檔案會引起一個可怕的問題。在這一章中，我們將察看
+兩個用來在系統中查詢檔案的工具。這些工具是：</p>
+
+<ul>
+  <li>
+    <p>locate – Find files by name</p>
+  </li>
+  <li>
+    <p>locate – 透過名字來查詢檔案</p>
+  </li>
+  <li>
+    <p>find – Search for files in a directory hierarchy</p>
+  </li>
+  <li>
+    <p>find – 在一個目錄層次結構中搜索檔案</p>
+  </li>
+</ul>
+
+<p>We will also look at a command that is often used with file search commands to process
+the resulting list of files:</p>
+
+<p>我們也將看一個經常與檔案搜尋命令一起使用的命令，它用來處理搜尋到的檔案列表：</p>
+
+<ul>
+  <li>
+    <p>xargs – Build and execute command lines from standard input</p>
+  </li>
+  <li>
+    <p>xargs – 從標準輸入產生和執行命令列</p>
+  </li>
+</ul>
+
+<p>In addition, we will introduce a couple of commands to assist us in our exploration:</p>
+
+<p>另外，我們將介紹兩個命令以便在我們探索的過程中協助我們：</p>
+
+<ul>
+  <li>
+    <p>touch – Change file times</p>
+  </li>
+  <li>
+    <p>touch – 更改檔案時間</p>
+  </li>
+  <li>
+    <p>stat – Display file or file system status</p>
+  </li>
+  <li>
+    <p>stat – 顯示檔案或檔案系統狀態</p>
+  </li>
+</ul>
+
+<h3 id="locate---查詢檔案的簡單方法">locate - 查詢檔案的簡單方法</h3>
+
+<p>The locate program performs a rapid database search of pathnames and outputs every
+name that matches a given substring. Say, for example, we want to find all the programs
+with names that begin with “zip.” Since we are looking for programs, we can assume
+that the directory containing the programs would end with “bin/”. Therefore, we could
+try to use locate this way to find our files:</p>
+
+<p>這個 locate 程式會執行一次快速的路徑名資料庫搜尋，並且輸出每個與給定子字串相匹配的路徑名。比如說，
+例如，我們想要找到所有名字以“zip”開頭的程式。因為我們正在查詢程式，可以假定包含
+程式的目錄以”bin/”結尾。因此，我們試著以這種方式使用 locate 命令，來找到我們的檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ locate bin/zip
+</code></pre></div></div>
+
+<p>locate will search its database of pathnames and output any that contain the string “bin/zip”:</p>
+
+<p>locate 命令將會搜尋它的路徑名資料庫，輸出任一個包含字串“bin/zip”的路徑名：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/usr/bin/zip
+/usr/bin/zipcloak
+/usr/bin/zipgrep
+/usr/bin/zipinfo
+/usr/bin/zipnote
+/usr/bin/zipsplit
+</code></pre></div></div>
+
+<p>If the search requirement is not so simple, locate can be combined with other tools
+such as grep to design more interesting searches:</p>
+
+<p>如果搜尋要求沒有這麼簡單，locate 可以結合其它工具，比如說 grep 命令，來設計更加
+有趣的搜尋：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ locate zip | grep bin
+/bin/bunzip2
+/bin/bzip2
+/bin/bzip2recover
+/bin/gunzip
+/bin/gzip
+/usr/bin/funzip
+/usr/bin/gpg-zip
+/usr/bin/preunzip
+/usr/bin/prezip
+/usr/bin/prezip-bin
+/usr/bin/unzip
+/usr/bin/unzipsfx
+/usr/bin/zip
+/usr/bin/zipcloak
+/usr/bin/zipgrep
+/usr/bin/zipinfo
+/usr/bin/zipnote
+/usr/bin/zipsplit
+</code></pre></div></div>
+
+<p>The locate program has been around for a number of years, and there are several
+different variants in common use. The two most common ones found in modern Linux
+distributions are slocate and mlocate, though they are usually accessed by a
+symbolic link named locate. The different versions of locate have overlapping
+options sets. Some versions include regular expression matching (which we’ll cover in
+an upcoming chapter) and wild card support. Check the man page for locate to
+determine which version of locate is installed.</p>
+
+<p>這個 locate 程式已經存在了很多年了，它有幾個不同的變體被普遍使用著。在現在 Linux
+發行版中兩個最常見的變體是 slocate 和 mlocate，儘管它們通常被名為 locate 的
+符號連結訪問。不同版本的 locate 命令擁有重疊的選項集合。一些版本包括正則表示式
+匹配（我們會在下一章中討論）和萬用字元支援。可以檢視 locate 命令的手冊來確定安裝了
+哪個版本的 locate 程式。</p>
+
+<blockquote>
+  <p>Where Does The locate Database Come From?</p>
+
+  <p>locate 資料庫來自何方？</p>
+
+  <p>You may notice that, on some distributions, locate fails to work just
+after the system is installed, but if you try again the next day, it works
+fine. What gives?  The locate database is created by another program named
+updatedb.  Usually, it is run periodically as a cron job; that is, a task
+performed at regular intervals by the cron daemon. Most systems equipped
+with locate run updatedb once a day. Since the database is not updated
+continuously, you will notice that very recent files do not show up when using
+locate. To overcome this, it’s possible to run the updatedb program manually
+by becoming the superuser and running updatedb at the prompt.</p>
+
+  <p>你可能注意到了，在一些發行版中，僅僅在系統安裝之後，locate 不能工作，
+但是如果你第二天再試一下，它就正常工作了。怎麼回事呢？locate 資料庫由另一個叫做 updatedb
+的程式建立。通常，這個程式作為一個定時任務（jobs）週期性運轉；也就是說，一個任務
+在特定的時間間隔內被 cron 守護程序執行。大多數裝有 locate 的系統會每隔一天執行一回
+updatedb 程式。因為資料庫不能被持續地更新，所以當使用 locate 時，你會發現
+目前最新的檔案不會出現。為了克服這個問題，透過更改為超級使用者身份，在提示符下執行 updatedb 命令，
+可以手動執行 updatedb 程式。</p>
+</blockquote>
+
+<h3 id="find---查詢檔案的複雜方式">find - 查詢檔案的複雜方式</h3>
+
+<p>While the locate program can find a file based solely on its name, the find program
+searches a given directory (and its subdirectories) for files based on a variety of
+attributes. We’re going to spend a lot of time with find because it has a lot of
+interesting features that we will see again and again when we start to cover programming
+concepts in later chapters.</p>
+
+<p>locate 程式只能依據檔名來查詢檔案，而 find 程式能基於各種各樣的屬性
+搜尋一個給定目錄（以及它的子目錄），來查詢檔案。我們將要花費大量的時間學習 find 命令，因為
+它有許多有趣的特性，當我們開始在隨後的章節裡面討論程式設計概念的時候，我們將會重複看到這些特性。</p>
+
+<p>In its simplest use, find is given one or more names of directories to search. For
+example, to produce a list of our home directory:</p>
+
+<p>在它的最簡單的使用方式中，find 命令接收一個或多個目錄名來執行搜尋。例如，輸出我們的家目錄的路徑名列表（包括檔案及目錄，譯者注）。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find ~
+</code></pre></div></div>
+
+<p>On most active user accounts, this will produce a large list. Since the list is sent to
+standard output, we can pipe the list into other programs. Let's use wc to count the
+number of files:</p>
+
+<p>在最活躍的使用者帳號中，這將產生一張很大的列表。因為這張列表被髮送到標準輸出，
+我們可以把這個列表管道到其它的程式中。讓我們使用 wc 程式來計算出檔案的數量：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find ~ | wc -l
+47068
+</code></pre></div></div>
+
+<p>Wow, we’ve been busy! The beauty of find is that it can be used to identify files that
+meet specific criteria. It does this through the (slightly strange) application of options,
+tests, and actions. We’ll look at the tests first.</p>
+
+<p>哇，我們一直很忙（在 home 路徑下執行了很多操作，譯者注）！find 命令的魅力所在就是它能夠被用來找到符合特定標準的檔案。它透過
+（有點奇怪）應用選項，測試條件，和操作來做到這一點。我們先看一下測試條件：</p>
+
+<h4 id="tests">Tests</h4>
+
+<p>Let's say that we want a list of directories from our search. To do this, we could add the
+following test:</p>
+
+<p>比如說我們想在我們的搜尋中得到目錄列表。我們可以新增以下測試條件：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find ~ -type d | wc -l
+1695
+</code></pre></div></div>
+
+<p>Adding the test -type d limited the search to directories. Conversely, we could have
+limited the search to regular files with this test:</p>
+
+<p>新增測試條件-type d 限制了只搜尋目錄。相反地，我們可以使用這個測試條件來限定搜尋普通檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find ~ -type f | wc -l
+38737
+</code></pre></div></div>
+
+<p>Here are the common file type tests supported by find:</p>
+
+<p>這裡是 find 命令支援的常見檔案型別測試條件：</p>
+
+<table class="multi">
+<caption class="cap">Table 18-1: find File Types</caption>
+<tr>
+<th class="title">File Type </th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="25%">b</td>
+<td valign="top">Block special device file
+</td>
+</tr>
+<tr>
+<td valign="top">c</td>
+<td valign="top">Character special device file</td>
+</tr>
+<tr>
+<td valign="top">d</td>
+<td valign="top">Directory</td>
+</tr>
+<tr>
+<td valign="top">f</td>
+<td valign="top">Regular file</td>
+</tr>
+<tr>
+<td valign="top">l</td>
+<td valign="top">Symbolic link</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表18-1: find 檔案型別</caption>
+<tr>
+<th class="title">檔案型別</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top" width="25%">b</td>
+<td valign="top">塊特殊裝置檔案 </td>
+</tr>
+<tr>
+<td valign="top">c</td>
+<td valign="top">字元特殊裝置檔案</td>
+</tr>
+<tr>
+<td valign="top">d</td>
+<td valign="top">目錄</td>
+</tr>
+<tr>
+<td valign="top">f</td>
+<td valign="top">普通檔案</td>
+</tr>
+<tr>
+<td valign="top">l</td>
+<td valign="top">符號連結</td>
+</tr>
+</table>
+
+<p>We can also search by file size and filename by adding some additional tests: Let's look
+for all the regular files that match the wild card pattern “*.JPG” and are larger than one
+megabyte:</p>
+
+<p>我們也可以透過加入一些額外的測試條件，根據檔案大小和檔名來搜尋：讓我們查詢所有檔名匹配
+萬用字元模式“*.JPG”和檔案大小大於1M 的普通檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find ~ -type f -name "*.JPG" -size +1M | wc -l
+840
+</code></pre></div></div>
+
+<p>In this example, we add the -name test followed by the wild card pattern. Notice how
+we enclose it in quotes to prevent pathname expansion by the shell. Next, we add the
+-size test followed by the string “+1M”. The leading plus sign indicates that we are
+looking for files larger than the specified number. A leading minus sign would change
+the meaning of the string to be smaller than the specified number. No sign means,
+“match the value exactly.” The trailing letter “M” indicates that the unit of measurement
+is megabytes. The following characters may be used to specify units:</p>
+
+<p>在這個例子裡面，我們加入了 -name 測試條件，後面跟萬用字元模式。注意，我們把它用雙引號引起來，
+從而阻止 shell 展開路徑名。緊接著，我們加入 -size 測試條件，後跟字串“+1M”。開頭的加號表明
+我們正在尋找檔案大小大於指定數的檔案。若字串以減號開頭，則意味著查詢小於指定數的檔案。
+若沒有符號意味著“精確匹配這個數”。結尾字母“M”表明測量單位是兆位元組。下面的字元可以
+被用來指定測量單位：</p>
+
+<table class="multi">
+<caption class="cap">Table 18-2: find Size Units</caption>
+<tr>
+<th class="title">Character</th>
+<th class="title">Unit</th>
+</tr>
+<tr>
+<td valign="top" width="25%">b</td>
+<td valign="top">512 byte blocks. This is the default if no unit is specified.</td>
+</tr>
+<tr>
+<td valign="top">c</td>
+<td valign="top">Bytes</td>
+</tr>
+<tr>
+<td valign="top">w</td>
+<td valign="top">Two byte words</td>
+</tr>
+<tr>
+<td valign="top">k</td>
+<td valign="top">Kilobytes (Units of 1024 bytes)</td>
+</tr>
+<tr>
+<td valign="top">M</td>
+<td valign="top">Megabytes (Units of 1048576 bytes)</td>
+</tr>
+<tr>
+<td valign="top">G</td>
+<td valign="top">Gigabytes (Units of 1073741824 bytes)</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表18-2: find 大小單位</caption>
+<tr>
+<th class="title">字元</th>
+<th class="title">單位</th>
+</tr>
+<tr>
+<td valign="top" width="25%">b</td>
+<td valign="top">512 個位元組塊。如果沒有指定單位，則這是預設值。</td>
+</tr>
+<tr>
+<td valign="top">c</td>
+<td valign="top">位元組</td>
+</tr>
+<tr>
+<td valign="top">w</td>
+<td valign="top">兩個位元組的字</td>
+</tr>
+<tr>
+<td valign="top">k</td>
+<td valign="top">千位元組(1024個位元組單位)</td>
+</tr>
+<tr>
+<td valign="top">M</td>
+<td valign="top">兆位元組(1048576個位元組單位)</td>
+</tr>
+<tr>
+<td valign="top">G</td>
+<td valign="top">千兆位元組(1073741824個位元組單位)</td>
+</tr>
+</table>
+
+<p>find supports a large number of different tests. Below is a rundown of the common
+ones. Note that in cases where a numeric argument is required, the same “+” and “-”
+notation discussed above can be applied:</p>
+
+<p>find 命令支援大量不同的測試條件。下表是列出了一些常見的測試條件。請注意，在需要數值引數的
+情況下，可以應用以上討論的“+”和“-”符號表示法：</p>
+
+<table class="multi">
+<caption class="cap">Table 18-3: find Tests</caption>
+<tr>
+<th class="title">Test</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-cmin n </td>
+<td valign="top">Match files or directories whose content or attributes were
+last modified exactly n minutes ago. To specify less than n
+minutes ago, use -n and to specify more than n minutes
+ago, use +n.</td>
+</tr>
+<tr>
+<td valign="top">-cnewer file </td>
+<td valign="top">Match files or directories whose contents or attributes were
+last modified more recently than those of file.</td>
+</tr>
+<tr>
+<td valign="top">-ctime n </td>
+<td valign="top">Match files or directories whose contents or attributes were
+last modified n*24 hours ago.</td>
+</tr>
+<tr>
+<td valign="top">-empty </td>
+<td valign="top">Match empty files and directories.</td>
+</tr>
+<tr>
+<td valign="top">-group name </td>
+<td valign="top">Match file or directories belonging to group. group may
+be expressed as either a group name or as a numeric group
+ID.</td>
+</tr>
+<tr>
+<td valign="top">-iname pattern </td>
+<td valign="top">Like the -name test but case insensitive.</td>
+</tr>
+<tr>
+<td valign="top">-inum n </td>
+<td valign="top">Match files with inode number n. This is helpful for
+finding all the hard links to a particular inode.</td>
+</tr>
+<tr>
+<td valign="top">-mmin n </td>
+<td valign="top">Match files or directories whose contents were modified n
+minutes ago.</td>
+</tr>
+<tr>
+<td valign="top">-mtime n </td>
+<td valign="top">Match files or directories whose contents were modified
+n*24 hours ago.</td>
+</tr>
+<tr>
+<td valign="top">-name pattern </td>
+<td valign="top">Match files and directories with the specified wild card pattern.</td>
+</tr>
+<tr>
+<td valign="top">-newer file </td>
+<td valign="top">Match files and directories whose contents were modified
+more recently than the specified file. This is very useful
+when writing shell scripts that perform file backups. Each
+time you make a backup, update a file (such as a log), then
+use find to determine which files that have changed since
+the last update.</td>
+</tr>
+<tr>
+<td valign="top">-nouser </td>
+<td valign="top">Match file and directories that do not belong to a valid user.
+This can be used to find files belonging to deleted accounts
+or to detect activity by attackers.</td>
+</tr>
+<tr>
+<td valign="top">-nogroup </td>
+<td valign="top">Match files and directories that do not belong to a valid
+group.</td>
+</tr>
+<tr>
+<td valign="top">-perm mode </td>
+<td valign="top">Match files or directories that have permissions set to the
+specified mode. mode may be expressed by either octal or
+symbolic notation.</td>
+</tr>
+<tr>
+<td valign="top">-samefile name </td>
+<td valign="top">Similar to the -inum test. Matches files that share the
+same inode number as file name.</td>
+</tr>
+<tr>
+<td valign="top">-size n </td>
+<td valign="top">Match files of size n.</td>
+</tr>
+<tr>
+<td valign="top">-type c </td>
+<td valign="top">Match files of type c.</td>
+</tr>
+<tr>
+<td valign="top">-user name </td>
+<td valign="top">Match files or directories belonging to user name. The
+user may be expressed by a user name or by a numeric user
+ID.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表18-3: find 測試條件</caption>
+<tr>
+<th class="title">測試條件</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-cmin n </td>
+<td valign="top">匹配內容或屬性最後修改時間正好在 n 分鐘之前的檔案或目錄。
+指定少於 n 分鐘之前，使用 -n，指定多於 n 分鐘之前，使用 +n。 </td>
+</tr>
+<tr>
+<td valign="top">-cnewer file </td>
+<td valign="top">匹配內容或屬性最後修改時間晚於 file 的檔案或目錄。 </td>
+</tr>
+<tr>
+<td valign="top">-ctime n </td>
+<td valign="top">匹配內容和屬性最後修改時間在 n*24小時之前的檔案和目錄。</td>
+</tr>
+<tr>
+<td valign="top">-empty </td>
+<td valign="top">匹配空檔案和目錄。</td>
+</tr>
+<tr>
+<td valign="top">-group name </td>
+<td valign="top">匹配屬於一個組的檔案或目錄。組可以用組名或組 ID 來表示。</td>
+</tr>
+<tr>
+<td valign="top">-iname pattern </td>
+<td valign="top">就像-name 測試條件，但是不區分大小寫。</td>
+</tr>
+<tr>
+<td valign="top">-inum n </td>
+<td valign="top">匹配 inode 號是 n的檔案。這對於找到某個特殊 inode 的所有硬連結很有幫助。 </td>
+</tr>
+<tr>
+<td valign="top">-mmin n </td>
+<td valign="top">匹配內容被修改於 n 分鐘之前的檔案或目錄。</td>
+</tr>
+<tr>
+<td valign="top">-mtime n </td>
+<td valign="top">匹配的檔案或目錄的內容被修改於 n*24小時之前。 </td>
+</tr>
+<tr>
+<td valign="top">-name pattern </td>
+<td valign="top">用指定的萬用字元模式匹配的檔案和目錄。</td>
+</tr>
+<tr>
+<td valign="top">-newer file </td>
+<td valign="top">匹配內容晚於指定的檔案的檔案和目錄。這在編寫執行備份的 shell 指令碼的時候很有幫。
+每次你製作一個備份，更新檔案（比如說日誌），然後使用 find 命令來判斷哪些檔案自從上一次更新之後被更改了。 </td>
+</tr>
+<tr>
+<td valign="top">-nouser </td>
+<td valign="top">匹配不屬於一個有效使用者的檔案和目錄。這可以用來查詢
+屬於被刪除的帳戶的檔案或監測攻擊行為。 </td>
+</tr>
+<tr>
+<td valign="top">-nogroup </td>
+<td valign="top">匹配不屬於一個有效的組的檔案和目錄。 </td>
+</tr>
+<tr>
+<td valign="top">-perm mode </td>
+<td valign="top">匹配許可權已經設定為指定的 mode的檔案或目錄。mode 可以用
+八進位制或符號表示法。</td>
+</tr>
+<tr>
+<td valign="top">-samefile name </td>
+<td valign="top">類似於-inum 測試條件。匹配和檔案 name 享有同樣 inode 號的檔案。 </td>
+</tr>
+<tr>
+<td valign="top">-size n </td>
+<td valign="top">匹配大小為 n 的檔案</td>
+</tr>
+<tr>
+<td valign="top">-type c </td>
+<td valign="top">匹配檔案型別是 c 的檔案。</td>
+</tr>
+<tr>
+<td valign="top">-user name </td>
+<td valign="top">匹配屬於某個使用者的檔案或目錄。這個使用者可以透過使用者名稱或使用者 ID 來表示。 </td>
+</tr>
+</table>
+
+<p>This is not a complete list. The find man page has all the details.</p>
+
+<p>這不是一個完整的列表。find 命令手冊有更詳細的說明。</p>
+
+<h4 id="運算子">運算子</h4>
+
+<p>Even with all the tests that find provides, we may still need a better way to describe the
+logical relationships between the tests. For example, what if we needed to determine if
+all the files and subdirectories in a directory had secure permissions? We would look for
+all the files with permissions that are not 0600 and the directories with permissions that
+are not 0700. Fortunately, find provides a way to combine tests using logical operators
+to create more complex logical relationships. To express the aforementioned test, we
+could do this:</p>
+
+<p>即使擁有了 find 命令提供的所有測試條件，我們還需要一個更好的方式來描述測試條件之間的邏輯關係。例如，
+如果我們需要確定是否一個目錄中的所有的檔案和子目錄擁有安全許可權，怎麼辦呢？
+我們可以查詢許可權不是0600的檔案和許可權不是0700的目錄。幸運地是，find 命令提供了
+一種方法來結合測試條件，透過使用邏輯運算子來建立更復雜的邏輯關係。
+為了表達上述的測試條件，我們可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find ~ \( -type f -not -perm 0600 \) -or \( -type d -not -perm 0700 \)
+</code></pre></div></div>
+
+<p>Yikes! That sure looks weird. What is all this stuff? Actually, the operators are not that
+complicated once you get to know them. Here is the list:</p>
+
+<p>呀！這的確看起來很奇怪。這些是什麼東西？實際上，這些運算子沒有那麼複雜，一旦你知道了它們的原理。
+這裡是運算子列表：</p>
+
+<table class="multi">
+<caption class="cap">Table 18-4: find Logical Operators</caption>
+<tr>
+<th class="title">Operator</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-and</td>
+<td>Match if the tests on both sides of the operator are true. May be shortened to -a. Note that when no operator is present, -and is implied by default.</td>
+</tr>
+<tr>
+<td valign="top">-or</td>
+<td>Match if a test on either side of the operator is true. May be shortened to -o.</td>
+</tr>
+<tr>
+<td valign="top">-not</td>
+<td>Match if the test following the operator is false. May be abbreviated with an exclamation point (!).</td>
+</tr>
+<tr>
+<td valign="top">()</td>
+<td>Groups tests and operators together to form larger expressions. This is used to control the precedence of the
+logical evaluations. By default, find evaluates from left to right. It is often necessary to override the default evaluation order to obtain the desired result. Even if not needed, it is helpful sometimes to include the grouping characters to improve readability of the command. Note that since the parentheses characters have special meaning to the shell, they must be quoted when using them on the command line to allow them to be passed as arguments to find. Usually the backslash character is used to escape them.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表18-4: find 命令的邏輯運算子</caption>
+<tr>
+<th class="title">運算子</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-and</td>
+<td valign="top">如果運算子兩邊的測試條件都是真，則匹配。可以簡寫為 -a。
+注意若沒有使用運算子，則預設使用 -and。</td>
+</tr>
+<tr>
+<td valign="top">-or</td>
+<td valign="top">若運算子兩邊的任一個測試條件為真，則匹配。可以簡寫為 -o。</td>
+</tr>
+<tr>
+<td valign="top">-not</td>
+<td valign="top">若運算子後面的測試條件是假，則匹配。可以簡寫為一個感嘆號（!）。</td>
+</tr>
+<tr>
+<td valign="top">()</td>
+<td valign="top"> 把測試條件和運算子組合起來形成更大的表示式。這用來控制邏輯計算的優先順序。
+預設情況下，find 命令按照從左到右的順序計算。經常有必要重寫預設的求值順序，以得到期望的結果。
+即使沒有必要，有時候包括組合起來的字元，對提高命令的可讀性是很有幫助的。注意
+因為圓括號字元對於 shell 來說有特殊含義，所以在命令列中使用它們的時候，它們必須
+用引號引起來，才能作為實參傳遞給 find 命令。通常反斜槓字元被用來轉義圓括號字元。</td>
+</tr>
+</table>
+
+<p>With this list of operators in hand, Let's deconstruct our find command. When viewed
+from the uppermost level, we see that our tests are arranged as two groupings separated
+by an -or operator:</p>
+
+<p>透過這張運算子列表，我們重建 find 命令。從最外層看，我們看到測試條件被分為兩組，由一個
+-or 運算子分開：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>( expression 1 ) -or ( expression 2 )
+</code></pre></div></div>
+
+<p>This makes sense, since we are searching for files with a certain set of permissions and
+for directories with a different set. If we are looking for both files and directories, why
+do we use -or instead of -and? Because as find scans through the files and
+directories, each one is evaluated to see if it matches the specified tests. We want to
+know if it is either a file with bad permissions or a directory with bad permissions. It
+can’t be both at the same time. So if we expand the grouped expressions, we can see it
+this way:</p>
+
+<p>這看起來合理，因為我們正在搜尋具有不同許可權集合的檔案和目錄。如果我們檔案和目錄兩者都查詢，
+那為什麼要用 -or 來代替 -and 呢？因為 find 命令掃描檔案和目錄時，會計算每一個物件，看看它是否
+匹配指定的測試條件。我們想要知道它是具有錯誤許可權的檔案還是有錯誤許可權的目錄。它不可能同時符合這
+兩個條件。所以如果展開組合起來的表示式，我們能這樣解釋它：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>( file with bad perms ) -or ( directory with bad perms )
+</code></pre></div></div>
+
+<p>Our next challenge is how to test for “bad permissions.” How do we do that? Actually
+we don’t. What we will test for is “not good permissions,” since we know what “good
+permissions” are. In the case of files, we define good as 0600 and for directories, as</p>
+<ol>
+  <li>The expression that will test files for “not good” permissions is:</li>
+</ol>
+
+<p>下一個挑戰是怎樣來檢查“錯誤許可權”，這個怎樣做呢？事實上我們不從這個角度入手。我們將測試
+“不是正確許可權”，因為我們知道什麼是“正確許可權”。對於檔案，我們定義正確許可權為0600，
+目錄則為0700。測試具有“不正確”許可權的檔案表示式為：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-type f -and -not -perms 0600
+</code></pre></div></div>
+
+<p>and for directories:</p>
+
+<p>對於目錄，表示式為：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-type d -and -not -perms 0700
+</code></pre></div></div>
+
+<p>As noted in the table of operators above, the -and operator can be safely removed, since
+it is implied by default. So if we put this all back together, we get our final command:</p>
+
+<p>正如上述運算子列表中提到的，這個-and 運算子能夠被安全地刪除，因為它是預設使用的運算子。
+所以如果我們把這兩個表示式連起來，就得到最終的命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find ~ ( -type f -not -perms 0600 ) -or ( -type d -not -perms 0700 )
+</code></pre></div></div>
+
+<p>However, since the parentheses have special meaning to the shell, we must escape them
+to prevent the shell from trying to interpret them. Preceding each one with a backslash
+character does the trick.</p>
+
+<p>然而，因為圓括號對於 shell 有特殊含義，我們必須轉義它們，來阻止 shell 解釋它們。在圓括號字元
+之前加上一個反斜槓字元來轉義它們。</p>
+
+<p>There is another feature of logical operators that is important to understand. Let's say
+that we have two expressions separated by a logical operator:</p>
+
+<p>邏輯運算子還有另外一個特性要重點理解。比方說我們有兩個由邏輯運算子分開的表示式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>expr1 -operator expr2
+</code></pre></div></div>
+
+<p>In all cases, expr1 will always be performed; however the operator will determine if
+expr2 is performed. Here’s how it works:</p>
+
+<p>在所有情況下，總會執行表示式 expr1；然而運算子將決定是否執行表示式 expr2。這裡
+列出了它是怎樣工作的：</p>
+
+<table class="multi">
+<caption class="cap">Table 18-5: find AND/OR Logic</caption>
+<tr>
+<th class="title" width="%30">Results of expr1</th>
+<th class="title" width="%30">Operator</th>
+<th class="title">expr2 is...</th>
+</tr>
+<tr>
+<td valign="top">True</td>
+<td valign="top">-and</td>
+<td valign="top">Always performed</td>
+</tr>
+<tr>
+<td valign="top">False</td>
+<td valign="top">-and</td>
+<td valign="top">Never performed</td>
+</tr>
+<tr>
+<td valign="top">Ture</td>
+<td valign="top">-or</td>
+<td valign="top">Never performed</td>
+</tr>
+<tr>
+<td valign="top">False</td>
+<td valign="top">-or</td>
+<td valign="top">Always performed</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表18-5: find AND/OR 邏輯</caption>
+<tr>
+<th class="title" width="%30">expr1 的結果</th>
+<th class="title" width="%30">運算子</th>
+<th class="title">expr2 is...</th>
+</tr>
+<tr>
+<td valign="top">真</td>
+<td valign="top">-and</td>
+<td valign="top">總要執行</td>
+</tr>
+<tr>
+<td valign="top">假</td>
+<td valign="top">-and</td>
+<td valign="top">從不執行</td>
+</tr>
+<tr>
+<td valign="top">真</td>
+<td valign="top">-or</td>
+<td valign="top">從不執行</td>
+</tr>
+<tr>
+<td valign="top">假</td>
+<td valign="top">-or</td>
+<td valign="top">總要執行</td>
+</tr>
+</table>
+
+<p>Why does this happen? It’s done to improve performance. Take -and, for example. We
+know that the expression expr1 -and expr2 cannot be true if the result of expr1
+is false, so there is no point in performing expr2. Likewise, if we have the expression
+expr1 -or expr2 and the result of expr1 is true, there is no point in performing
+expr2, as we already know that the expression expr1 -or expr2 is true.
+OK, so it helps it go faster. Why is this important? It’s important because we can rely on
+this behavior to control how actions are performed, as we shall soon see..</p>
+
+<p>為什麼這會發生呢？這樣做是為了提高效能。以 -and 為例，我們知道如果表示式 expr1的結果為假，
+表示式 expr1 -and expr2不能為真，所以沒有必要執行 expr2。同樣地，如果我們有表示式
+expr1 -or expr2，並且表示式 expr1的結果為真，那麼就沒有必要執行 expr2，因為我們已經知道
+表示式 expr1 -or expr2 為真。好，這樣會執行快一些。為什麼這個很重要？
+它很重要是因為我們能依靠這種行為來控制怎樣來執行操作。我們會很快看到…</p>
+
+<h3 id="預定義的操作">預定義的操作</h3>
+
+<p>Let's get some work done! Having a list of results from our find command is useful,
+but what we really want to do is act on the items on the list. Fortunately, find allows
+actions to be performed based on the search results. There are a set of predefined actions
+and several ways to apply user-defined actions. First Let's look at a few of the predefined
+actions:</p>
+
+<p>讓我們做一些工作吧！執行 find 命令得到結果列表很有用處，但是我們真正想要做的事情是操作列表
+中的某些條目。幸運地是，find 命令允許基於搜尋結果來執行操作。有許多預定義的操作和幾種方式來
+應用使用者定義的操作。首先，讓我們看一下幾個預定義的操作：</p>
+
+<table class="multi">
+<caption class="cap">Table 18-6: Predefined find Actions</caption>
+<tr>
+<th class="title">Action </th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-delete</td>
+<td valign="top">Delete the currently matching file.</td>
+</tr>
+<tr>
+<td valign="top">-ls</td>
+<td valign="top">Perform the equivalent of ls -dils on the matching file.
+Output is sent to standard output.
+</td>
+</tr>
+<tr>
+<td valign="top">-print</td>
+<td valign="top">Output the full pathname of the matching file to standard
+output. This is the default action if no other action is specified.</td>
+</tr>
+<tr>
+<td valign="top">-quit</td>
+<td valign="top"> Quit once a match has been made.  </td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表18-6: 幾個預定義的 find 命令操作</caption>
+<tr>
+<th class="title">操作</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-delete</td>
+<td valign="top">刪除當前匹配的檔案。</td>
+</tr>
+<tr>
+<td valign="top">-ls</td>
+<td valign="top">對匹配的檔案執行等同的 ls -dils 命令。並將結果傳送到標準輸出。
+</td>
+</tr>
+<tr>
+<td valign="top">-print</td>
+<td valign="top">把匹配檔案的全路徑名輸送到標準輸出。如果沒有指定其它操作，這是
+預設操作。</td>
+</tr>
+<tr>
+<td valign="top">-quit</td>
+<td valign="top">一旦找到一個匹配，退出。</td>
+</tr>
+</table>
+
+<p>As with the tests, there are many more actions. See the find man page for full details.
+In our very first example, we did this:</p>
+
+<p>和測試條件一樣，還有更多的操作。檢視 find 命令手冊得到更多細節。在第一個例子裡，
+我們這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find ~
+</code></pre></div></div>
+
+<p>which produced a list of every file and subdirectory contained within our home directory.
+It produced a list because the -print action is implied if no other action is specified.
+Thus our command could also be expressed as:</p>
+
+<p>這個命令輸出了我們家目錄中包含的每個檔案和子目錄。它會輸出一個列表，因為會預設使用-print 操作
+，如果沒有指定其它操作的話。因此我們的命令也可以這樣表述：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find ~ -print
+</code></pre></div></div>
+
+<p>We can use find to delete files that meet certain criteria. For example, to delete files
+that have the file extension “.BAK” (which is often used to designate backup files), we
+could use this command:</p>
+
+<p>我們可以使用 find 命令來刪除符合一定條件的檔案。例如，來刪除副檔名為“.BAK”（這通常用來指定備份檔案）
+的檔案，我們可以使用這個命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find ~ -type f -name '*.BAK' -delete
+</code></pre></div></div>
+
+<p>In this example, every file in the user’s home directory (and its subdirectories) is searched
+for filenames ending in .BAK. When they are found, they are deleted.</p>
+
+<p>在這個例子裡面，使用者家目錄（和它的子目錄）下的每個檔案中搜索以.BAK 結尾的檔名。當找到後，就刪除它們。</p>
+
+<hr />
+
+<p>Warning: It should go without saying that you should use extreme caution when
+using the -delete action. Always test the command first by substituting the
+-print action for -delete to confirm the search results.</p>
+
+<p>警告：當使用 -delete 操作時，不用說，你應該格外小心。每次都應該首先用
+-print 操作代替 -delete 測試一下命令，來確認搜尋結果。</p>
+
+<hr />
+
+<p>Before we go on, Let's take another look at how the logical operators affect actions.
+Consider the following command:</p>
+
+<p>在我們繼續之前，讓我們看一下邏輯運算子是怎樣影響操作的。考慮以下命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find ~ -type f -name '*.BAK' -print
+</code></pre></div></div>
+
+<p>As we have seen, this command will look for every regular file (-type f) whose name
+ends with .BAK (-name ‘*.BAK’) and will output the relative pathname of each
+matching file to standard output (-print). However, the reason the command performs
+the way it does is determined by the logical relationships between each of the tests and
+actions. Remember, there is, by default, an implied -and relationship between each test
+and action. We could also express the command this way to make the logical
+relationships easier to see:</p>
+
+<p>正如我們所見到的，這個命令會查詢每個檔名以.BAK (-name ‘*.BAK’) 結尾的普通檔案 (-type f)，
+並把每個匹配檔案的相對路徑名輸出到標準輸出 (-print)。然而，此命令按這個方式執行的原因，是
+由每個測試和操作之間的邏輯關係決定的。記住，在每個測試和操作之間會預設應用 -and 邏輯運算子。
+我們也可以這樣表達這個命令，使邏輯關係更容易看出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find ~ -type f -and -name '*.BAK' -and -print
+</code></pre></div></div>
+
+<p>With our command fully expressed, Let's look at how the logical operators affect its
+execution:</p>
+
+<p>當命令被充分表達之後，讓我們看看邏輯運算子是如何影響其執行的：</p>
+
+<table class="multi">
+<tr>
+<th class="title">Test/Action</th>
+<th class="title">Is Performed Only If...</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-print</td>
+<td valign="top">-type f and -name '*.BAK' are true</td>
+</tr>
+<tr>
+<td valign="top">-name ‘*.BAK’ </td>
+<td valign="top">-type f is true</td>
+</tr>
+<tr>
+<td valign="top">-type f </td>
+<td valign="top">Is always performed, since it is the first test/action in an
+-and relationship.  </td>
+</tr>
+</table>
+
+<table class="multi">
+<tr>
+<th class="title">測試／行為 </th>
+<th class="title">只有...的時候，才被執行</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-print</td>
+<td valign="top">只有 -type f and -name '*.BAK'為真的時候</td>
+</tr>
+<tr>
+<td valign="top">-name ‘*.BAK’ </td>
+<td valign="top">只有 -type f 為真的時候</td>
+</tr>
+<tr>
+<td valign="top">-type f </td>
+<td valign="top">總是被執行，因為它是與 -and 關係中的第一個測試／行為。</td>
+</tr>
+</table>
+
+<p>Since the logical relationship between the tests and actions determines which of them are
+performed, we can see that the order of the tests and actions is important. For instance, if
+we were to reorder the tests and actions so that the -print action was the first one, the
+command would behave much differently:</p>
+
+<p>因為測試和行為之間的邏輯關係決定了哪一個會被執行，我們可以看出知道測試和行為的順序很重要。例如，
+如果我們重新安排測試和行為之間的順序，讓 -print 行為是第一個，那麼這個命令執行起來會截然不同：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find ~ -print -and -type f -and -name '*.BAK'
+</code></pre></div></div>
+
+<p>This version of the command will print each file (the -print action always evaluates to
+true) and then test for file type and the specified file extension.</p>
+
+<p>這個版本的命令會打印出每個檔案（-print 行為總是為真），然後測試檔案型別和指定的副檔名。</p>
+
+<h3 id="使用者定義的行為">使用者定義的行為</h3>
+
+<p>In addition to the predefined actions, we can also invoke arbitrary commands. The
+traditional way of doing this is with the -exec action. This action works like this:</p>
+
+<p>除了預定義的行為之外，我們也可以呼叫任意的命令。傳統方式是透過 -exec 行為。這個
+行為像這樣工作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-exec command {} ;
+</code></pre></div></div>
+
+<p>where command is the name of a command, {} is a symbolic representation of the current
+pathname and the semicolon is a required delimiter indicating the end of the command.
+Here’s an example of using -exec to act like the -delete action discussed earlier:</p>
+
+<p>這裡的 command 就是指一個命令的名字，{}是當前路徑名的符號表示，分號是必要的分隔符
+表明命令的結束。這裡是一個使用 -exec 行為的例子，其作用如之前討論的 -delete 行為：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-exec rm '{}' ';'
+</code></pre></div></div>
+
+<p>Again, since the brace and semicolon characters have special meaning to the shell, they
+must be quoted or escaped.</p>
+
+<p>重述一遍，因為花括號和分號對於 shell 有特殊含義，所以它們必須被引起來或被轉義。</p>
+
+<p>It’s also possible to execute a user defined action interactively. By using the -ok action
+in place of -exec, the user is prompted before execution of each specified command:</p>
+
+<p>我們也可以互動式地執行一個使用者定義的行為。透過使用 -ok 行為來代替 -exec，在執行每個指定的命令之前，
+會提示使用者：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find ~ -type f -name 'foo*' -ok ls -l '{}' ';'
+&lt; ls ... /home/me/bin/foo &gt; ? y
+-rwxr-xr-x 1 me    me 224 2007-10-29 18:44 /home/me/bin/foo
+&lt; ls ... /home/me/foo.txt &gt; ? y
+-rw-r--r-- 1 me    me 0 2008-09-19 12:53 /home/me/foo.txt
+</code></pre></div></div>
+
+<p>In this example, we search for files with names starting with the string “foo” and execute
+the command ls -l each time one is found. Using the -ok action prompts the user
+before the ls command is executed.</p>
+
+<p>在這個例子裡面，我們搜尋以字串“foo”開頭的檔名，並且對每個匹配的檔案執行 ls -l 命令。
+使用 -ok 行為，會在 ls 命令執行之前提示使用者。</p>
+
+<h3 id="提高效率">提高效率</h3>
+
+<p>When the -exec action is used, it launches a new instance of the specified command
+each time a matching file is found. There are times when we might prefer to combine all
+of the search results and launch a single instance of the command. For example, rather
+than executing the commands like this:</p>
+
+<p>當 -exec 行為被使用的時候，若每次找到一個匹配的檔案，它會啟動一個新的指定命令的範例。
+我們可能更願意把所有的搜尋結果結合起來，再執行一個命令的範例。例如，與其像這樣執行命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ls -l file1
+ls -l file2
+</code></pre></div></div>
+
+<p>we may prefer to execute it this way:</p>
+
+<p>我們更喜歡這樣執行命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ls -l file1 file2
+</code></pre></div></div>
+
+<p>thus causing the command to be executed only one time rather than multiple times.
+There are two ways we can do this. The traditional way, using the external command
+xargs and the alternate way, using a new feature in find itself. We’ll talk about the
+alternate way first.</p>
+
+<p>這樣就導致命令只被執行一次而不是多次。有兩種方法可以這樣做。傳統方式是使用外部命令
+xargs，另一種方法是，使用 find 命令自己的一個新功能。我們先討論第二種方法。</p>
+
+<p>By changing the trailing semicolon character to a plus sign, we activate the ability of
+find to combine the results of the search into an argument list for a single execution of
+the desired command. Going back to our example, this:</p>
+
+<p>透過把末尾的分號改為加號，就激活了 find 命令的一個功能，把搜尋結果結合為一個引數列表，
+然後用於所期望的命令的一次執行。再看一下之前的例子，這個例子中：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find ~ -type f -name 'foo*' -exec ls -l '{}' ';'
+-rwxr-xr-x 1 me     me 224 2007-10-29 18:44 /home/me/bin/foo
+-rw-r--r-- 1 me     me 0 2008-09-19 12:53 /home/me/foo.txt
+</code></pre></div></div>
+
+<p>will execute ls each time a matching file is found. By changing the command to:</p>
+
+<p>每次找到一個匹配的檔案， 就會執行一次 ls 命令。透過把命令改為：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find ~ -type f -name 'foo*' -exec ls -l '{}' +
+-rwxr-xr-x 1 me     me 224 2007-10-29 18:44 /home/me/bin/foo
+-rw-r--r-- 1 me     me 0 2008-09-19 12:53 /home/me/foo.txt
+</code></pre></div></div>
+
+<p>we get the same results, but the system only has to execute the ls command once.</p>
+
+<p>雖然我們得到一樣的結果，但是系統只需要執行一次 ls 命令。</p>
+
+<h4 id="xargs">xargs</h4>
+
+<p>The xargs command performs an interesting function. It accepts input from standard
+input and converts it into an argument list for a specified command. With our example,
+we would use it like this:</p>
+
+<p>這個 xargs 命令會執行一個有趣的函式。它從標準輸入接受輸入，並把輸入轉換為一個特定命令的
+引數列表。對於我們的例子，我們可以這樣使用它：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find ~ -type f -name 'foo*' -print | xargs ls -l
+-rwxr-xr-x 1 me     me 224 2007-10-29 18:44 /home/me/bin/foo
+-rw-r--r-- 1 me     me 0 2008-09-19 12:53 /home/me/foo.txt
+</code></pre></div></div>
+
+<p>Here we see the output of the find command piped into xargs which, in turn,
+constructs an argument list for ls command and then executes it.</p>
+
+<p>這裡我們看到 find 命令的輸出被管道到 xargs 命令，之後，xargs 會為 ls 命令建構
+引數列表，然後執行 ls 命令。</p>
+
+<hr />
+
+<p>Note: While the number of arguments that can be placed into a command line is
+quite large, it’s not unlimited. It is possible to create commands that are too long
+for the shell to accept. When a command line exceeds the maximum length
+supported by the system, xargs executes the specified command with the
+maximum number of arguments possible and then repeats this process until
+standard input is exhausted. To see the maximum size of the command line,
+execute xargs with the –show-limits option.</p>
+
+<p>注意：當被放置到命令列中的引數個數相當大時，引數個數是有限制的。有可能建立的命令
+太長以至於 shell 不能接受。當命令列超過系統支援的最大長度時，xargs 會執行帶有最大
+引數個數的指定命令，然後重複這個過程直到耗盡標準輸入。執行帶有 –show–limits 選項
+的 xargs 命令，來檢視命令列的最大值。</p>
+
+<hr />
+
+<blockquote>
+  <p>Dealing With Funny Filenames</p>
+
+  <p>處理古怪的檔名</p>
+
+  <p>Unix-like systems allow embedded spaces (and even newlines!) in filenames.
+This causes problems for programs like xargs that construct argument lists for
+other programs. An embedded space will be treated as a delimiter and the
+resulting command will interpret each space-separated word as a separate
+argument. To overcome this, find and xarg allow the optional use of a null
+character as argument separator. A null character is defined in ASCII as the
+character represented by the number zero (as opposed to, for example, the space
+character, which is defined in ASCII as the character represented by the number
+32). The find command provides the action -print0, which produces null
+separated output, and the xargs command has the –null option, which
+accepts null separated input. Here’s an example:</p>
+
+  <p>類別 Unix 的系統允許在檔名中嵌入空格（甚至換行符）。這就給一些程式，如為其它
+程式建構引數列表的 xargs 程式，造成了問題。一個嵌入的空格會被看作是一個分隔符，產生的
+命令會把每個空格分離的單詞解釋為單獨的引數。為了解決這個問題，find 命令和 xarg 程式
+允許使用一個可選的 null 字元作為引數分隔符。一個 null 字元被定義在 ASCII 碼中，由數字
+零來表示（相反的，例如，空格字元在 ASCII 碼中由數字32表示）。find 命令提供的 -print0 行為，
+則會產生由 null 字元分離的輸出，並且 xargs 命令有一個 –null 選項，這個選項會接受由 null 字元
+分離的輸入。這裡有一個例子：</p>
+
+  <table>
+    <tbody>
+      <tr>
+        <td>find ~ -iname ‘*.jpg’ -print0</td>
+        <td>xargs –null ls -l</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Using this technique, we can ensure that all files, even those containing embedded
+spaces in their names, are handled correctly.</p>
+
+  <p>使用這項技術，我們可以保證所有檔案，甚至那些檔名中包含空格的檔案，都能被正確地處理。</p>
+</blockquote>
+
+<h3 id="返回操練場">返回操練場</h3>
+
+<p>It’s time to put find to some (almost) practical use. We’ll create a playground and try
+out some of what we have learned.</p>
+
+<p>到實際使用 find 命令的時候了。我們將會建立一個操練場，來實踐一些我們所學到的知識。</p>
+
+<p>First, Let's create a playground with lots of subdirectories and files:</p>
+
+<p>首先，讓我們建立一個包含許多子目錄和檔案的操練場：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mkdir -p playground/dir-{00{1..9},0{10..99},100}
+[me@linuxbox ~]$ touch playground/dir-{00{1..9},0{10..99},100}/file-{A..Z}
+</code></pre></div></div>
+
+<p>Marvel in the power of the command line! With these two lines, we created a playground
+directory containing one hundred subdirectories each containing twenty-six empty files.
+Try that with the GUI!</p>
+
+<p>驚歎於命令列的強大功能！只用這兩行，我們就建立了一個包含一百個子目錄，每個子目錄中
+包含了26個空檔案的操練場。試試用 GUI 來建立它！</p>
+
+<p>The method we employed to accomplish this magic involved a familiar command
+(mkdir), an exotic shell expansion (braces) and a new command, touch. By
+combining mkdir with the -p option (which causes mkdir to create the parent
+directories of the specified paths) with brace expansion, we were able to create one
+hundred directories.</p>
+
+<p>我們用來創造這個奇蹟的方法中包含一個熟悉的命令（mkdir），一個奇異的 shell 擴充套件（花括號）
+和一個新命令，touch。透過結合 mkdir 命令和-p 選項（導致 mkdir 命令建立指定路徑的父目錄），以及
+花括號展開，我們能夠建立一百個目錄。</p>
+
+<p>The touch command is usually used to set or update the access, change, and modify
+times of files. However, if a filename argument is that of a nonexistent file, an empty file
+is created.</p>
+
+<p>這個 touch 命令通常被用來設定或更新檔案的訪問，更改，和修改時間。然而，如果一個檔名引數是一個
+不存在的檔案，則會建立一個空檔案。</p>
+
+<p>In our playground, we created one hundred instances of a file named file-A. Let's find
+them:</p>
+
+<p>在我們的操練場中，我們建立了一百個名為 file-A 的檔案範例。讓我們找到它們：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find playground -type f -name 'file-A'
+</code></pre></div></div>
+
+<p>Note that unlike ls, find does not produce results in sorted order. Its order is
+determined by the layout of the storage device. To confirm that we actually have one
+hundred instances of the file we can confirm it this way:</p>
+
+<p>注意不同於 ls 命令，find 命令的輸出結果是無序的。其順序由儲存裝置的佈局決定。為了確定實際上
+我們擁有一百個此檔案的範例，我們可以用這種方式來確認：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find playground -type f -name 'file-A' | wc -l
+</code></pre></div></div>
+
+<p>Next, Let's look at finding files based on their modification times. This will be helpful
+when creating backups or organizing files in chronological order. To do this, we will first
+create a reference file against which we will compare modification time:</p>
+
+<p>下一步，讓我們看一下基於檔案的修改時間來查詢檔案。當建立備份檔案或者以年代順序來
+組織檔案的時候，這會很有幫助。為此，首先我們將建立一個參考檔案，我們將與其比較修改時間：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ touch playground/timestamp
+</code></pre></div></div>
+
+<p>This creates an empty file named timestamp and sets its modification time to the
+current time. We can verify this by using another handy command, stat, which is a
+kind of souped-up version of ls. The stat command reveals all that the system
+understands about a file and its attributes:</p>
+
+<p>這個建立了一個空檔案，名為 timestamp，並且把它的修改時間設定為當前時間。我們能夠驗證
+它透過使用另一個方便的命令，stat，是一款加大馬力的 ls 命令版本。這個 stat 命令會展示系統對
+某個檔案及其屬性所知道的所有資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ stat playground/timestamp
+File: 'playground/timestamp'
+Size: 0 Blocks: 0 IO Block: 4096 regular empty file
+Device: 803h/2051d Inode: 14265061 Links: 1
+Access: (0644/-rw-r--r--) Uid: ( 1001/ me) Gid: ( 1001/ me)
+Access: 2008-10-08 15:15:39.000000000 -0400
+Modify: 2008-10-08 15:15:39.000000000 -0400
+Change: 2008-10-08 15:15:39.000000000 -0400
+</code></pre></div></div>
+
+<p>If we touch the file again and then examine it with stat, we will see that the file’s
+times have been updated.</p>
+
+<p>如果我們再次 touch 這個檔案，然後用 stat 命令檢測它，我們會發現所有檔案的時間已經更新了。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ touch playground/timestamp
+[me@linuxbox ~]$ stat playground/timestamp
+File: 'playground/timestamp'
+Size: 0 Blocks: 0 IO Block: 4096 regular empty file
+Device: 803h/2051d Inode: 14265061 Links: 1
+Access: (0644/-rw-r--r--) Uid: ( 1001/ me) Gid: ( 1001/ me)
+Access: 2008-10-08 15:23:33.000000000 -0400
+Modify: 2008-10-08 15:23:33.000000000 -0400
+Change: 2008-10-08 15:23:33.000000000 -0400
+</code></pre></div></div>
+
+<p>Next, Let's use find to update some of our playground files:</p>
+
+<p>下一步，讓我們使用 find 命令來更新一些操練場中的檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find playground -type f -name 'file-B' -exec touch '{}' ';'
+</code></pre></div></div>
+
+<p>This updates all files in the playground named file-B. Next we’ll use find to identify
+the updated files by comparing all the files to the reference file timestamp:</p>
+
+<p>這會更新操練場中所有名為 file-B 的檔案。接下來我們會使用 find 命令
+透過把所有檔案與參考檔案 timestamp 做比較，來找到已更新的檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find playground -type f -newer playground/timestamp
+</code></pre></div></div>
+
+<p>The results contain all one hundred instances of file-B. Since we performed a touch
+on all the files in the playground named file-B after we updated timestamp, they
+are now “newer” than timestamp and thus can be identified with the -newer test.</p>
+
+<p>搜尋結果包含所有一百個檔案 file-B 的範例。因為我們在更新了檔案 timestamp 之後，
+touch 了操練場中名為 file-B 的所有檔案，所以現在它們“新於”timestamp 檔案，因此能被用
+-newer 測試條件找到。</p>
+
+<p>Finally, Let's go back to the bad permissions test we performed earlier and apply it to
+playground:</p>
+
+<p>最後，讓我們回到之前那個錯誤許可權的例子中，把它應用於操練場裡：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find playground \( -type f -not -perm 0600 \) -or \( -type d -not -perm 0700 \)
+</code></pre></div></div>
+
+<p>This command lists all one hundred directories and twenty-six hundred files in
+playground (as well as timestamp and playground itself, for a total of 2702)
+because none of them meets our definition of “good permissions.” With our knowledge
+of operators and actions, we can add actions to this command to apply new permissions
+to the files and directories in our playground:</p>
+
+<p>這個命令列出了操練場中所有一百個目錄和二百六十個檔案（還有 timestamp 和操練場本身，共 2702 個）
+，因為沒有一個符合我們“正確許可權”的定義。透過對運算子和行為知識的瞭解，我們可以給這個命令
+新增行為，對實戰場中的檔案和目錄應用新的許可權。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ find playground \( -type f -not -perm 0600 -exec chmod 0600 '{}' ';' \)
+   -or \( -type d -not -perm 0711 -exec chmod 0700 '{}' ';' \)
+</code></pre></div></div>
+
+<p>On a day-to-day basis, we might find it easier to issue two commands, one for the
+directories and one for the files, rather than this one large compound command, but it’s
+nice to know that we can do it this way. The important point here is to understand how
+the operators and actions can be used together to perform useful tasks.</p>
+
+<p>在日常的基礎上，我們可能發現執行兩個命令會比較容易一些，一個操作目錄，另一個操作檔案，
+而不是這一個長長的複合命令，但是很高興知道，我們能這樣執行命令。這裡最重要的一點是要
+理解怎樣把運算子和行為結合起來使用，來執行有用的任務。</p>
+
+<h4 id="選項">選項</h4>
+
+<p>Finally, we have the options. The options are used to control the scope of a find search.
+They may be included with other tests and actions when constructing find expressions.
+Here is a list of the most commonly used ones:</p>
+
+<p>最後，我們有這些選項。這些選項被用來控制 find 命令的搜尋範圍。當建構 find 表示式的時候，
+它們可能被其它的測試條件和行為包含，這裡有一個最常被使用的選項的列表：</p>
+
+<table class="multi">
+<caption class="cap">Table 18-7: find Options</caption>
+<tr>
+<th class="title">Option</th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-depth</td>
+<td valign="top">Direct find to process a directory’s files before the
+directory itself. This option is automatically applied
+when the -delete action is specified.</td>
+</tr>
+<tr>
+<td valign="top">-maxdepth levels </td>
+<td valign="top">Set the maximum number of levels that find will
+descend into a directory tree when performing tests and actions.</td>
+</tr>
+<tr>
+<td valign="top">-mindepth levels </td>
+<td valign="top">Set the minimum number of levels that find will
+descend into a directory tree before applying tests and actions.</td>
+</tr>
+<tr>
+<td valign="top">-mount </td>
+<td valign="top">Direct find not to traverse directories that are mounted
+on other file systems.</td>
+</tr>
+<tr>
+<td valign="top">-noleaf </td>
+<td valign="top">Direct find not to optimize its search based on the
+assumption that it is searching a Unix-like file system.
+This is needed when scanning DOS/Windows file
+systems and CD-ROMs.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 18-7: find 命令選項</caption>
+<tr>
+<th class="title">選項</th>
+<th class="title">描述</th>
+</tr>
+<tr>
+<td valign="top" width="25%">-depth</td>
+<td valign="top"> 指示 find 程式先處理目錄中的檔案，再處理目錄自身。當指定-delete 行為時，會自動
+應用這個選項。</td>
+</tr>
+<tr>
+<td valign="top">-maxdepth levels </td>
+<td valign="top">當執行測試條件和行為的時候，設定 find 程式陷入目錄樹的最大級別數 </td>
+</tr>
+<tr>
+<td valign="top">-mindepth levels </td>
+<td valign="top">在應用測試條件和行為之前，設定 find 程式陷入目錄數的最小級別數。 </td>
+</tr>
+<tr>
+<td valign="top">-mount </td>
+<td valign="top">指示 find 程式不要搜尋掛載到其它檔案系統上的目錄。</td>
+</tr>
+<tr>
+<td valign="top">-noleaf </td>
+<td valign="top">指示 find 程式不要基於自己在搜尋 Unix 的檔案系統的假設，來優化它的搜尋。
+在搜尋DOS/Windows 檔案系統和CD/ROMS的時候，我們需要這個選項</td>
+</tr>
+</table>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>The locate, updatedb, find, and xargs programs are all part the GNU
+Project’s findutils package. The GNU Project provides a website with
+extensive on-line documentation, which is quite good and should be read if
+you are using these programs in high security environments:</p>
+  </li>
+  <li>
+    <p>程式 locate，updatedb，find 和 xargs 都是 GNU 專案 findutils 軟體包的一部分。
+這個 GUN 專案提供了大量的線上文件，這些文件相當出色，如果你在高安全性的
+環境中使用這些程式，你應該讀讀這些文件。</p>
+
+    <p><a href="http://www.gnu.org/software/findutils/">http://www.gnu.org/software/findutils/</a></p>
+  </li>
+</ul>
+
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">啟動一個專案</h1><br>
+<p>Starting with this chapter, we will begin to build a program. The purpose of this project
+is to see how various shell features are used to create programs and, more importantly,
+create good programs.</p>
+
+<p>從這一章開始，我們將建設一個專案。這個專案的目的是為了瞭解怎樣使用各種各樣的 shell 功能來
+建立程式，更重要的是，建立好程式。</p>
+
+<p>The program we will write is a report generator. It will present various statistics about
+our system and its status, and will produce this report in HTML format, so we can view it
+with a web browser such as Firefox or Konqueror.</p>
+
+<p>我們將要編寫的程式是一個報告產生器。它會顯示系統的各種統計資料和它的狀態，並將產生 HTML 格式的報告，
+所以我們能透過網路瀏覽器，比如說 Firefox 或者 Konqueror，來檢視這個報告。</p>
+
+<p>Programs are usually built up in a series of stages, with each stage adding features and
+capabilities. The first stage of our program will produce a very minimal HTML page that
+contains no system information. That will come later.</p>
+
+<p>通常，建立程式要經過一系列階段，每個階段會新增新的特性和功能。我們程式的第一個階段將會
+產生一個非常小的 HTML 網頁，其不包含系統資訊。隨後我們會新增這些資訊。</p>
+
+<h3 id="第一階段最小的文件">第一階段：最小的文件</h3>
+
+<p>The first thing we need to know is the format of a well-formed HTML document. It
+looks like this:</p>
+
+<p>首先我們需要知道的事是一個規則的 HTML 文件的格式。它看起來像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;HTML&gt;
+      &lt;HEAD&gt;
+            &lt;TITLE&gt;Page Title&lt;/TITLE&gt;
+      &lt;/HEAD&gt;
+      &lt;BODY&gt;
+            Page body.
+      &lt;/BODY&gt;
+&lt;/HTML&gt;
+</code></pre></div></div>
+
+<p>If we enter this into our text editor and save the file as foo.html, we can use the
+following URL in Firefox to view the file:</p>
+
+<p>如果我們將這些內容輸入到文字編輯器中，並把檔案儲存為 foo.html，然後我們就能在 Firefox 中
+使用下面的 URL 來檢視檔案內容：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>file:///home/username/foo.html
+</code></pre></div></div>
+
+<p>The first stage of our program will be able to output this HTML file to standard output.
+We can write a program to do this pretty easily. Let's start our text editor and create a
+new file named ~/bin/sys_info_page:</p>
+
+<p>程式的第一個階段將這個 HTML 檔案輸出到標準輸出。我們可以編寫一個程式，相當容易地完成這個任務。
+啟動我們的文字編輯器，然後建立一個名為 ~/bin/sys_info_page 的新檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ vim ~/bin/sys_info_page
+</code></pre></div></div>
+
+<p>and enter the following program:</p>
+
+<p>隨後輸入下面的程式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Program to output a system information page</span>
+<span class="nb">echo</span> <span class="s2">"&lt;HTML&gt;"</span>
+<span class="nb">echo</span> <span class="s2">"      &lt;HEAD&gt;"</span>
+<span class="nb">echo</span> <span class="s2">"            &lt;TITLE&gt;Page Title&lt;/TITLE&gt;"</span>
+<span class="nb">echo</span> <span class="s2">"      &lt;/HEAD&gt;"</span>
+<span class="nb">echo</span> <span class="s2">"      &lt;BODY&gt;"</span>
+<span class="nb">echo</span> <span class="s2">"            Page body."</span>
+<span class="nb">echo</span> <span class="s2">"      &lt;/BODY&gt;"</span>
+<span class="nb">echo</span> <span class="s2">"&lt;/HTML&gt;"</span>
+</code></pre></div></div>
+
+<p>Our first attempt at this problem contains a shebang, a comment (always a good idea) and
+a sequence of echo commands, one for each line of output. After saving the file, we’ll
+make it executable and attempt to run it:</p>
+
+<p>我們第一次嘗試解決這個問題，程式包含了一個 shebang，一條註釋（總是一個好主意）和一系列的
+echo 命令，每個命令負責輸出一行文字。儲存檔案之後，我們將讓它成為可執行檔案，再嘗試執行它：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ chmod 755 ~/bin/sys_info_page
+[me@linuxbox ~]$ sys_info_page
+</code></pre></div></div>
+
+<p>When the program runs, we should see the text of the HTML document displayed on the
+screen, since the echo commands in the script send their output to standard output.
+We’ll run the program again and redirect the output of the program to the file
+sys_info_page.html, so that we can view the result with a web browser:</p>
+
+<p>當程式執行的時候，我們應該看到 HTML 文字在螢幕上顯示出來，因為指令碼中的 echo 命令會將輸出
+傳送到標準輸出。我們再次執行這個程式，把程式的輸出重新導向到檔案 sys_info_page.html 中，
+從而我們可以透過網路瀏覽器來檢視輸出結果：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ sys_info_page &gt; sys_info_page.html
+[me@linuxbox ~]$ firefox sys_info_page.html
+</code></pre></div></div>
+
+<p>So far, so good.</p>
+
+<p>到目前為止，一切順利。</p>
+
+<p>When writing programs, it’s always a good idea to strive for simplicity and clarity.
+Maintenance is easier when a program is easy to read and understand, not to mention, it
+can make the program easier to write by reducing the amount of typing. Our current
+version of the program works fine, but it could be simpler. We could actually combine all
+the echo commands into one, which will certainly make it easier to add more lines to the
+program’s output. So, Let's change our program to this:</p>
+
+<p>在編寫程式的時候，儘量做到簡單明瞭，這總是一個好主意。當一個程式易於閱讀和理解的時候，
+維護它也就更容易，更不用說，透過減少鍵入量，可以使程式更容易書寫了。我們當前的程式版本
+工作正常，但是它可以更簡單些。實際上，我們可以把所有的 echo 命令結合成一個 echo 命令，當然
+這樣能更容易地新增更多的文字行到程式的輸出中。那麼，把我們的程式修改為：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Program to output a system information page</span>
+<span class="nb">echo</span> <span class="s2">"&lt;HTML&gt;
+    &lt;HEAD&gt;
+          &lt;TITLE&gt;Page Title&lt;/TITLE&gt;
+    &lt;/HEAD&gt;
+    &lt;BODY&gt;
+          Page body.
+    &lt;/BODY&gt;
+&lt;/HTML&gt;"</span>
+</code></pre></div></div>
+
+<p>A quoted string may include newlines, and therefore contain multiple lines of text. The
+shell will keep reading the text until it encounters the closing quotation mark. It works
+this way on the command line, too:</p>
+
+<p>一個帶引號的字串可能包含換行符，因此可以包含多個文字行。Shell 會持續讀取文字直到它遇到
+右引號。它在命令列中也是這樣工作的：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo "&lt;HTML&gt;
+
+&gt;         &lt;HEAD&gt;
+                &lt;TITLE&gt;Page Title&lt;/TITLE&gt;
+&gt;         &lt;/HEAD&gt;
+&gt;         &lt;BODY&gt;
+&gt;               Page body.
+&gt;         &lt;/BODY&gt;
+&gt;&lt;/HTML&gt;"
+</code></pre></div></div>
+
+<p>The leading “&gt;” character is the shell prompt contained in the PS2 shell variable. It
+appears whenever we type a multi-line statement into the shell. This feature is a little
+obscure right now, but later, when we cover multi-line programming statements, it will
+turn out to be quite handy.</p>
+
+<p>開頭的 “&gt;” 字元是包含在 PS2shell 變數中的 shell 提示符。每當我們在 shell 中鍵入多行語句的時候，
+這個提示符就會出現。現在這個功能有點晦澀，但隨後，當我們介紹多行程式設計語句時，它會派上大用場。</p>
+
+<h3 id="第二階段新增一點資料">第二階段：新增一點資料</h3>
+
+<p>Now that our program can generate a minimal document, Let's put some data in the
+report. To do this, we will make the following changes:</p>
+
+<p>現在我們的程式能產生一個最小的文件，讓我們給報告新增些資料吧。為此，我們將做
+以下修改：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Program to output a system information page</span>
+<span class="nb">echo</span> <span class="s2">"&lt;HTML&gt;
+    &lt;HEAD&gt;
+          &lt;TITLE&gt;System Information Report&lt;/TITLE&gt;
+    &lt;/HEAD&gt;
+    &lt;BODY&gt;
+          &lt;H1&gt;System Information Report&lt;/H1&gt;
+    &lt;/BODY&gt;
+&lt;/HTML&gt;"</span>
+</code></pre></div></div>
+
+<p>We added a page title and a heading to the body of the report.</p>
+
+<p>我們增加了一個網頁標題，並且在報告正文部分加了一個標題。</p>
+
+<h3 id="變數和常量">變數和常量</h3>
+
+<p>There is an issue with our script, however. Notice how the string “System Information
+Report” is repeated? With our tiny script it’s not a problem, but Let's imagine that our
+script was really long and we had multiple instances of this string. If we wanted to
+change the title to something else, we would have to change it in multiple places, which
+could be a lot of work. What if we could arrange the script so that the string only
+appeared once and not multiple times? That would make future maintenance of the script
+much easier. Here’s how we could do that:</p>
+
+<p>然而，我們的指令碼存在一個問題。請注意字串 “System Information
+Report” 是怎樣被重複使用的？對於這個微小的指令碼而言，它不是一個問題，但是讓我們設想一下，
+我們的指令碼非常冗長，並且我們有許多這個字串的範例。如果我們想要更換一個標題，我們必須
+對指令碼中的許多地方做修改，這會是很大的工作量。如果我們能整理一下指令碼，讓這個字串只
+出現一次而不是多次，會怎樣呢？這樣會使今後的指令碼維護工作更加輕鬆。我們可以這樣做：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Program to output a system information page</span>
+<span class="nv">title</span><span class="o">=</span><span class="s2">"System Information Report"</span>
+<span class="nb">echo</span> <span class="s2">"&lt;HTML&gt;
+        &lt;HEAD&gt;
+                &lt;TITLE&gt;</span><span class="nv">$title</span><span class="s2">&lt;/TITLE&gt;
+        &lt;/HEAD&gt;
+        &lt;BODY&gt;
+                &lt;H1&gt;</span><span class="nv">$title</span><span class="s2">&lt;/H1&gt;
+        &lt;/BODY&gt;
+&lt;/HTML&gt;"</span>
+</code></pre></div></div>
+
+<p>By creating a variable named title and assigning it the value “System Information
+Report,” we can take advantage of parameter expansion and place the string in multiple
+locations.</p>
+
+<p>透過建立一個名為 title 的變數，並把 “System Information
+Report” 字串賦值給它，我們就可以利用引數展開功能，把這個字串放到檔案中的多個位置。</p>
+
+<p>So, how do we create a variable? Simple, we just use it. When the shell encounters a
+variable, it automatically creates it. This differs from many programming languages in
+which variables must be explicitly declared or defined before use. The shell is very lax
+about this, which can lead to some problems. For example, consider this scenario played
+out on the command line:</p>
+
+<p>那麼，我們怎樣來建立一個變數呢？很簡單，我們只管使用它。當 shell 碰到一個變數的時候，它會
+自動地建立它。這不同於許多程式語言，它們中的變數在使用之前，必須顯式的宣告或是定義。關於
+這個問題，shell 要求非常寬鬆，這可能會導致一些問題。例如，考慮一下在命令列中發生的這種情形：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo="yes"
+[me@linuxbox ~]$ echo $foo
+yes
+[me@linuxbox ~]$ echo $fool
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>We first assign the value “yes” to the variable foo, then display its value with echo.
+Next we display the value of the variable name misspelled as “fool” and get a blank
+result. This is because the shell happily created the variable fool when it encountered
+it, and gave it the default value of nothing, or empty. From this, we learn that we must
+pay close attention to our spelling! It’s also important to understand what really
+happened in this example. From our previous look at how the shell performs expansions,
+we know that the command:</p>
+
+<p>首先我們把 “yes” 賦給變數 foo，然後用 echo 命令來顯示變數值。接下來，我們顯示拼寫錯誤的變數名
+“fool” 的變數值，然後得到一個空值。這是因為 當 shell 遇到 fool 的時候, 它很高興地建立了變數 fool
+並且賦給 fool 一個空的預設值。因此，我們必須小心謹慎地拼寫！同樣理解範例中究竟發生了什麼事情也
+很重要。從我們以前學習 shell 執行展開操作，我們知道這個命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo $foo
+</code></pre></div></div>
+
+<p>undergoes parameter expansion and results in:</p>
+
+<p>經歷了引數展開操作，然後得到：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo yes
+</code></pre></div></div>
+
+<p>Whereas the command:</p>
+
+<p>然而這個命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo $fool
+</code></pre></div></div>
+
+<p>expands into:</p>
+
+<p>展開為：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ echo
+</code></pre></div></div>
+
+<p>The empty variable expands into nothing! This can play havoc with commands that
+require arguments. Here’s an example:</p>
+
+<p>這個空變數展開值為空！對於需要引數的命令來說，這會引起混亂。下面是一個例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo=foo.txt
+[me@linuxbox ~]$ foo1=foo1.txt
+[me@linuxbox ~]$ cp $foo $fool
+cp: missing destination file operand after `foo.txt'
+Try `cp --help' for more information.
+</code></pre></div></div>
+
+<p>We assign values to two variables, foo and foo1. We then perform a cp, but misspell
+the name of the second argument. After expansion, the cp command is only sent one
+argument, though it requires two.</p>
+
+<p>我們給兩個變數賦值，foo 和 foo1。然後我們執行 cp 操作，但是拼寫錯了第二個引數的名字。
+引數展開之後，這個 cp 命令只接受到一個引數，雖然它需要兩個。</p>
+
+<p>There are some rules about variable names:</p>
+
+<p>有一些關於變數名的規則：</p>
+
+<ol>
+  <li>
+    <p>Variable names may consist of alphanumeric characters (letters and numbers) and
+underscore characters.</p>
+  </li>
+  <li>
+    <p>The first character of a variable name must be either a letter or an underscore.</p>
+  </li>
+  <li>
+    <p>Spaces and punctuation symbols are not allowed.</p>
+  </li>
+</ol>
+<ol>
+  <li>
+    <p>變數名可由字母數字字元（字母和數字）和下劃線字元組成。</p>
+  </li>
+  <li>
+    <p>變數名的第一個字元必須是一個字母或一個下劃線。</p>
+  </li>
+  <li>
+    <p>變數名中不允許出現空格和標點符號。</p>
+  </li>
+</ol>
+
+<p>The word “variable” implies a value that changes, and in many applications, variables are
+used this way. However, the variable in our application, title, is used as a constant. A
+constant is just like a variable in that it has a name and contains a value. The difference
+is that the value of a constant does not change. In an application that performs geometric
+calculations, we might define PI as a constant, and assign it the value of 3.1415,
+instead of using the number literally throughout our program. The shell makes no
+distinction between variables and constants; they are mostly for the programmer’s
+convenience. A common convention is to use upper case letters to designate constants
+and lower case letters for true variables. We will modify our script to comply with this
+convention:</p>
+
+<p>單詞 “variable” 意味著可變的值，並且在許多應用程式當中，都是以這種方式來使用變數的。然而，
+我們應用程式中的變數，title，被用作一個常量。常量有一個名字且包含一個值，在這方面就
+像是變數。不同之處是常量的值是不能改變的。在執行幾何運算的應用程式中，我們可以把 PI 定義為
+一個常量，並把 3.1415 賦值給它，用它來代替數字字面值。shell 不能辨別變數和常量；它們大多數情況下
+是為了方便程式設計師。一個常用慣例是指定大寫字母來表示常量，小寫字母表示真正的變數。我們
+將修改我們的指令碼來遵從這個慣例：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Program to output a system information page</span>
+<span class="nv">TITLE</span><span class="o">=</span><span class="s2">"System Information Report For </span><span class="nv">$HOSTNAME</span><span class="s2">"</span>
+<span class="nb">echo</span> <span class="s2">"&lt;HTML&gt;
+        &lt;HEAD&gt;
+                &lt;TITLE&gt;</span><span class="nv">$TITLE</span><span class="s2">&lt;/TITLE&gt;
+        &lt;/HEAD&gt;
+        &lt;BODY&gt;
+                &lt;H1&gt;</span><span class="nv">$TITLE</span><span class="s2">&lt;/H1&gt;
+        &lt;/BODY&gt;
+&lt;/HTML&gt;"</span>
+</code></pre></div></div>
+
+<p>We also took the opportunity to jazz up our title by adding the value of the shell variable
+HOSTNAME. This is the network name of the machine.</p>
+
+<p>我們亦藉此機會，透過在標題中新增 shell 變數名 HOSTNAME，讓標題變得活潑有趣些。
+這個變數名是這臺機器的網路名稱。</p>
+
+<hr />
+
+<p>Note: The shell actually does provide a way to enforce the immutability of
+constants, through the use of the declare builtin command with the -r (read-
+only) option. Had we assigned TITLE this way:</p>
+
+<p>注意：實際上，shell 確實提供了一種方法，透過使用帶有-r（只讀）選項的內部命令 declare，
+來強制常量的不變性。如果我們給 TITLE 這樣賦值：</p>
+
+<p>declare -r TITLE=”Page Title”</p>
+
+<p>the shell would prevent any subsequent assignment to TITLE. This feature is
+rarely used, but it exists for very formal scripts.</p>
+
+<p>那麼隨後所有給 TITLE 的賦值都會被 shell 阻止。這個功能極少被使用，但為了很早之前的指令碼，
+它仍然存在。</p>
+
+<hr />
+
+<h4 id="給變數和常量賦值">給變數和常量賦值</h4>
+
+<p>Here is where our knowledge of expansion really starts to pay off. As we have seen,
+variables are assigned values this way:</p>
+
+<p>這裡是我們真正開始使用引數擴充套件知識的地方。正如我們所知道的，這樣給變數賦值：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>variable=value
+</code></pre></div></div>
+
+<p>where variable is the name of the variable and value is a string. Unlike some other
+programming languages, the shell does not care about the type of data assigned to a
+variable; it treats them all as strings. You can force the shell to restrict the assignment to
+integers by using the declare command with the -i option, but, like setting variables
+as read-only, this is rarely done.</p>
+
+<p>這裡的<em>variable</em>是變數的名字，<em>value</em>是一個字串。不同於一些其它的程式語言，shell 不會
+在乎變數值的型別；它把它們都看作是字串。透過使用帶有-i 選項的 declare 命令，你可以強制 shell 把
+賦值限制為整數，但是，正如像設定變數為只讀一樣，極少這樣做。</p>
+
+<p>Note that in an assignment, there must be no spaces between the variable name, the
+equals sign, and the value. So what can the value consist of? Anything that we can
+expand into a string:</p>
+
+<p>注意在賦值過程中，變數名、等號和變數值之間必須沒有空格。那麼，這些值由什麼組成呢？
+可以展開成字串的任意值：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a=z                     # Assign the string "z" to variable a.
+b="a string"            # Embedded spaces must be within quotes.
+c="a string and $b"     # Other expansions such as variables can be
+                        # expanded into the assignment.
+
+d=$(ls -l foo.txt)      # Results of a command.
+e=$((5 * 7))            # Arithmetic expansion.
+f="\t\ta string\n"      # Escape sequences such as tabs and newlines.
+</code></pre></div></div>
+
+<p>Multiple variable assignments may be done on a single line:</p>
+
+<p>可以在同一行中對多個變數賦值：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a=5 b="a string"
+</code></pre></div></div>
+
+<p>During expansion, variable names may be surrounded by optional curly braces “{}”.
+This is useful in cases where a variable name becomes ambiguous due to its surrounding
+context. Here, we try to change the name of a file from myfile to myfile1, using a
+variable:</p>
+
+<p>在引數展開過程中，變數名可能被花括號「{}」包圍著。由於變數名周圍的上下文，其變得不明確的情況下，
+這會很有幫助。這裡，我們試圖把一個檔名從 myfile 改為 myfile1，使用一個變數：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ filename="myfile"
+[me@linuxbox ~]$ touch $filename
+[me@linuxbox ~]$ mv $filename $filename1
+mv: missing destination file operand after `myfile'
+Try `mv --help' for more information.
+</code></pre></div></div>
+
+<p>This attempt fails because the shell interprets the second argument of the mv command as
+a new (and empty) variable. The problem can be overcome this way:</p>
+
+<p>這種嘗試失敗了，因為 shell 把 mv 命令的第二個引數解釋為一個新的（並且空的）變數。透過這種方法
+可以解決這個問題：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ mv $filename ${filename}1
+</code></pre></div></div>
+
+<p>By adding the surrounding braces, the shell no longer interprets the trailing 1 as part of
+the variable name.</p>
+
+<p>透過新增花括號，shell 不再把末尾的1解釋為變數名的一部分。</p>
+
+<p>We’ll take this opportunity to add some data to our report, namely the date and time the
+report was created and the user name of the creator:</p>
+
+<p>我們將利用這個機會來新增一些資料到我們的報告中，即建立包括的日期和時間，以及建立者的使用者名稱：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Program to output a system information page</span>
+<span class="nv">TITLE</span><span class="o">=</span><span class="s2">"System Information Report For </span><span class="nv">$HOSTNAME</span><span class="s2">"</span>
+<span class="nv">CURRENT_TIME</span><span class="o">=</span><span class="k">$(</span>date +<span class="s2">"%x %r %Z"</span><span class="k">)</span>
+<span class="nv">TIME_STAMP</span><span class="o">=</span><span class="s2">"Generated </span><span class="nv">$CURRENT_TIME</span><span class="s2">, by </span><span class="nv">$USER</span><span class="s2">"</span>
+<span class="nb">echo</span> <span class="s2">"&lt;HTML&gt;
+        &lt;HEAD&gt;
+                &lt;TITLE&gt;</span><span class="nv">$TITLE</span><span class="s2">&lt;/TITLE&gt;
+        &lt;/HEAD&gt;
+        &lt;BODY&gt;
+                &lt;H1&gt;</span><span class="nv">$TITLE</span><span class="s2">&lt;/H1&gt;
+                &lt;P&gt;</span><span class="nv">$TIME_STAMP</span><span class="s2">&lt;/P&gt;
+        &lt;/BODY&gt;
+&lt;/HTML&gt;"</span>
+</code></pre></div></div>
+
+<h3 id="here-documents">Here Documents</h3>
+
+<p>We’ve looked at two different methods of outputting our text, both using the echo
+command. There is a third way called a <em>here document</em> or <em>here script</em>. A here document
+is an additional form of I/O redirection in which we embed a body of text into our script
+and feed it into the standard input of a command. It works like this:</p>
+
+<p>我們已經知道了兩種不同的文字輸出方法，兩種方法都使用了 echo 命令。還有第三種方法，叫做
+here document 或者 here script。一個 here document 是另外一種 I/O 重新導向形式，我們
+在指令碼檔案中嵌入正文文字，然後把它傳送給一個命令的標準輸入。它這樣工作：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>command &lt;&lt; token
+text
+token
+</code></pre></div></div>
+
+<p>where <em>command</em> is the name of command that accepts standard input and <em>token</em> is a string
+used to indicate the end of the embedded text. We’ll modify our script to use a here
+document:</p>
+
+<p>這裡的 command 是一個可以接受標準輸入的命令名，token 是一個用來指示嵌入文字結束的字串。
+我們將修改我們的指令碼，來使用一個 here document:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Program to output a system information page</span>
+<span class="nv">TITLE</span><span class="o">=</span><span class="s2">"System Information Report For </span><span class="nv">$HOSTNAME</span><span class="s2">"</span>
+<span class="nv">CURRENT_TIME</span><span class="o">=</span><span class="k">$(</span>date +<span class="s2">"%x %r %Z"</span><span class="k">)</span>
+<span class="nv">TIME_STAMP</span><span class="o">=</span><span class="s2">"Generated </span><span class="nv">$CURRENT_TIME</span><span class="s2">, by </span><span class="nv">$USER</span><span class="s2">"</span>
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span> <span class="no">_EOF_</span><span class="sh">
+&lt;HTML&gt;
+         &lt;HEAD&gt;
+                &lt;TITLE&gt;</span><span class="nv">$TITLE</span><span class="sh">&lt;/TITLE&gt;
+         &lt;/HEAD&gt;
+         &lt;BODY&gt;
+                &lt;H1&gt;</span><span class="nv">$TITLE</span><span class="sh">&lt;/H1&gt;
+                &lt;P&gt;</span><span class="nv">$TIME_STAMP</span><span class="sh">&lt;/P&gt;
+         &lt;/BODY&gt;
+&lt;/HTML&gt;
+</span><span class="no">_EOF_
+</span></code></pre></div></div>
+
+<p>Instead of using echo, our script now uses cat and a here document. The string _EOF_
+(meaning “End Of File,” a common convention) was selected as the token, and marks the
+end of the embedded text. Note that the token must appear alone and that there must not
+be trailing spaces on the line.</p>
+
+<p>取代 echo 命令，現在我們的指令碼使用 cat 命令和一個 here document。這個字串_EOF_（意思是“檔案結尾”，
+一個常見用法）被選作為 token，並標誌著嵌入文字的結尾。注意這個 token 必須在一行中單獨出現，並且文字行中
+沒有末尾的空格。</p>
+
+<p>So what’s the advantage of using a here document? It’s mostly the same as echo, except
+that, by default, single and double quotes within here documents lose their special
+meaning to the shell. Here is a command line example:</p>
+
+<p>那麼使用一個 here document 的優點是什麼呢？它很大程度上和 echo 一樣，除了預設情況下，here
+documents 中的單引號和雙引號會失去它們在 shell 中的特殊含義。這裡有一個命令中的例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ foo="some text"
+[me@linuxbox ~]$ cat &lt;&lt; _EOF_
+&gt; $foo
+&gt; "$foo"
+&gt; '$foo'
+&gt; \$foo
+&gt; _EOF_
+some text
+"some text"
+'some text'
+$foo
+</code></pre></div></div>
+
+<p>As we can see, the shell pays no attention to the quotation marks. It treats them as
+ordinary characters. This allows us to embed quotes freely within a here document. This
+could turn out to be handy for our report program.</p>
+
+<p>正如我們所見到的，shell 根本沒有注意到引號。它把它們看作是普通的字元。這就允許我們
+在一個 here document 中可以隨意的嵌入引號。對於我們的報告程式來說，這將是非常方便的。</p>
+
+<p>Here documents can be used with any command that accepts standard input. In this
+example, we use a here document to pass a series of commands to the ftp program in
+order to retrieve a file from a remote FTP server:</p>
+
+<p>Here documents 可以和任意能接受標準輸入的命令一塊使用。在這個例子中，我們使用了
+一個 here document 將一系列的命令傳遞到這個 ftp 程式中，為的是從一個遠端 FTP 伺服器中得到一個檔案：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Script to retrieve a file via FTP</span>
+<span class="nv">FTP_SERVER</span><span class="o">=</span>ftp.nl.debian.org
+<span class="nv">FTP_PATH</span><span class="o">=</span>/debian/dists/lenny/main/installer-i386/current/images/cdrom
+<span class="nv">REMOTE_FILE</span><span class="o">=</span>debian-cd_info.tar.gz
+ftp <span class="nt">-n</span> <span class="o">&lt;&lt;</span> <span class="no">_EOF_</span><span class="sh">
+open </span><span class="nv">$FTP_SERVER</span><span class="sh">
+user anonymous me@linuxbox
+cd </span><span class="nv">$FTP_PATH</span><span class="sh">
+hash
+get </span><span class="nv">$REMOTE_FILE</span><span class="sh">
+bye
+</span><span class="no">_EOF_
+</span><span class="nb">ls</span> <span class="nt">-l</span> <span class="nv">$REMOTE_FILE</span>
+</code></pre></div></div>
+
+<p>If we change the redirection operator from “&lt;&lt;” to “&lt;&lt;-“, the shell will ignore leading
+tab characters in the here document. This allows a here document to be indented, which
+can improve readability:</p>
+
+<p>如果我們把重新導向運算子從 “&lt;&lt;” 改為 “&lt;&lt;-”，shell 會忽略在此 here document 中開頭的 tab 字元。
+這就能縮排一個 here document，從而提高指令碼的可讀性：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Script to retrieve a file via FTP</span>
+<span class="nv">FTP_SERVER</span><span class="o">=</span>ftp.nl.debian.org
+<span class="nv">FTP_PATH</span><span class="o">=</span>/debian/dists/lenny/main/installer-i386/current/images/cdrom
+<span class="nv">REMOTE_FILE</span><span class="o">=</span>debian-cd_info.tar.gz
+ftp <span class="nt">-n</span> <span class="o">&lt;&lt;-</span> <span class="no">_EOF_</span><span class="sh">
+    open </span><span class="nv">$FTP_SERVER</span><span class="sh">
+    user anonymous me@linuxbox
+    cd </span><span class="nv">$FTP_PATH</span><span class="sh">
+    hash
+    get </span><span class="nv">$REMOTE_FILE</span><span class="sh">
+    bye
+</span><span class="no">_EOF_
+</span><span class="nb">ls</span> <span class="nt">-l</span> <span class="nv">$REMOTE_FILE</span>
+</code></pre></div></div>
+
+<h3 id="總結歸納">總結歸納</h3>
+
+<p>In this chapter, we started a project that will carry us through the process of building a
+successful script. We introduced the concept of variables and constants and how they can
+be employed. They are the first of many applications we will find for parameter
+expansion. We also looked at how to produce output from our script, and various
+methods for embedding blocks of text.</p>
+
+<p>在這一章中，我們啟動了一個專案，其帶領我們領略了建立一個成功指令碼的整個過程。
+同時我們介紹了變數和常量的概念，以及怎樣使用它們。它們是我們將找到的眾多引數展開應用程式中的第一批範例。
+我們也知道了怎樣從我們的指令碼檔案中產生輸出，及其各種各樣嵌入文字塊的方法。</p>
+
+<h3 id="拓展閱讀">拓展閱讀</h3>
+
+<ul>
+  <li>
+    <p>For more information about HTML, see the following articles and tutorials:</p>
+  </li>
+  <li>
+    <p>關於 HTML 的更多資訊，檢視下面的文章和教材：</p>
+
+    <p><a href="http://en.wikipedia.org/wiki/Html">http://en.wikipedia.org/wiki/Html</a></p>
+
+    <p><a href="http://en.wikibooks.org/wiki/HTML_Programming">http://en.wikibooks.org/wiki/HTML_Programming</a></p>
+
+    <p><a href="http://html.net/tutorials/html/">http://html.net/tutorials/html/</a></p>
+  </li>
+  <li>
+    <p>The bash man page includes a section entitled “HERE DOCUMENTS,” which
+has a full description of this feature.</p>
+  </li>
+  <li>
+    <p>Bash 手冊包括一節“HERE DOCUMENTS”的內容，其詳細的講述了這個功能。</p>
+  </li>
+</ul>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>

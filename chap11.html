@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <link rel="stylesheet" type="text/css" href="css/typo.css" />
+  <link rel="stylesheet" type="text/css" href="css/tlcl.css" />
+  <link rel="icon" type="image/png" href="../images/billi66.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TLCL</title>
+</head>
+
+<body>
+
+<div id="wrapper" class="typo">
+
+<a href="index.html">目錄</a>
+<h1 style="text-align:center">程序</h1><br>
+<p>Modern operating systems are usually multitasking, meaning that they create the illusion
+of doing more than one thing at once by rapidly switching from one executing program to
+another. The Linux kernel manages this through the use of processes. Processes are how
+Linux organizes the different programs waiting for their turn at the CPU.</p>
+
+<p>通常，現在的作業系統都支援多工，意味著作業系統透過在一個執行中的程式和另一個
+程式之間快速地切換造成了一種它同時能夠做多件事情的假象。Linux 核心透過使用程序來
+管理多工。程序，就是Linux 組織安排正在等待使用 CPU的各種程式的方式。</p>
+
+<p>Sometimes a computer will become sluggish or an application will stop responding. In
+this chapter, we will look at some of the tools available at the command line that let us
+examine what programs are doing, and how to terminate processes that are misbehaving.</p>
+
+<p>有時候，計算機變得呆滯，執行緩慢，或者一個應用程式停止響應。在這一章中，我們將看一些
+可用的命令列工具，這些工具幫助我們檢視程式的執行狀態，以及怎樣終止行為不當的程序。</p>
+
+<p>This chapter will introduce the following commands:</p>
+
+<p>這一章將介紹以下命令：</p>
+
+<ul>
+  <li>
+    <p>ps– Report a snapshot of current processes</p>
+  </li>
+  <li>
+    <p>top – Display tasks</p>
+  </li>
+  <li>
+    <p>jobs – List active jobs</p>
+  </li>
+  <li>
+    <p>bg – Place a job in the background</p>
+  </li>
+  <li>
+    <p>fg – Place a job in the foreground</p>
+  </li>
+  <li>
+    <p>kill – Send a signal to a process</p>
+  </li>
+  <li>
+    <p>killall – Kill processes by name</p>
+  </li>
+  <li>
+    <p>shutdown – Shutdown or reboot the system</p>
+  </li>
+  <li>
+    <p>ps – 報告當前程序快照</p>
+  </li>
+  <li>
+    <p>top – 顯示任務</p>
+  </li>
+  <li>
+    <p>jobs – 列出活躍的任務</p>
+  </li>
+  <li>
+    <p>bg – 把一個任務放到後臺執行</p>
+  </li>
+  <li>
+    <p>fg – 把一個任務放到前臺執行</p>
+  </li>
+  <li>
+    <p>kill – 給一個程序傳送訊號</p>
+  </li>
+  <li>
+    <p>killall – 殺死指定名字的程序</p>
+  </li>
+  <li>
+    <p>shutdown – 關機或重啟系統</p>
+  </li>
+</ul>
+
+<h3 id="程序是怎樣工作的">程序是怎樣工作的</h3>
+
+<p>When a system starts up, the kernel initiates a few of its own activities as processes and
+launches a program called init. init, in turn, runs a series of shell scripts (located in
+/etc) called init scripts, which start all the system services. Many of these services are
+implemented as daemon programs, programs that just sit in the background and do their
+thing without having any user interface. So even if we are not logged in, the system is at
+least a little busy performing routine stuff.</p>
+
+<p>當系統啟動的時候，核心先把一些它自己的活動初始化為程序，然後執行一個叫做 init 的程式。init，
+依次地，再執行一系列的稱為 init 指令碼的 shell 指令碼（位於/etc），它們可以啟動所有的系統服務。
+其中許多系統服務以守護（daemon）程式的形式實現，守護程式僅在後臺執行，沒有任何使用者介面(User Interface)。
+這樣，即使我們沒有登入系統，至少系統也在忙於執行一些例行事務。</p>
+
+<p>The fact that a program can launch other programs is expressed in the process scheme as
+a parent process producing a child process.</p>
+
+<p>在程序方案中，一個程式可以發動另一個程式被表述為一個父程序可以產生一個子程序。</p>
+
+<p>The kernel maintains information about each process to help keep things organized. For
+example, each process is assigned a number called a process ID or PID. PIDs are
+assigned in ascending order, with init always getting PID 1. The kernel also keeps
+track of the memory assigned to each process, as well as the processes’ readiness to
+resume execution. Like files, processes also have owners and user IDs, effective user
+IDs, etc.</p>
+
+<p>核心維護每個程序的資訊，以此來保持事情有序。例如，系統分配給每個程序一個數字，這個數字叫做
+程序(process) ID 或 PID。PID 號按升序分配，init 程序的 PID 總是1。核心也對分配給每個程序的記憶體和就緒狀態進行追蹤以便繼續執行這個程序。
+像檔案一樣，程序也有所有者和使用者 ID，有效使用者 ID，等等。</p>
+
+<h3 id="檢視程序">檢視程序</h3>
+
+<p>The most commonly used command to view processes (there are several) is ps. The ps
+program has a lot of options, but in it simplest form it is used like this:</p>
+
+<p>檢視程序，最常使用地命令（有幾個命令）是 ps(process status)。ps 程式有許多選項，它最簡單地使用形式是這樣的：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ps
+PID TTY           TIME CMD
+5198 pts/1    00:00:00 bash
+10129 pts/1   00:00:00 ps
+</code></pre></div></div>
+
+<p>The result in this example lists two processes, process 5198 and process 10129, which are
+bash and ps respectively. As we can see, by default, ps doesn’t show us very much,
+just the processes associated with the current terminal session. To see more, we need to
+add some options, but before we do that, Let's look at the other fields produced by ps.
+TTY is short for “Teletype,” and refers to the controlling terminal for the process. Unix
+is showing its age here. The TIME field is the amount of CPU time consumed by the
+process. As we can see, neither process makes the computer work very hard.</p>
+
+<p>上例中，列出了兩個程序，程序 5198 和程序 10129，各自代表命令 bash 和 ps。正如我們所看到的，
+預設情況下，ps 不會顯示很多程序資訊，只是列出與當前終端會話相關的程序。為了得到更多資訊，
+我們需要加上一些選項，但是在這樣做之前，我們先看一下 ps 命令執行結果的其它欄位。
+TTY 是 “Teletype”(直譯電傳打字機) 的簡寫，是指程序的控制終端。TTY足足顯示了 Unix 的年代久遠。TIME 欄位表示
+程序所消耗的 CPU 時間數量。正如我們所看到的，這兩個程序使計算機工作起來很輕鬆。</p>
+
+<p>If we add an option, we can get a bigger picture of what the system is doing:</p>
+
+<p>如果給 ps 命令加上選項，我們可以得到更多關於系統執行狀態的資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ps x
+PID TTY   STAT   TIME COMMAND
+2799 ?    Ssl    0:00 /usr/libexec/bonobo-activation-server –ac
+2820 ?    Sl     0:01 /usr/libexec/evolution-data-server-1.10 --
+
+and many more...
+</code></pre></div></div>
+
+<p>Adding the “x” option (note that there is no leading dash) tells ps to show all of our
+processes regardless of what terminal (if any) they are controlled by. The presence of a
+“?” in the TTY column indicates no controlling terminal. Using this option, we see a list
+of every process that we own.</p>
+
+<p>加上 “x” 選項（注意沒有開頭的 “-“ 字元），告訴 ps 命令，展示所有程序，不管它們由什麼
+終端（如果有的話）控制。在 TTY 一欄中出現的「?」，表示沒有控制終端。使用這個 “x” 選項，可以
+看到我們所擁有的每個程序的資訊。</p>
+
+<p>Since the system is running a lot of processes, ps produces a long list. It is often helpful
+to pipe the output from ps into less for easier viewing. Some option combinations also
+produce long lines of output, so maximizing the terminal emulator window may be a
+good idea, too.</p>
+
+<p>因為系統中正執行著許多程序，所以 ps 命令的輸出結果很長。為了方便檢視，將ps的輸出管道
+到less中通常很有幫助。一些選項組合也會產生很長的輸出結果，所以最大化
+終端模擬器視窗可能也是一個好主意。</p>
+
+<p>A new column titled STAT has been added to the output. STAT is short for “state” and
+reveals the current status of the process:</p>
+
+<p>輸出結果中，新添加了一欄，標題為 STAT 。STAT 是 “state” 的簡寫，它揭示了程序當前狀態：</p>
+
+<table class="multi">
+<caption class="cap">Table 11-1: Process States</caption>
+<thead>
+<tr>
+<th class="title">State</th>
+<th class="title">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top" width="15%">R</td>
+<td valign="top">Running. This means that the process is running or ready to run.
+</td>
+</tr>
+<tr>
+<td valign="top">S</td>
+<td valign="top">Sleeping. A process is not running; rather, it is waiting for an event,
+such as a keystroke or network packet.
+</td>
+</tr>
+<tr>
+<td valign="top">D</td>
+<td valign="top">Uninterruptible Sleep. Process is waiting for I/O such as a disk drive.</td>
+</tr>
+<tr>
+<td valign="top">T</td>
+<td valign="top">Stopped. Process has been instructed to stop. More on this later.</td>
+</tr>
+<tr>
+<td valign="top">Z</td>
+<td valign="top">A defunct or “zombie” process. This is a child process that has
+terminated, but has not been cleaned up by its parent.</td>
+</tr>
+<tr>
+<td valign="top">&lt;</td>
+<td valign="top">A high priority process. It's possible to grant more importance to a
+process, giving it more time on the CPU. This property of a process
+is called niceness. A process with high priority is said to be less
+nice because it's taking more of the CPU's time, which leaves less
+for everybody else.</td>
+</tr>
+<tr>
+<td valign="top">N</td>
+<td valign="top">A low priority process. A process with low priority (a “nice”
+process) will only get processor time after other processes with
+higher priority have been serviced.</td>
+</tr>
+</tbody>
+</table>
+
+<table class="multi">
+<caption class="cap">表11-1: 程序狀態</caption>
+<thead>
+<tr>
+<th class="title">狀態</th>
+<th class="title">含義</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top" width="15%">R</td>
+<td valign="top">執行中。這意味著，程序正在執行或準備執行。
+</td>
+</tr>
+<tr>
+<td valign="top">S</td>
+<td valign="top">正在睡眠。程序沒有執行，而是，正在等待一個事件，
+比如說，一個按鍵或者網路分組。
+</td>
+</tr>
+<tr>
+<td valign="top">D</td>
+<td valign="top">不可中斷睡眠。程序正在等待 I/O，比方說，一個磁碟驅動器的 I/O。</td>
+</tr>
+<tr>
+<td valign="top">T</td>
+<td valign="top">已停止. 已經指示程序停止執行。稍後介紹更多。</td>
+</tr>
+<tr>
+<td valign="top">Z</td>
+<td valign="top">一個死程序或“殭屍”程序。這是一個已經終止的子程序，但是它的父程序還沒有清空它。
+（父程序沒有把子程序從程序表中刪除）</td>
+</tr>
+<tr>
+<td valign="top">&lt;</td>
+<td valign="top">一個高優先順序程序。這可能會授予一個程序更多重要的資源，給它更多的 CPU 時間。
+程序的這種屬性叫做 niceness。具有高優先順序的程序據說是不好的（less nice），
+因為它佔用了比較多的 CPU 時間，這樣就給其它程序留下很少時間。
+</td>
+</tr>
+<tr>
+<td valign="top">N</td>
+<td valign="top">低優先順序程序。
+一個低優先順序程序（一個“nice”程序）只有當其它高優先順序程序被服務了之後，才會得到處理器時間。
+</td>
+</tr>
+</tbody>
+</table>
+
+<p>The process state may be followed by other characters. These indicate various exotic
+process characteristics. See the ps man page for more detail.</p>
+
+<p>程序狀態資訊之後，可能還跟隨其他的字元。這表示各種外來程序的特性。詳細資訊請看 ps 手冊頁。</p>
+
+<p>Another popular set of options is “aux” (without a leading dash). This gives us even
+more information:</p>
+
+<p>另一個流行的選項組合是 “aux”（不帶開頭的”-“字元）。這會給我們更多資訊：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ps aux
+USER   PID  %CPU  %MEM     VSZ    RSS  TTY   STAT   START   TIME  COMMAND
+root     1   0.0   0.0    2136    644  ?     Ss     Mar05   0:31  init
+root     2   0.0   0.0       0      0  ?     S&amp;lt;     Mar05   0:00  [kt]
+
+and many more...
+</code></pre></div></div>
+
+<p>This set of options displays the processes belonging to every user. Using the options
+without the leading dash invokes the command with “BSD style” behavior. The Linux
+version of ps can emulate the behavior of the ps program found in several different
+Unix implementations. With these options, we get these additional columns:</p>
+
+<p>這個選項組合，能夠顯示屬於每個使用者的程序資訊。使用這個選項，可以喚醒 “BSD 風格” 的輸出結果。
+Linux 版本的 ps 命令，可以模擬幾個不同 Unix 版本中的 ps 程式的行為。透過這些選項，我們得到
+這些額外的列。</p>
+
+<table class="multi">
+<caption class="cap">Table 11-2: BSD Style ps Column Headers
+</caption>
+<thead>
+<tr>
+<th class="title">Header</th>
+<th class="title">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top" width="15%">USER</td>
+<td valign="top">User ID. This is the owner of the process.
+</td>
+</tr>
+<tr>
+<td valign="top">%CPU</td>
+<td valign="top">CPU usage in percent</td>
+</tr>
+<tr>
+<td valign="top">%MEM</td>
+<td valign="top">Memory usage in percent</td>
+</tr>
+<tr>
+<td valign="top">VSZ</td>
+<td valign="top">Virtual memory size</td>
+</tr>
+<tr>
+<td valign="top">RSS</td>
+<td valign="top">Resident Set Size. The amount of physical memory (RAM) the
+process is using in kilobytes.</td>
+</tr>
+<tr>
+<td valign="top">START</td>
+<td valign="top">Time when the process started. For values over twenty four hours,
+a date is used.</td>
+</tr>
+</tbody>
+</table>
+
+<table class="multi">
+<caption class="cap">表11-2: BSD 風格的 ps 命令列標題
+</caption>
+<thead>
+<tr>
+<th class="title">標題</th>
+<th class="title">含義</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top" width="15%">USER</td>
+<td valign="top">使用者 ID. 程序的所有者。
+</td>
+</tr>
+<tr>
+<td valign="top">%CPU</td>
+<td valign="top">以百分比表示的 CPU 使用率</td>
+</tr>
+<tr>
+<td valign="top">%MEM</td>
+<td valign="top">以百分比表示的記憶體使用率</td>
+</tr>
+<tr>
+<td valign="top">VSZ</td>
+<td valign="top">虛擬記憶體大小</td>
+</tr>
+<tr>
+<td valign="top">RSS</td>
+<td valign="top">程序佔用的實體記憶體的大小，以千位元組為單位。</td>
+</tr>
+<tr>
+<td valign="top">START</td>
+<td valign="top">程序啟動的時間。若它的值超過24小時，則用天表示。</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="用-top-命令動態檢視程序">用 top 命令動態檢視程序</h3>
+
+<p>While the ps command can reveal a lot about what the machine is doing, it provides only
+a snapshot of the machine’s state at the moment the ps command is executed. To see a
+more dynamic view of the machine’s activity, we use the top command:</p>
+
+<p>雖然 ps 命令能夠展示許多計算機執行狀態的資訊，但是它只是提供 ps 命令執行時刻的機器狀態快照。
+為了看到更多動態的資訊，我們使用 top 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ top
+</code></pre></div></div>
+
+<p>The top program displays a continuously updating (by default, every 3 seconds) display
+of the system processes listed in order of process activity. The name “top” comes from
+the fact that the top program is used to see the “top” processes on the system. The top
+display consists of two parts: a system summary at the top of the display, followed by a
+table of processes sorted by CPU activity:</p>
+
+<p>top 程式以程序活動順序顯示連續更新的系統程序列表。（預設情況下，每三秒鐘更新一次），”top”這個名字
+來源於 top 程式是用來檢視系統中“頂端”程序的。top 顯示結果由兩部分組成：
+最上面是系統概要，下面是程序列表，以 CPU 的使用率排序。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>top - 14:59:20 up 6:30, 2 users, load average: 0.07, 0.02, 0.00
+Tasks: 109 total,   1 running,  106 sleeping,    0 stopped,    2 zombie
+Cpu(s): 0.7%us, 1.0%sy, 0.0%ni, 98.3%id, 0.0%wa, 0.0%hi, 0.0%si
+Mem:   319496k total,   314860k used,   4636k free,   19392k buff
+Swap:  875500k total,   149128k used,   726372k free,  114676k cach
+
+ PID  USER       PR   NI   VIRT   RES   SHR  S %CPU  %MEM   TIME+    COMMAND
+6244  me         39   19  31752  3124  2188  S  6.3   1.0   16:24.42 trackerd
+....
+</code></pre></div></div>
+
+<p>The system summary contains a lot of good stuff. Here’s a rundown:</p>
+
+<p>其中系統概要包含許多有用資訊。下表是對系統概要的說明：</p>
+
+<table class="multi">
+<caption class="cap">Table 11-3: top Information Fields</caption>
+<thead>
+<tr>
+<th class="title">Row</th>
+<th class="title">Field</th>
+<th class="title">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top" width="10%">1</td>
+<td valign="top" width="15%">top</td>
+<td class="title">Name of the program</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">14:59:20</td>
+<td valign="top">Current time of day.
+</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">up 6:30 </td>
+<td valign="top">This is called uptime. It is the amount of time
+since the machine was last booted. In this
+example, the system has been up for six and a
+half hours.
+</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">2 users</td>
+<td valign="top">There are two users logged in.
+</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">load average: </td>
+<td valign="top">Load average refers to the number of processes
+that are waiting to run, that is, the number of
+processes that are in a runnable state and are
+sharing the CPU. Three values are shown,
+each for a different period of time. The first is
+the average for the last 60 seconds, the next the
+previous 5 minutes, and finally the previous 15
+minutes. Values under 1.0 indicate that the
+machine is not busy.
+</td>
+</tr>
+<tr>
+<td valign="top">2</td>
+<td valign="top">Tasks:</td>
+<td valign="top">This summarizes the number of processes and
+their various process states.
+</td>
+</tr>
+<tr>
+<td valign="top">3</td>
+<td valign="top">Cpu(s):</td>
+<td valign="top">This row describes the character of the
+activities that the CPU is performing.
+</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">0.7%us </td>
+<td valign="top">0.7% of the CPU is being used for user
+processes. This means processes outside of the
+kernel itself.</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">1.0%sy </td>
+<td valign="top">1.0% of the CPU is being used for system
+(kernel) processes.</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">0.0%ni </td>
+<td valign="top">0.0% of the CPU is being used by “nice” (low
+   priority) processes.
+</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">98.3%id </td>
+<td valign="top">98.3% of the CPU is idle.</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">0.0%wa </td>
+<td valign="top">0.0% of the CPU is waiting for I/O.</td>
+</tr>
+<tr>
+<td valign="top">4</td>
+<td valign="top">Mem:</td>
+<td valign="top">Shows how physical RAM is being used.</td>
+</tr>
+<tr>
+<td valign="top">5</td>
+<td valign="top">Swap:</td>
+<td valign="top">Shows how swap space (virtual memory) is
+being used.</td>
+</tr>
+</tbody>
+</table>
+
+<table class="multi">
+<caption class="cap">表11-3: top 命令資訊欄位</caption>
+<thead>
+<tr>
+<th class="title">行號</th>
+<th class="title">欄位</th>
+<th class="title">意義</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td valign="top" width="10%">1</td>
+<td valign="top" width="15%">top</td>
+<td class="title">程式名。</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">14:59:20</td>
+<td valign="top">當前時間。
+</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">up 6:30 </td>
+<td valign="top">這是正常執行時間。它是計算機從上次啟動到現在所執行的時間。
+在這個例子裡，系統已經運行了六個半小時。  </td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">2 users</td>
+<td valign="top">有兩個使用者登入系統。</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">load average: </td>
+<td valign="top">載入平均值是指，等待執行的程序數目，也就是說，處於可以執行狀態並共享 CPU 的程序個數。
+這裡展示了三個數值，每個數值對應不同的時間段。第一個是最後60秒的平均值，
+下一個是前5分鐘的平均值，最後一個是前15分鐘的平均值。若平均值低於1.0，則指示計算機
+工作不忙碌。</td>
+</tr>
+<tr>
+<td valign="top">2</td>
+<td valign="top">Tasks:</td>
+<td valign="top">總結了程序數目和這些程序的各種狀態。</td>
+</tr>
+<tr>
+<td valign="top">3</td>
+<td valign="top">Cpu(s):</td>
+<td valign="top">這一行描述了 CPU 正在進行的活動的特性。</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">0.7%us </td>
+<td valign="top">0.7% 的 CPU 被用於使用者程序。這意味著程序在核心之外。</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">1.0%sy </td>
+<td valign="top">1.0%的 CPU 時間被用於系統（核心）程序。
+</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">0.0%ni </td>
+<td valign="top">0.0%的 CPU 時間被用於"nice"（低優先順序）程序。
+</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">98.3%id </td>
+<td valign="top">98.3%的 CPU 時間是空閒的。</td>
+</tr>
+<tr>
+<td valign="top"></td>
+<td valign="top">0.0%wa </td>
+<td valign="top">0.0%的 CPU 時間來等待 I/O。</td>
+</tr>
+<tr>
+<td valign="top">4</td>
+<td valign="top">Mem:</td>
+<td valign="top">展示實體記憶體的使用情況。</td>
+</tr>
+<tr>
+<td valign="top">5</td>
+<td valign="top">Swap:</td>
+<td valign="top">展示交換分割槽（虛擬記憶體）的使用情況。
+</td>
+</tr>
+</tbody>
+</table>
+
+<p>The top program accepts a number of keyboard commands. The two most interesting are
+h, which displays the program’s help screen, and q, which quits top.</p>
+
+<p>top 程式接受一系列從鍵盤輸入的命令。兩個最有趣的命令是 h 和 q。h，顯示程式的幫助螢幕，q，
+退出 top 程式。</p>
+
+<p>Both major desktop environments provide graphical applications that display information
+similar to top (in much the same way that Task Manager in Windows works), but I find
+that top is better than the graphical versions because it is faster and it consumes far
+fewer system resources. After all, our system monitor program shouldn’t be the source of
+the system slowdown that we are trying to track.</p>
+
+<p>兩個主要的桌面環境都提供了圖形化應用程式，來顯示與 top 程式相似的資訊
+（和 Windows 中的工作管理員差別不多），但是我覺得 top 程式要好於圖形化的版本，
+因為它執行速度快，並且消費很少的系統資源。畢竟，我們的系統監測程式不能成為
+我們試圖追蹤的系統怠工的原因。</p>
+
+<h3 id="控制程序">控制程序</h3>
+
+<p>Now that we can see and monitor processes, Let's gain some control over them. For our
+experiments, we’re going to use a little program called xlogo as our guinea pig. The
+xlogo program is a sample program supplied with the X Window System (the
+underlying engine that makes the graphics on our display go) which simply displays a re-
+sizable window containing the X logo. First, we’ll get to know our test subject:</p>
+
+<p>現在我們可以看到和監測程序，讓我們得到一些對它們的控制權。為了我們的實驗，我們將使用
+一個叫做 xlogo 的小程式，作為我們的實驗品。這個 xlogo 程式是 X 視窗系統
+（使圖形介面顯示在螢幕上的底層引擎）提供的示例程式，這個程式僅顯示一個大小可調的
+包含 X 標誌的視窗。首先，我們需要知道測試的實驗物件：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ xlogo
+</code></pre></div></div>
+
+<p>After entering the command, a small window containing the logo should appear
+somewhere on the screen. On some systems, xlogo may print a warning message, but it
+may be safely ignored.</p>
+
+<p>命令執行之後，一個包含 X 標誌的小視窗應該出現在螢幕的某個位置上。在一些系統中，xlogo 命令
+會列印一條警告資訊，但是不用理會它。</p>
+
+<p>Tip: If your system does not include the xlogo program, try using gedit or
+kwrite instead.</p>
+
+<p>小貼士：如果你的系統不包含 xlogo 程式，試著用 gedit 或者 kwrite 來代替。</p>
+
+<p>We can verify that xlogo is running by resizing its window. If the logo is redrawn in the
+new size, the program is running.</p>
+
+<p>透過調整它的視窗大小，我們能夠證明 xlogo 程式正在執行。如果這個標誌以新的尺寸被重畫，
+則這個程式正在執行。</p>
+
+<p>Notice how our shell prompt has not returned? This is because the shell is waiting for the
+program to finish, just like all the other programs we have used so far. If we close the
+xlogo window, the prompt returns.</p>
+
+<p>注意，為什麼我們的 shell 提示符還沒有返回？這是因為 shell 正在等待這個程式結束，
+就像到目前為止我們用過的其它所有程式一樣。如果我們關閉 xlogo 視窗，shell 提示符就返回了。</p>
+
+<h3 id="中斷一個程序">中斷一個程序</h3>
+
+<p>Let's observe what happens when we run xlogo again. First, enter the xlogo
+command and verify that the program is running. Next, return to the terminal window
+and type Ctrl-c.</p>
+
+<p>我們再執行 xlogo 程式一次，觀察一下發生了什麼事。首先，執行 xlogo 命令，並且
+證實這個程式正在執行。下一步，回到終端視窗，按下 Ctrl-c。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ xlogo
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>In a terminal, typing Ctrl-c, interrupts a program. This means that we politely asked
+the program to terminate. After typing Ctrl-c, the xlogo window closed and the shell
+prompt returned.</p>
+
+<p>在一個終端中，輸入 Ctrl-c，中斷一個程式。這意味著，我們禮貌地要求終止這個程式。
+輸入 Ctrl-c 之後，xlogo 視窗關閉，shell 提示符返回。</p>
+
+<p>Many (but not all) command line programs can be interrupted by using this technique.</p>
+
+<p>透過這個技巧，許多（但不是全部）命令列程式可以被中斷。</p>
+
+<h3 id="把一個程序放置到後臺執行">把一個程序放置到後臺(執行)</h3>
+
+<p>Let's say we wanted to get the shell prompt back without terminating the xlogo
+program. We’ll do this by placing the program in the background. Think of the terminal
+as having a foreground (with stuff visible on the surface like the shell prompt) and a
+background (with hidden stuff behind the surface.) To launch a program so that it is
+immediately placed in the background, we follow the command with an- “&amp;” character:</p>
+
+<p>假如說我們想讓 shell 提示符返回，卻不終止 xlogo 程式。我們可以把
+這個程式放到後臺(background)執行。把終端想象是一個有前臺（包含在表層可見的事物，像 shell 提示符）
+和後臺（包含表層之下的隱藏的事物）（的裝置）。為了啟動一個程式並讓它立即在後臺
+執行，我們在程式命令之後，加上”&amp;”字元：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ xlogo &amp;
+[1] 28236
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>After entering the command, the xlogo window appeared and the shell prompt returned,
+but some funny numbers were printed too. This message is part of a shell feature called
+job control. With this message, the shell is telling us that we have started job number 1
+(“[1]”) and that it has PID 28236. If we run ps, we can see our process:</p>
+
+<p>執行命令之後，這個 xlogo 窗口出現，並且 shell 提示符返回，同時列印一些有趣的數字。
+這條資訊是 shell 特性的一部分，叫做任務控制 (job control)。透過這條資訊，shell 告訴我們，已經啟動了
+任務號(job number)為1（“［1］”），PID 為28236的程式。如果我們執行 ps 命令，可以看到我們的程序：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ ps
+  PID TTY         TIME   CMD
+10603 pts/1   00:00:00   bash
+28236 pts/1   00:00:00   xlogo
+28239 pts/1   00:00:00   ps
+</code></pre></div></div>
+
+<p>The shell’s job control facility also gives us a way to list the jobs that are have been
+launched from our terminal. Using the jobs command, we can see this list:</p>
+
+<p>shell 的任務控制功能給出了一種列出從我們終端中啟動了的任務的方法。執行 jobs 命令，我們可以看到這個輸出列表：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ jobs
+[1]+ Running            xlogo &amp;
+</code></pre></div></div>
+
+<p>The results show that we have one job, numbered “1”, that it is running, and that the
+command was xlogo &amp;.</p>
+
+<p>結果顯示我們有一個任務，編號為“1”，它正在執行，並且這個任務的命令是 xlogo ＆。</p>
+
+<h3 id="程序返回到前臺">程序返回到前臺</h3>
+
+<p>A process in the background is immune from keyboard input, including any attempt
+interrupt it with a Ctrl-c. To return a process to the foreground, use the fg command,
+this way:</p>
+
+<p>一個在後臺執行的程序對一切來自鍵盤的輸入都免疫，也不能用 Ctrl-c 來中斷它。
+為了讓一個程序返回前臺 (foreground)，這樣使用 fg 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ jobs
+[1]+ Running        xlogo &amp;
+[me@linuxbox ~]$ fg %1
+xlogo
+</code></pre></div></div>
+
+<p>The command fg followed by a percent sign and the job number (called a jobspec) does
+the trick. If we only have one background job, the jobspec is optional. To terminate
+xlogo, type Ctrl-c.</p>
+
+<p>fg 命令之後，跟隨著一個百分號和任務序號（叫做 jobspec,如此處的%1）就可以了。如果我們只有一個後臺任務，那麼
+jobspec(job specification) 是可有可無的。輸入 Ctrl-c 來終止 xlogo 程式。</p>
+
+<h3 id="停止一個程序">停止一個程序</h3>
+
+<p>Sometimes we’ll want to stop a process without terminating it. This is often done to
+allow a foreground process to be moved to the background. To stop a foreground
+process, type Ctrl-z. Let's try it. At the command prompt, type xlogo, the Enter
+key, then Ctrl-z:</p>
+
+<p>有時候，我們想要停止一個程序，而不是終止它。我們這麼做通常是為了允許前臺程序被移動到後臺。
+輸入 Ctrl-z，可以停止一個前臺程序。讓我們試一下。在命令提示符下，執行 xlogo 命令，
+然後輸入 Ctrl-z:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ xlogo
+[1]+ Stopped                 xlogo
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>After stopping xlogo, we can verify that the program has stopped by attempting to
+resize the xlogo window. We will see that it appears quite dead. We can either restore
+the program to the foreground, using the fg command, or move the program to the
+background with the bg command:</p>
+
+<p>停止 xlogo 程式之後，透過調整 xlogo 的視窗大小，我們可以證實這個程式已經停止了。
+它看起來像死掉了一樣。使用 fg 命令，可以恢復程式到前臺執行，或者用 bg 命令把程式移到後臺。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ bg %1
+[1]+ xlogo &amp;
+[me@linuxbox ~]$
+</code></pre></div></div>
+
+<p>As with the fg command, the jobspec is optional if there is only one job.</p>
+
+<p>和 fg 命令一樣，如果只有一個任務的話，jobspec 引數是可選的。</p>
+
+<p>Moving a process from the foreground to the background is handy if we launch a
+graphical program from the command, but forget to place it in the background by
+appending the trailing “&amp;”.</p>
+
+<p>如果我們從命令列啟動一個圖形程式，但是忘了在命令後加字元 “&amp;”， 將一個程序從前臺移動到後臺也是很方便的。</p>
+
+<p>Why would you want to launch a graphical program from the command line? There are
+two reasons. First, the program you wish to run might not be listed on the window
+manager’s menus (such as xlogo). Secondly, by launching a program from the
+command line, you might be able to see error messages that would otherwise be invisible
+if the program were launched graphically. Sometimes, a program will fail to start up
+when launched from the graphical menu. By launching it from the command line instead,
+we may see an error message that will reveal the problem. Also, some graphical
+programs have many interesting and useful command line options.</p>
+
+<p>為什麼要從命令列啟動一個圖形介面程式呢？有兩個原因。第一個，你想要啟動的程式，可能
+沒有在視窗管理器的選單中列出來（比方說 xlogo）。第二個，從命令列啟動一個程式，
+你能夠看到一些錯誤資訊，如果從圖形介面中執行程式的話，這些資訊是不可見的。有時候，
+一個程式不能從圖形介面選單中啟動。透過從命令列中啟動它，我們可能會看到
+能揭示問題的錯誤資訊。一些圖形介面程式還有許多有意思並且有用的命令列選項。</p>
+
+<h3 id="signals">Signals</h3>
+
+<p>The kill command is used to “kill” programs. This allows us to terminate programs
+that need killing. Here’s an example:</p>
+
+<p>kill 命令被用來“殺死”程式。這樣我們就可以終止需要殺死的程式。這裡有一個例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ xlogo &amp;
+[1] 28401
+[me@linuxbox ~]$ kill 28401
+[1]+ Terminated               xlogo
+</code></pre></div></div>
+
+<p>We first launch xlogo in the background. The shell prints the jobspec and the PID of
+the background process. Next, we use the kill command and specify the PID of the
+process we want to terminate. We could have also specified the process using a jobspec
+(for example, “%1”) instead of a PID.</p>
+
+<p>首先，我們在後臺啟動 xlogo 程式。shell 打印出這個後臺程序的 jobspec 和 PID。下一步，我們使用
+kill 命令，並且指定我們想要終止的程序 PID。也可以用 jobspec（例如，“％1”）來代替 PID。</p>
+
+<p>While this is all very straightforward, there is more to it than that. The kill command
+doesn’t exactly “kill” programs, rather it sends them signals. Signals are one of several
+ways that the operating system communicates with programs. We have already seen
+signals in action with the use of Ctrl-c and Ctrl-z. When the terminal receives one
+of these keystrokes, it sends a signal to the program in the foreground. In the case of
+Ctrl-c, a signal called INT (Interrupt) is sent; with Ctrl-z, a signal called TSTP
+(Terminal Stop.) Programs, in turn, “listen” for signals and may act upon them as they
+are received. The fact that a program can listen and act upon signals allows a program to
+do things like save work in progress when it is sent a termination signal.</p>
+
+<p>雖然這個命令看上去很直白， 但是它的含義不止於此。這個 kill 命令不是真的“殺死”程式，而是給程式
+傳送訊號。訊號是作業系統與程式之間進行通訊時所採用的幾種方式中的一種。
+在使用 Ctrl-c 和 Ctrl-z 的過程中我們已經看到訊號的實際用法。當終端接受了其中一個按鍵組合後，它會給在前端執行
+的程式傳送一個訊號。在使用 Ctrl-c 的情況下，會發送一個叫做 INT（Interrupt,中斷）的訊號；當使用
+Ctrl-z 時，則傳送一個叫做 TSTP（Terminal Stop,終端停止）的訊號。程式，相應地，監聽訊號的到來，當程式
+接到訊號之後，則做出響應。一個程式能夠監聽和響應訊號這件事允許一個程式做些事情，
+比如，當程式接到一個終止訊號時，它可以儲存所做的工作。</p>
+
+<h3 id="透過-kill-命令給程序傳送訊號">透過 kill 命令給程序傳送訊號</h3>
+
+<p>The kill command is used to send signals to programs. Its most common syntax looks
+like this:</p>
+
+<p>kill 命令被用來給程式傳送訊號。它最常見的語法形式看起來像這樣：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kill [-signal] PID...
+</code></pre></div></div>
+
+<p>If no signal is specified on the command line, then the TERM (Terminate) signal is sent by
+default. The kill command is most often used to send the following signals:</p>
+
+<p>如果在命令列中沒有指定訊號，那麼預設情況下，傳送 TERM（Terminate，終止）訊號。kill 命令被經常
+用來發送以下命令：</p>
+
+<table class="multi">
+<caption class="cap">Table 11-4: Common Signals</caption>
+<tr>
+<th class="title">Number</th>
+<th class="title">Name</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top" width="10%">1</td>
+<td valign="top" width="10%">HUP</td>
+<td valign="top">Hangup. This is a vestige of the good old days when terminals
+were attached to remote computers with phone lines and modems. The signal is
+used to indicate to programs that the controlling terminal has “hung up.” The
+effect of this signal can be demonstrated by closing a terminal session. The
+foreground program running on the terminal will be sent the signal and will
+terminate.  <p>This signal is also used by many daemon programs to cause a
+reinitialization. This means that when a daemon is sent this signal, it will
+restart and re-read its configuration file. The Apache web server is an
+example of a daemon that uses the HUP signal in this way.</p> </td>
+</tr>
+<tr>
+<td valign="top">2</td>
+<td valign="top">INT</td>
+<td valign="top">Interrupt. Performs the same function as the
+Ctrl-c key sent from the terminal. It will usually terminate a program.
+</td>
+</tr>
+<tr>
+<td valign="top">9</td>
+<td valign="top">KILL</td>
+<td valign="top">Kill. This signal is special. Whereas programs may choose to
+handle signals sent to them in different ways, including ignoring them all
+together, the KILL signal is never actually sent to the target program.
+Rather, the kernel immediately terminates the process. When a process is
+terminated in this manner, it is given no opportunity to “clean up” after
+itself or save its work. For this reason, the KILL signal should only be used
+as a last resort when other termination signals fail.  </td>
+</tr>
+<tr>
+<td valign="top">15</td>
+<td valign="top">TERM</td>
+<td valign="top">Terminate. This is the default signal sent by the kill
+command. If a program is still “alive” enough to receive signals, it will
+terminate.  </td>
+</tr>
+<tr>
+<td valign="top">18</td>
+<td valign="top">CONT</td>
+<td valign="top">Continue. This will restore a process after a STOP signal.</td>
+</tr>
+<tr>
+<td valign="top">19</td>
+<td valign="top">STOP</td>
+<td valign="top">Stop. This signal causes a process to pause without
+terminating. Like the KILL signal, it is not sent to the target process, and
+thus it cannot be ignored.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 11-4: 常用訊號</caption>
+<tr>
+<th class="title">編號</th>
+<th class="title">名字</th>
+<th class="title">含義</th>
+</tr>
+<tr>
+<td valign="top" width="10%">1</td>
+<td valign="top" width="10%">HUP</td>
+<td valign="top">掛起（Hangup）。這是美好往昔的殘留部分，那時候終端機透過電話線和調變解調器連線到
+遠端的計算機。這個訊號被用來告訴程式，控制的終端機已經“結束通話”。
+透過關閉一個終端會話，可以展示這個訊號的作用。在當前終端執行的前臺程式將會收到這個訊號並終止。
+<p>許多守護程序也使用這個訊號，來重新初始化。這意味著，當一個守護程序收到這個訊號後，
+這個程序會重新啟動，並且重新讀取它的配置檔案。Apache 網路伺服器守護程序就是一個例子。</p>
+</td>
+</tr>
+<tr>
+<td valign="top">2</td>
+<td valign="top">INT</td>
+<td valign="top">中斷。實現和 Ctrl-c 一樣的功能，由終端傳送。通常，它會終止一個程式。
+</td>
+</tr>
+<tr>
+<td valign="top">9</td>
+<td valign="top">KILL</td>
+<td valign="top">殺死。這個訊號很特別。儘管程式可能會選擇不同的方式來處理髮送給它的
+訊號，其中也包含忽略訊號，但是 KILL 訊號從不被髮送到目標程式。而是核心立即終止
+這個程序。當一個程序以這種方式終止的時候，它沒有機會去做些“清理”工作，或者是儲存工作。
+因為這個原因，把 KILL 訊號看作最後一招，當其它終止訊號失敗後，再使用它。
+</td>
+</tr>
+<tr>
+<td valign="top">15</td>
+<td valign="top">TERM</td>
+<td valign="top">終止。這是 kill 命令傳送的預設訊號。如果程式仍然“活著”，可以接受訊號，那麼
+這個它會終止。 </td>
+</tr>
+<tr>
+<td valign="top">18</td>
+<td valign="top">CONT</td>
+<td valign="top">繼續。在一個停止訊號後，這個訊號會恢復程序的執行。</td>
+</tr>
+<tr>
+<td valign="top">19</td>
+<td valign="top">STOP</td>
+<td valign="top">停止。這個訊號導致程序停止執行，而不是終止。像 KILL 訊號，它不被
+傳送到目標程序，因此它不能被忽略。
+</td>
+</tr>
+</table>
+
+<p>Let's try out the kill command:</p>
+
+<p>讓我們試一下 kill 命令：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ xlogo &amp;
+[1] 13546
+[me@linuxbox ~]$ kill -1 13546
+[1]+ Hangup         xlogo
+</code></pre></div></div>
+
+<p>In this example, we start the xlogo program in the background and then send it a HUP
+signal with kill. The xlogo program terminates and the shell indicates that the
+background process has received a hangup signal. You may need to press the enter key a
+couple of times before you see the message. Note that signals may be specified either by
+number or by name, including the name prefixed with the letters “SIG”:</p>
+
+<p>在這個例子裡，我們在後臺啟動 xlogo 程式，然後透過 kill 命令，傳送給它一個 HUP 訊號。
+這個 xlogo 程式終止執行，並且 shell 指示這個後臺程序已經接受了一個掛起訊號。在看到這條
+資訊之前，你可能需要多按幾次 enter 鍵。注意，訊號既可以用號碼，也可以用名字來指定，
+包括在前面加上字母 “SIG” 的名字。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ xlogo 1] 13601
+[me@linuxbox ~]$ kill -INT 13601
+[1]+ Interrupt                    xlogo
+[me@linuxbox ~]$ xlogo &amp;
+[1] 13608
+[me@linuxbox ~]$ kill -SIGINT 13608
+[1]+ Interrupt                    xlogo
+</code></pre></div></div>
+
+<p>Repeat the example above and try out the other signals. Remember, you can also use
+jobspecs in place of PIDs.</p>
+
+<p>重複上面的例子，試著使用其它的訊號。記住，你也可以用 jobspecs 來代替 PID。</p>
+
+<p>Processes, like files, have owners, and you must be the owner of a process (or the
+superuser) in order to send it signals with kill.</p>
+
+<p>程序，和檔案一樣，擁有所有者，所以為了能夠透過 kill 命令來給程序傳送訊號，
+你必須是程序的所有者（或者是超級使用者）。</p>
+
+<p>In addition to the list of signals above, which are most often used with kill, there are
+other signals frequently used by the system. Here is a list of other common signals:</p>
+
+<p>除了上表列出的 kill 命令最常使用的訊號之外，還有一些系統頻繁使用的訊號。以下是其它一些常用
+訊號列表：</p>
+
+<table class="multi">
+<caption class="cap">Table 11-5: Other Common Signals</caption>
+<tr>
+<th class="title">Number</th>
+<th class="title">Name</th>
+<th class="title">Meaning</th>
+</tr>
+<tr>
+<td valign="top" width="10%">3</td>
+<td valign="top" width="10%">QUIT</td>
+<td valign="top">Quit</td>
+</tr>
+<tr>
+<td valign="top">11</td>
+<td valign="top">SEGV</td>
+<td valign="top">Segmentation Violation. This signal is sent if a program
+makes illegal use of memory, that is, it tried to write somewhere it was not
+allowed to.  </td>
+</tr>
+<tr>
+<td valign="top">20</td>
+<td valign="top">TSTP</td>
+<td valign="top">Terminal Stop. This is the signal sent by the terminal when
+the Ctrl-z key is pressed.  Unlike the STOP signal, the TSTP signal is
+received by the process and may be ignored.  </td>
+</tr>
+<tr>
+<td valign="top">28</td>
+<td valign="top">WINCH</td>
+<td valign="top">Window Change. This is a signal sent by the system when a
+window changes size. Some programs , like top and less will respond to this
+signal by redrawing themselves to fit the new window dimensions.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表 11-5: 其它常用訊號</caption>
+<tr>
+<th class="title">編號</th>
+<th class="title">名字</th>
+<th class="title">含義</th>
+</tr>
+<tr>
+<td valign="top" width="10%">3</td>
+<td valign="top" width="10%">QUIT</td>
+<td valign="top">退出</td>
+</tr>
+<tr>
+<td valign="top">11</td>
+<td valign="top">SEGV</td>
+<td valign="top">段錯誤(Segmentation Violation)。如果一個程式非法使用記憶體，就會發送這個訊號。也就是說，
+程式試圖寫入記憶體，而這個記憶體空間是不允許此程式寫入的。</td>
+</tr>
+<tr>
+<td valign="top">20</td>
+<td valign="top">TSTP</td>
+<td valign="top">終端停止(Terminal Stop)。當按下 Ctrl-z 組合鍵後，終端傳送這個訊號。不像 STOP 訊號，
+TSTP 訊號由目標程序接收，且可能被忽略。</td>
+</tr>
+<tr>
+<td valign="top">28</td>
+<td valign="top">WINCH</td>
+<td valign="top">改變視窗大小(Window Change)。當改變視窗大小時，系統會發送這個訊號。
+一些程式，像 top 和 less 程式會響應這個訊號，按照新視窗的尺寸，重新整理顯示的內容。
+</td>
+</tr>
+</table>
+
+<p>For the curious, a complete list of signals can be seen with the following command:</p>
+
+<p>為了滿足讀者的好奇心，透過下面的命令可以得到一個完整的訊號列表：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ kill -l
+</code></pre></div></div>
+
+<h3 id="透過-killall-命令給多個程序傳送訊號">透過 killall 命令給多個程序傳送訊號</h3>
+
+<p>It’s also possible to send signals to multiple processes matching a specified program or
+user name by using the killall command. Here is the syntax:</p>
+
+<p>也有可能透過 killall 命令，給匹配特定程式或使用者名稱的多個程序傳送訊號。下面是 killall 命令的語法形式：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>killall [-u user] [-signal] name...
+</code></pre></div></div>
+
+<p>To demonstrate, we will start a couple of instances of the xlogo program and then
+terminate them:</p>
+
+<p>為了說明情況，我們將啟動一對 xlogo 程式的範例，然後再終止它們：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[me@linuxbox ~]$ xlogo &amp;
+[1] 18801
+[me@linuxbox ~]$ xlogo &amp;
+[2] 18802
+[me@linuxbox ~]$ killall xlogo
+[1]- Terminated                xlogo
+[2]+ Terminated                xlogo
+</code></pre></div></div>
+
+<p>Remember, as with kill, you must have superuser privileges to send signals to
+processes that do not belong to you.</p>
+
+<p>記住，和 kill 命令一樣，你必須擁有超級使用者許可權才能給不屬於你的程序傳送訊號。</p>
+
+<h3 id="更多和程序相關的命令">更多和程序相關的命令</h3>
+
+<p>Since monitoring processes is an important system administration task, there are a lot of
+commands for it. Here are some to play with:</p>
+
+<p>因為監測程序是一個很重要的系統管理任務，所以有許多命令與它相關。玩玩下面幾個命令：</p>
+
+<table class="multi">
+<caption class="cap">Table 11-6: Other Process Related Commands</caption>
+<tr>
+<th class="title">Command </th>
+<th class="title">Description</th>
+</tr>
+<tr>
+<td valign="top" width="15%">pstree </td>
+<td valign="top">Outputs a process list arranged in a tree-like pattern showing the
+parent/child relationships between processes.</td>
+</tr>
+<tr>
+<td valign="top">vmstat</td>
+<td valign="top">Outputs a snapshot of system resource usage including, memory,
+swap and disk I/O. To see a continuous display, follow the
+command with a time delay (in seconds) for updates. For example:
+vmstat 5. Terminate the output with Ctrl-c.</td>
+</tr>
+<tr>
+<td valign="top">xload</td>
+<td valign="top">A graphical program that draws a graph showing system load over
+time</td>
+</tr>
+<tr>
+<td valign="top">tload</td>
+<td valign="top">Similar to the xload program, but draws the graph in the terminal.
+Terminate the output with Ctrl-c.</td>
+</tr>
+</table>
+
+<table class="multi">
+<caption class="cap">表11-6: 其它與程序相關的命令</caption>
+<tr>
+<th class="title">命令名</th>
+<th class="title">命令描述</th>
+</tr>
+<tr>
+<td valign="top" width="15%">pstree </td>
+<td valign="top">輸出一個樹型結構的程序列表(processtree)，這個列表展示了程序間父/子關係。</td>
+</tr>
+<tr>
+<td valign="top">vmstat</td>
+<td valign="top">輸出一個系統資源使用快照，包括記憶體，交換分割槽和磁碟 I/O。
+為了看到連續的顯示結果，則在命令名後加上更新操作延時的時間（以秒為單位）。例如，“vmstat 5”。
+，按下 Ctrl-c 組合鍵, 終止輸出。</td>
+</tr>
+<tr>
+<td valign="top">xload</td>
+<td valign="top">一個圖形介面程式，可以畫出系統負載隨時間變化的圖形。</td>
+</tr>
+<tr>
+<td valign="top">tload</td>
+<td valign="top">terminal load與 xload 程式相似，但是在終端中畫出圖形。使用 Ctrl-c，來終止輸出。</td>
+</tr>
+</table>
+
+<br />
+<a href="index.html" class= "footer" >Go to Table of Contents</a>
+</body>
+</div>
+</html>
